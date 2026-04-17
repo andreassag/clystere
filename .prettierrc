@@ -1,0 +1,31 @@
+{
+    "plugins": ["prettier-plugin-groovy"],
+    "printWidth": 120,
+    "tabWidth": 4,
+    "useTabs": false,
+    "semi": false,
+    "singleQuote": false,
+    "trailingComma": "none",
+    "overrides": [
+        {
+            "files": ["*.nf", "*.config"],
+            "options": {
+                "parser": "groovy"
+            }
+        },
+        {
+            "files": ["*.{json,yml,yaml}"],
+            "options": {
+                "tabWidth": 2,
+                "trailingComma": "none"
+            }
+        },
+        {
+            "files": "*.md",
+            "options": {
+                "tabWidth": 2,
+                "proseWrap": "always"
+            }
+        }
+    ]
+}

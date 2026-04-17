@@ -1,0 +1,38 @@
+{
+  "input_file": "GCA_000005845.gbff",
+  "records": [
+    {
+      "name": "U00096.3",
+      "description": "Escherichia coli str. K-12 substr. MG1655, complete genome",
+      "areas": [{ "products": ["siderophore"] }, { "products": ["NRPS-like"] }],
+      "features": [
+        {
+          "type": "region",
+          "location": "[635000:680000](+)",
+          "qualifiers": {
+            "region_number": ["1"],
+            "contig_edge": ["False"],
+            "product": ["siderophore"]
+          }
+        },
+        {
+          "type": "region",
+          "location": "[3940000:3985000](+)",
+          "qualifiers": {
+            "region_number": ["2"],
+            "contig_edge": ["False"],
+            "product": ["NRPS-like"]
+          }
+        }
+      ],
+      "modules": {}
+    },
+    {
+      "name": "AHEC01000001.1",
+      "description": "Escherichia coli str. K-12 substr. MG1655 unplaced genomic scaffold",
+      "areas": [],
+      "features": [],
+      "modules": {}
+    }
+  ]
+}

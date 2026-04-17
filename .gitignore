@@ -1,0 +1,45 @@
+# Nextflow runtime artefacts
+.nextflow/
+.nextflow.log
+.nextflow.log.*
+.nextflow.pid
+.nextflow.log.*.bak
+*.log
+
+# Pipeline work and output directories
+work/
+results/
+
+# Nextflow execution reports (generated per run)
+pipeline_info/
+
+# Intermediate / cached DB downloads
+tmp/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+dist/
+build/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test artefacts
+.nf-test/
+.nf-test.timestamp
+
+# MkDocs build output
+site/
+
+# Secrets and credentials
+.env
+*.pem
+*.key

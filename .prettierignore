@@ -1,0 +1,8 @@
+# nf-core .prettierignore
+assets/
+*.png
+*.svg
+*.jpeg
+*.jpg
+*.pdf
+CITATIONS.md

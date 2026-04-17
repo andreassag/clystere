@@ -1,0 +1,38 @@
+name: Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    - cron: "17 6 * * 1" # Every Monday at 06:17 UTC
+
+jobs:
+  test:
+    name: Run pipeline – test profile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Nextflow
+        uses: nf-core/setup-nextflow@v2
+        with:
+          version: latest-stable
+
+      - name: Run pipeline (test + docker)
+        run: |
+          nextflow run . \
+            --input example/samplesheet.csv \
+            --outdir results \
+            -profile test,docker
+
+      - name: Upload pipeline logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nextflow-logs
+          path: |
+            .nextflow.log
+            results/pipeline_info/
+          retention-days: 7

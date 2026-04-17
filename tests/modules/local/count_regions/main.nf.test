@@ -1,0 +1,92 @@
+nextflow_process {
+    name "Test COUNT_REGIONS"
+    script "modules/local/count_regions/main.nf"
+    process "COUNT_REGIONS"
+
+    test("Default – per-genome BGC count") {
+        when {
+            params {
+                count_per_contig = false
+                split_hybrids    = false
+                max_cpus         = 2
+                max_memory       = "4.GB"
+                max_time         = "1.h"
+            }
+            process {
+                """
+                input[0] = [
+                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert path(process.out.tsv[0]).exists()
+
+            def lines = path(process.out.tsv[0]).readLines()
+            // header + at least one data row
+            assert lines.size() >= 2
+
+            def header = lines[0].split("\t")
+            assert "record" in header
+            assert "total_count" in header
+            assert "description" in header
+
+            def row = lines[1].split("\t")
+            // fixture has 2 regions on U00096.3 (siderophore + NRPS-like)
+            def totalIdx = header.toList().indexOf("total_count")
+            assert row[totalIdx].toInteger() == 2
+        }
+    }
+
+    test("Per-contig mode") {
+        when {
+            params {
+                count_per_contig = true
+                split_hybrids    = false
+                max_cpus         = 2
+                max_memory       = "4.GB"
+                max_time         = "1.h"
+            }
+            process {
+                """
+                input[0] = [
+                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            def lines = path(process.out.tsv[0]).readLines()
+            // per-contig mode emits a row for every contig; header + U00096.3 + AHEC01000001.1
+            assert lines.size() == 3
+            assert lines[1].contains("U00096.3")
+        }
+    }
+
+    test("Versions file is emitted") {
+        when {
+            params {
+                count_per_contig = false
+                split_hybrids    = false
+                max_cpus         = 2
+                max_memory       = "4.GB"
+                max_time         = "1.h"
+            }
+            process {
+                """
+                input[0] = [
+                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert path(process.out.versions[0]).exists()
+            assert path(process.out.versions[0]).text.contains("python")
+        }
+    }
+}

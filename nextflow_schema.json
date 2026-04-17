@@ -1,0 +1,557 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/exterex/clystere/main/nextflow_schema.json",
+  "title": "clystere pipeline parameters",
+  "description": "Nextflow pipeline for antiSMASH + BiG-SCAPE biosynthetic gene cluster analysis",
+  "type": "object",
+  "$defs": {
+    "input_output_options": {
+      "title": "Input/output options",
+      "type": "object",
+      "fa_icon": "fas fa-terminal",
+      "description": "Define where the pipeline should find input and save output data.",
+      "required": [
+        "input",
+        "outdir"
+      ],
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "file-path",
+          "exists": true,
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$",
+          "description": "Path to samplesheet CSV with columns: sample, genome[, annotation].",
+          "help_text": "CSV file with a header row. Required columns: `sample` (unique identifier) and `genome` (path to a GenBank/EMBL/FASTA file). Optional column: `annotation` (path to a GFF3 annotation file).",
+          "fa_icon": "fas fa-file-csv"
+        },
+        "outdir": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "Directory where pipeline results will be published.",
+          "fa_icon": "fas fa-folder-open",
+          "default": "results"
+        }
+      }
+    },
+    "antismash_basic_options": {
+      "title": "antiSMASH \u2014 basic options",
+      "type": "object",
+      "fa_icon": "fas fa-bacterium",
+      "description": "Core antiSMASH run parameters.",
+      "properties": {
+        "antismash_db": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "Path to an antiSMASH database directory. Downloaded automatically when absent or empty.",
+          "fa_icon": "fas fa-database"
+        },
+        "antismash_taxon": {
+          "type": "string",
+          "default": "bacteria",
+          "description": "Taxonomic scope for antiSMASH detection rules.",
+          "fa_icon": "fas fa-sitemap",
+          "enum": [
+            "bacteria",
+            "fungi"
+          ]
+        },
+        "antismash_genefinding_tool": {
+          "type": "string",
+          "default": "prodigal",
+          "description": "Gene-finding tool used when no annotation is provided.",
+          "fa_icon": "fas fa-search",
+          "enum": [
+            "prodigal",
+            "prodigal-m",
+            "none",
+            "error"
+          ]
+        },
+        "antismash_minlength": {
+          "type": "integer",
+          "default": 1000,
+          "description": "Minimum sequence length (bp) for a record to be analysed.",
+          "fa_icon": "fas fa-ruler-horizontal"
+        },
+        "antismash_limit": {
+          "type": "integer",
+          "default": -1,
+          "description": "Maximum number of records to analyse per file. Set to -1 to disable.",
+          "fa_icon": "fas fa-slash"
+        },
+        "antismash_minimal": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run antiSMASH in minimal mode. Individual modules can then be re-enabled selectively.",
+          "fa_icon": "fas fa-compress-alt"
+        },
+        "antismash_extra_args": {
+          "type": "string",
+          "default": "",
+          "description": "Additional command-line arguments appended verbatim to the antiSMASH invocation.",
+          "fa_icon": "fas fa-terminal"
+        },
+        "antismash_accept_failure": {
+          "type": "boolean",
+          "default": false,
+          "description": "Continue the pipeline if antiSMASH fails for a sample instead of aborting.",
+          "fa_icon": "fas fa-exclamation-triangle"
+        },
+        "antismash_reuse_results": {
+          "type": "boolean",
+          "default": false,
+          "description": "Pass `--reuse-results` to antiSMASH to reuse a previous output directory.",
+          "fa_icon": "fas fa-redo"
+        }
+      }
+    },
+    "antismash_modules_options": {
+      "title": "antiSMASH \u2014 analysis modules",
+      "type": "object",
+      "fa_icon": "fas fa-puzzle-piece",
+      "description": "Enable or disable individual antiSMASH analysis modules. All are disabled by default when running in minimal mode.",
+      "properties": {
+        "antismash_enable_genefunctions": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable the gene-functions module (`--enable-genefunctions`).",
+          "fa_icon": "fas fa-dna"
+        },
+        "antismash_enable_lanthipeptides": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable lanthipeptide detection (`--enable-lanthipeptides`).",
+          "fa_icon": "fas fa-dna"
+        },
+        "antismash_enable_lassopeptides": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable lassopeptide detection (`--enable-lassopeptides`).",
+          "fa_icon": "fas fa-dna"
+        },
+        "antismash_enable_nrps_pks": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable NRPS/PKS domain analysis (`--enable-nrps-pks`).",
+          "fa_icon": "fas fa-dna"
+        },
+        "antismash_enable_sactipeptides": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable sactipeptide detection (`--enable-sactipeptides`).",
+          "fa_icon": "fas fa-dna"
+        },
+        "antismash_enable_t2pks": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable type-II PKS analysis (`--enable-t2pks`).",
+          "fa_icon": "fas fa-dna"
+        },
+        "antismash_enable_terpene": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable terpene detection (`--enable-terpene`).",
+          "fa_icon": "fas fa-dna"
+        },
+        "antismash_enable_thiopeptides": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable thiopeptide detection (`--enable-thiopeptides`).",
+          "fa_icon": "fas fa-dna"
+        },
+        "antismash_enable_tta": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable TTA codon detection (`--enable-tta`).",
+          "fa_icon": "fas fa-dna"
+        },
+        "antismash_enable_html": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable HTML output generation (`--enable-html`).",
+          "fa_icon": "fas fa-file-code"
+        },
+        "antismash_fullhmmer": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run a full-genome Pfam HMM scan (`--fullhmmer`).",
+          "fa_icon": "fas fa-search"
+        },
+        "antismash_cassis": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run CASSIS cluster border prediction (`--cassis`). Requires a genome with gene annotation.",
+          "fa_icon": "fas fa-border-all"
+        },
+        "antismash_clusterhmmer": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run Pfam HMM scan limited to cluster regions (`--clusterhmmer`).",
+          "fa_icon": "fas fa-search"
+        },
+        "antismash_tigrfam": {
+          "type": "boolean",
+          "default": false,
+          "description": "Annotate cluster genes with TIGRFam (`--tigrfam`).",
+          "fa_icon": "fas fa-tag"
+        },
+        "antismash_asf": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run active site finder analysis (`--asf`).",
+          "fa_icon": "fas fa-search-plus"
+        },
+        "antismash_pfam2go": {
+          "type": "boolean",
+          "default": false,
+          "description": "Map Pfam annotations to Gene Ontology terms (`--pfam2go`).",
+          "fa_icon": "fas fa-project-diagram"
+        },
+        "antismash_rre": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run RRE-Finder for RiPP recognition element detection (`--rre`).",
+          "fa_icon": "fas fa-search"
+        },
+        "antismash_smcog_trees": {
+          "type": "boolean",
+          "default": false,
+          "description": "Generate phylogenetic trees for secondary metabolite COGs (`--smcog-trees`).",
+          "fa_icon": "fas fa-tree"
+        },
+        "antismash_tfbs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Identify transcription factor binding sites (`--tfbs`).",
+          "fa_icon": "fas fa-search"
+        },
+        "antismash_fullhmmer_pfamdb_version": {
+          "type": "string",
+          "description": "Pfam database version to use with `--fullhmmer`.",
+          "fa_icon": "fas fa-code-branch"
+        },
+        "antismash_clusterhmmer_pfamdb_version": {
+          "type": "string",
+          "description": "Pfam database version to use with `--clusterhmmer`.",
+          "fa_icon": "fas fa-code-branch"
+        },
+        "antismash_rre_cutoff": {
+          "type": "number",
+          "description": "Score cutoff for RRE-Finder.",
+          "fa_icon": "fas fa-sliders-h"
+        },
+        "antismash_rre_minlength": {
+          "type": "integer",
+          "description": "Minimum amino acid length for RRE-Finder candidates.",
+          "fa_icon": "fas fa-ruler"
+        },
+        "antismash_tfbs_pvalue": {
+          "type": "number",
+          "description": "p-value threshold for TFBS detection.",
+          "fa_icon": "fas fa-sliders-h"
+        },
+        "antismash_tfbs_range": {
+          "type": "integer",
+          "description": "Upstream search range (bp) for TFBS detection.",
+          "fa_icon": "fas fa-ruler-horizontal"
+        },
+        "antismash_tta_threshold": {
+          "type": "number",
+          "description": "GC content threshold for TTA codon detection.",
+          "fa_icon": "fas fa-sliders-h"
+        }
+      }
+    },
+    "antismash_clusterblast_options": {
+      "title": "antiSMASH \u2014 cluster comparison",
+      "type": "object",
+      "fa_icon": "fas fa-th",
+      "description": "Options for cluster comparison and annotation modules (ClusterBlast, MIBiG).",
+      "properties": {
+        "antismash_cc_mibig": {
+          "type": "boolean",
+          "default": false,
+          "description": "Compare clusters against the MIBiG reference database (`--cc-mibig`).",
+          "fa_icon": "fas fa-database"
+        },
+        "antismash_cc_custom_dbs": {
+          "type": "string",
+          "description": "Comma-separated paths to custom ClusterCompare database config files (`--cc-custom-dbs`).",
+          "fa_icon": "fas fa-database"
+        },
+        "antismash_cb_general": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run general ClusterBlast (`--cb-general`).",
+          "fa_icon": "fas fa-th"
+        },
+        "antismash_cb_knownclusters": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run KnownClusterBlast against MIBiG (`--cb-knownclusters`). Results are included in the tabulation summary when enabled.",
+          "fa_icon": "fas fa-th"
+        },
+        "antismash_cb_subclusters": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run SubClusterBlast (`--cb-subclusters`).",
+          "fa_icon": "fas fa-th"
+        },
+        "antismash_cb_nclusters": {
+          "type": "integer",
+          "description": "Number of top ClusterBlast hits to report (default: 10).",
+          "fa_icon": "fas fa-sort-numeric-up"
+        },
+        "antismash_cb_min_homology_scale": {
+          "type": "number",
+          "description": "Minimum homology scale for ClusterBlast hits (0.0\u20131.0).",
+          "fa_icon": "fas fa-sliders-h",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "antismash_hmmdetection_options": {
+      "title": "antiSMASH \u2014 HMM detection",
+      "type": "object",
+      "fa_icon": "fas fa-filter",
+      "description": "Options controlling HMM-based BGC detection sensitivity.",
+      "properties": {
+        "antismash_hmmdetection_strictness": {
+          "type": "string",
+          "default": "relaxed",
+          "description": "Strictness level for HMM-based rule detection.",
+          "fa_icon": "fas fa-sliders-h",
+          "enum": [
+            "strict",
+            "relaxed",
+            "loose"
+          ]
+        },
+        "antismash_hmmdetection_fungal_cutoff_multiplier": {
+          "type": "number",
+          "description": "Multiplier applied to HMM cutoff scores for fungal genomes.",
+          "fa_icon": "fas fa-times"
+        },
+        "antismash_hmmdetection_fungal_neighbourhood_multiplier": {
+          "type": "number",
+          "description": "Multiplier applied to neighbourhood size for fungal genomes.",
+          "fa_icon": "fas fa-times"
+        },
+        "antismash_hmmdetection_limit_to_rule_names": {
+          "type": "string",
+          "description": "Comma-separated list of rule names to restrict detection to.",
+          "fa_icon": "fas fa-filter"
+        },
+        "antismash_hmmdetection_limit_to_rule_categories": {
+          "type": "string",
+          "description": "Comma-separated list of rule categories to restrict detection to.",
+          "fa_icon": "fas fa-filter"
+        }
+      }
+    },
+    "antismash_output_options": {
+      "title": "antiSMASH \u2014 output",
+      "type": "object",
+      "fa_icon": "fas fa-file-export",
+      "description": "Options controlling antiSMASH output formats.",
+      "properties": {
+        "antismash_zip_output": {
+          "type": "boolean",
+          "default": false,
+          "description": "Archive the antiSMASH output directory as a zip file.",
+          "fa_icon": "fas fa-file-archive"
+        },
+        "antismash_summary_gbk": {
+          "type": "boolean",
+          "description": "Write a summary GenBank file of all detected regions.",
+          "fa_icon": "fas fa-file-alt"
+        },
+        "antismash_region_gbks": {
+          "type": "boolean",
+          "description": "Write individual GenBank files for each detected region.",
+          "fa_icon": "fas fa-file-alt"
+        },
+        "antismash_allow_long_headers": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow header lines longer than 80 characters in output files.",
+          "fa_icon": "fas fa-text-width"
+        },
+        "antismash_sideload": {
+          "type": "string",
+          "description": "Comma-separated paths to JSON sideload files (`--sideload`).",
+          "fa_icon": "fas fa-file-import"
+        },
+        "antismash_sideload_simple": {
+          "type": "string",
+          "description": "Sideload a simple region by coordinates, e.g. `ACCESSION:START-END` (`--sideload-simple`).",
+          "fa_icon": "fas fa-file-import"
+        },
+        "antismash_sideload_by_cds": {
+          "type": "string",
+          "description": "Comma-separated locus tags to sideload as a region (`--sideload-by-cds`).",
+          "fa_icon": "fas fa-file-import"
+        }
+      }
+    },
+    "bigscape_options": {
+      "title": "BiG-SCAPE options",
+      "type": "object",
+      "fa_icon": "fas fa-project-diagram",
+      "description": "Options for BiG-SCAPE gene cluster family (GCF) analysis.",
+      "properties": {
+        "run_bigscape": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run BiG-SCAPE on the antiSMASH output.",
+          "fa_icon": "fas fa-play"
+        },
+        "bigscape_pfam_path": {
+          "type": "string",
+          "format": "path",
+          "description": "Path to `Pfam-A.hmm`. Resolved automatically from `--antismash_db` when absent.",
+          "fa_icon": "fas fa-database"
+        },
+        "bigscape_gcf_cutoffs": {
+          "type": "string",
+          "default": "0.3 0.5 0.7",
+          "description": "Space-separated list of GCF distance cutoffs passed to `--gcf-cutoffs`.",
+          "fa_icon": "fas fa-sliders-h"
+        },
+        "bigscape_mix": {
+          "type": "boolean",
+          "default": true,
+          "description": "Analyse all BGC classes together in a single network (`--mix`).",
+          "fa_icon": "fas fa-random"
+        },
+        "bigscape_classify": {
+          "type": "string",
+          "default": "none",
+          "description": "Classification mode for BiG-SCAPE.",
+          "fa_icon": "fas fa-tags",
+          "enum": [
+            "none",
+            "classify"
+          ]
+        },
+        "bigscape_include_singletons": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include singleton BGCs (those that form no GCF) in the output (`--include-singletons`).",
+          "fa_icon": "fas fa-dot-circle"
+        },
+        "bigscape_extra_args": {
+          "type": "string",
+          "default": "",
+          "description": "Additional command-line arguments appended verbatim to the BiG-SCAPE invocation.",
+          "fa_icon": "fas fa-terminal"
+        },
+        "bigscape_zip_output": {
+          "type": "boolean",
+          "default": false,
+          "description": "Archive the BiG-SCAPE output directory as a `.tar.gz` file.",
+          "fa_icon": "fas fa-file-archive"
+        }
+      }
+    },
+    "tabulation_options": {
+      "title": "Tabulation options",
+      "type": "object",
+      "fa_icon": "fas fa-table",
+      "description": "Options for summary table generation across all antiSMASH results.",
+      "properties": {
+        "run_tabulation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Generate per-region and per-genome BGC count summary tables.",
+          "fa_icon": "fas fa-table"
+        },
+        "count_per_contig": {
+          "type": "boolean",
+          "default": false,
+          "description": "Report BGC counts per contig rather than aggregated per genome assembly.",
+          "fa_icon": "fas fa-list"
+        },
+        "split_hybrids": {
+          "type": "boolean",
+          "default": false,
+          "description": "Count each product type in hybrid BGCs separately. The `total_count` column is unaffected.",
+          "fa_icon": "fas fa-code-branch"
+        }
+      }
+    },
+    "generic_options": {
+      "title": "Generic options",
+      "type": "object",
+      "fa_icon": "fas fa-file-import",
+      "description": "Pipeline-level options that are not specific to any analysis step.",
+      "properties": {
+        "publish_dir_mode": {
+          "type": "string",
+          "default": "copy",
+          "description": "Method used to save pipeline results to `--outdir`.",
+          "fa_icon": "fas fa-copy",
+          "enum": [
+            "copy",
+            "symlink",
+            "move",
+            "rellink",
+            "link"
+          ],
+          "help_text": "Use `copy` for portability. `symlink` saves disk space but breaks when the work directory is cleaned."
+        },
+        "monochrome_logs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Disable ANSI colour codes in log output.",
+          "fa_icon": "fas fa-palette"
+        },
+        "help": {
+          "type": "boolean",
+          "default": false,
+          "description": "Display the help message and exit.",
+          "fa_icon": "fas fa-question-circle",
+          "hidden": true
+        },
+        "version": {
+          "type": "boolean",
+          "default": false,
+          "description": "Display the pipeline version and exit.",
+          "fa_icon": "fas fa-tag",
+          "hidden": true
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/input_output_options"
+    },
+    {
+      "$ref": "#/$defs/antismash_basic_options"
+    },
+    {
+      "$ref": "#/$defs/antismash_modules_options"
+    },
+    {
+      "$ref": "#/$defs/antismash_clusterblast_options"
+    },
+    {
+      "$ref": "#/$defs/antismash_hmmdetection_options"
+    },
+    {
+      "$ref": "#/$defs/antismash_output_options"
+    },
+    {
+      "$ref": "#/$defs/bigscape_options"
+    },
+    {
+      "$ref": "#/$defs/tabulation_options"
+    },
+    {
+      "$ref": "#/$defs/generic_options"
+    }
+  ]
+}

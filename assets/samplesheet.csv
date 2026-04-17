@@ -1,0 +1,4 @@
+sample,genome,annotation
+GCA_000005845,genomes/GCA_000005845.gbff.gz,
+GCA_000009045,genomes/GCA_000009045.gbff.gz,
+GCF_003176835,genomes/GCF_003176835.fna.gz,genomes/GCF_003176835.gff

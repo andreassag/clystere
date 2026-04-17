@@ -1,0 +1,87 @@
+nextflow_process {
+    name "Test TABULATE_REGIONS"
+    script "modules/local/tabulate_regions/main.nf"
+    process "TABULATE_REGIONS"
+
+    test("Default – per-region tabulation without KnownClusterBlast") {
+        when {
+            params {
+                antismash_cb_knownclusters = false
+                max_cpus                   = 2
+                max_memory                 = "4.GB"
+                max_time                   = "1.h"
+            }
+            process {
+                """
+                input[0] = [
+                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert path(process.out.tsv[0]).exists()
+
+            def lines = path(process.out.tsv[0]).readLines()
+            // header + 2 region rows (AHEC01000001.1 has no areas)
+            assert lines.size() == 3
+
+            def header = lines[0].split("\t")
+            assert "file" in header
+            assert "record_id" in header
+            assert "product" in header
+            assert "region" in header
+            // KnownClusterBlast columns must NOT be present
+            assert !("knownclusterblast_hit" in header)
+        }
+    }
+
+    test("KnownClusterBlast columns included when flag set") {
+        when {
+            params {
+                antismash_cb_knownclusters = true
+                max_cpus                   = 2
+                max_memory                 = "4.GB"
+                max_time                   = "1.h"
+            }
+            process {
+                """
+                input[0] = [
+                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            def header = path(process.out.tsv[0]).readLines()[0].split("\t")
+            assert "knownclusterblast_hit" in header
+            assert "knownclusterblast_accession" in header
+            assert "knownclusterblast_similarity" in header
+        }
+    }
+
+    test("Versions file is emitted") {
+        when {
+            params {
+                antismash_cb_knownclusters = false
+                max_cpus                   = 2
+                max_memory                 = "4.GB"
+                max_time                   = "1.h"
+            }
+            process {
+                """
+                input[0] = [
+                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert path(process.out.versions[0]).exists()
+            assert path(process.out.versions[0]).text.contains("python")
+        }
+    }
+}

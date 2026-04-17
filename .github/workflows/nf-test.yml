@@ -1,0 +1,61 @@
+name: nf-test
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "modules/**"
+      - "workflows/**"
+      - "tests/**"
+      - "nf-test.config"
+      - "nextflow.config"
+      - "conf/**"
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened, labeled]
+    paths:
+      - "modules/**"
+      - "workflows/**"
+      - "tests/**"
+      - "nf-test.config"
+      - "nextflow.config"
+      - "conf/**"
+
+jobs:
+  get-shards:
+    name: Get nf-test shards
+    runs-on: ubuntu-latest
+    outputs:
+      nextflow-version: ${{ steps.get-shards.outputs.nextflow-version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/get-shards
+        id: get-shards
+
+  nf-test:
+    name: nf-test modules
+    needs: [get-shards]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Nextflow
+        uses: nf-core/setup-nextflow@v2
+        with:
+          version: "${{ needs.get-shards.outputs.nextflow-version }}"
+
+      - name: Install nf-test
+        uses: nf-core/setup-nf-test@v1
+        with:
+          version: latest
+
+      - name: Run nf-test
+        run: nf-test test --profile docker --verbose
+
+      - name: Upload nf-test logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nf-test-logs
+          path: .nf-test/
+          retention-days: 7

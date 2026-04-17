@@ -1,0 +1,27 @@
+target-version = "py311"
+line-length = 120
+
+[lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade — modernise syntax for target Python version
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "C4",  # flake8-comprehensions
+    "PTH", # flake8-use-pathlib — enforce Path over os.path
+]
+ignore = [
+    "E501", # line too long — enforced by formatter, not linter
+]
+
+[lint.isort]
+force-sort-within-sections = true
+known-first-party = []
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"

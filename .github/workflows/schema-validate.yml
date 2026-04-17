@@ -1,0 +1,51 @@
+name: Schema
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "nextflow_schema.json"
+      - "nextflow.config"
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "nextflow_schema.json"
+      - "nextflow.config"
+
+jobs:
+  validate:
+    name: Validate nextflow_schema.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install jsonschema
+        run: pip install jsonschema
+
+      - name: Schema is well-formed (meta-schema check)
+        run: |
+          python - <<'EOF'
+          import json, jsonschema
+          with open("nextflow_schema.json") as f:
+              schema = json.load(f)
+          jsonschema.Draft202012Validator.check_schema(schema)
+          print("nextflow_schema.json is valid")
+          EOF
+
+      - name: Required top-level keys present
+        run: |
+          python - <<'EOF'
+          import json, sys
+          with open("nextflow_schema.json") as f:
+              schema = json.load(f)
+          required = {"$schema", "$id", "title", "description", "type", "properties"}
+          missing = required - schema.keys()
+          if missing:
+              print(f"Missing keys: {missing}", file=sys.stderr)
+              sys.exit(1)
+          print("All required top-level keys present")
+          EOF

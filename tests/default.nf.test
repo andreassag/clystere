@@ -1,0 +1,16 @@
+nextflow_pipeline {
+    name "Test pipeline default run"
+    script "main.nf"
+    profile "test,docker"
+
+    test("Pipeline runs with test profile") {
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+        then {
+            assert workflow.success
+        }
+    }
+}
