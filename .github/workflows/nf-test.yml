@@ -45,7 +45,7 @@ jobs:
           version: "${{ needs.get-shards.outputs.nextflow-version }}"
 
       - name: Install nf-test
-        uses: nf-core/setup-nf-test@v1
+        uses: nf-core/setup-nf-test@v2
         with:
           version: "0.9.5"
 
