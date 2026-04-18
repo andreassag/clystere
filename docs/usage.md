@@ -46,16 +46,15 @@ backend.
 -profile conda,hpc
 ```
 
-| Profile       | Type        | Description                                              |
-| ------------- | ----------- | -------------------------------------------------------- |
-| `docker`      | Container   | Run all processes in Docker containers                   |
-| `singularity` | Container   | Run all processes in Singularity images                  |
-| `apptainer`   | Container   | Run all processes in Apptainer images                    |
-| `podman`      | Container   | Run all processes in Podman containers                   |
-| `conda`       | Environment | Use per-process Conda environments                       |
-| `hpc`         | Resource    | Raise default CPU/memory/time ceilings for cluster nodes |
-| `slurm`       | Executor    | Submit jobs to a SLURM scheduler (combine with `hpc`)    |
-| `test`        | Test        | Preset params for the bundled example data               |
+| Profile                 | Type        | Description                                              |
+| ----------------------- | ----------- | -------------------------------------------------------- |
+| `docker`                | Container   | Run all processes in Docker containers                   |
+| `apptainer/singularity` | Container   | Run all processes in Apptainer images                    |
+| `podman`                | Container   | Run all processes in Podman containers                   |
+| `conda`                 | Environment | Use per-process Conda environments                       |
+| `hpc`                   | Resource    | Raise default CPU/memory/time ceilings for cluster nodes |
+| `slurm`                 | Executor    | Submit jobs to a SLURM scheduler (combine with `hpc`)    |
+| `test`                  | Test        | Preset params for the bundled example data               |
 
 ---
 

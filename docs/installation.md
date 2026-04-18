@@ -52,11 +52,23 @@ per-process by Nextflow.
 
 The pipeline can download the database automatically on first run. To pre-download it manually:
 
+Using docker:
+
 ```bash
 # pull the antiSMASH container and run the download helper
+docker pull antismash/standalone:8.0.4
 docker run --rm -v /path/to/db:/db \
-    antismash/antismash \
+    antismash/standalone:8.0.4 \
     antismash-download-databases /db
+```
+
+Using conda:
+
+```bash
+# create an antiSMASH environment and run the download helper
+conda create -n antismash -c conda-forge -c bioconda antismash=8
+conda activate antismash
+antismash-download-databases
 ```
 
 Pass the database path to the pipeline with `--antismash_db /path/to/db`. If the path is absent or empty, the pipeline

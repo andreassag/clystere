@@ -28,22 +28,12 @@ pre-commit install
 
 ### Python (`bin/`)
 
-Python scripts are linted and formatted with [Ruff](https://docs.astral.sh/ruff/). Configuration lives in `ruff.toml`.
-The target interpreter is Python 3.11.
-
-Key conventions:
-
-- PEP 8 naming throughout — descriptive, domain-specific names; abbreviations only where universally understood (e.g.
-  `bgc`, `tsv`).
-- `pathlib.Path` for all filesystem operations.
-- `ThreadPoolExecutor` / `as_completed` for parallel JSON parsing.
-- CLI interface defined with `argparse`; the interface must remain stable because Nextflow modules reference flag names
-  directly.
+Python scripts are linted and formatted with [Ruff](https://docs.astral.sh/ruff/). The target interpreter is Python
+3.11.
 
 ### Nextflow (`.nf`, `.config`)
 
-Nextflow files are formatted with [Prettier](https://prettier.io/) via `prettier-plugin-groovy`. Configuration lives in
-`.prettierrc`.
+Nextflow files are formatted with [Prettier](https://prettier.io/) via `prettier-plugin-groovy`.
 
 ---
 
@@ -105,8 +95,10 @@ nextflow run . \
 ## Branching and pull requests
 
 - `main` is the stable release branch.
-- Feature branches: `feat/<description>`
-- Bug fixes: `fix/<description>`
+- Feature branches: `feature/<description>`
+- Bug/hot fixes: `fix/<description>`
+- Non-code tasks: `chore/<description>`
+- Preparing a release: `release/<description>`
 - Open a pull request against `main`; CI must be green before merge.
 
 ---
@@ -116,7 +108,7 @@ nextflow run . \
 Releases follow [Semantic Versioning](https://semver.org/). To cut a release:
 
 1. Update the version in `nextflow.config` (`manifest.version`).
-2. Commit with message `chore: bump version to vX.Y.Z`.
+2. Commit with message `release: bump version to vX.Y.Z`.
 3. Push a `vX.Y.Z` tag — the `release.yml` workflow creates the GitHub Release automatically.
 
 ```bash

@@ -22,12 +22,9 @@ graph LR
 
 ## Features
 
-- Parallel antiSMASH annotation across any number of assemblies or GenBank files
-- Automatic antiSMASH database download when no local copy is present
-- Per-region tabulation (`all_regions.tsv`) and per-genome BGC count summary (`region_counts.tsv`)
-- Optional BiG-SCAPE GCF clustering
-- HPC-ready with SLURM and elevated resource profiles
-- Container support: Docker, Singularity, Apptainer, Podman, Conda
+- Parallel antiSMASH annotation across any number of genome assemblies or GenBank files
+- Per-region tabulation and per-genome BGC count summary
+- Optional BiG-SCAPE clustering
 
 ---
 
