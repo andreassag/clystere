@@ -6,3 +6,6 @@ assets/
 *.jpg
 *.pdf
 CITATIONS.md
+# prettier-plugin-groovy does not emit a trailing newline; editorconfig handles these
+*.nf
+*.config

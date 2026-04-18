@@ -30,4 +30,13 @@ process TABULATE_REGIONS {
         python: \$(python --version 2>&1 | sed 's/Python //')
     END_VERSIONS
     """
+  stub:
+  """
+    printf 'sample\tregion\tproduct\n' > all_regions.tsv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: 3.11.0
+    END_VERSIONS
+    """
 }

@@ -46,4 +46,14 @@ process BIGSCAPE {
         bigscape: \$(bigscape --version 2>&1 | head -1 | sed 's/bigscape //')
     END_VERSIONS
     """
+  stub:
+  """
+    mkdir -p bigscape
+    touch bigscape/bigscape.db
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        bigscape: 2.0.2
+    END_VERSIONS
+    """
 }

@@ -36,7 +36,7 @@ def parse_antismash_json(json_path: Path) -> tuple[str, dict[str, list[list[str]
         A tuple containing:
             - str: The original input file name recorded in the JSON.
             - dict[str, list[list[str]]]: BGC product lists per biosynthetic area,
-              keyed by sequence record (contig) name.
+                keyed by sequence record (contig) name.
             - dict[str, str]: Sequence descriptions keyed by record name.
     """
     with json_path.open() as file:

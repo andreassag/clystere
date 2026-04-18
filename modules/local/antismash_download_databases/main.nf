@@ -25,4 +25,13 @@ process ANTISMASH_DOWNLOAD_DATABASES {
         antismash: \$(antismash --version 2>&1 | head -1 | sed 's/antiSMASH //')
     END_VERSIONS
     """
+  stub:
+  """
+    mkdir -p ${db_dest}
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        antismash: 8.0.1
+    END_VERSIONS
+    """
 }

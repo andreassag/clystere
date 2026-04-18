@@ -21,8 +21,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: npm install --global prettier prettier-plugin-groovy
-      - run: prettier --check .
+      - run: npm install
+      - run: npx prettier --check .
 
   PythonLint:
     runs-on: ubuntu-latest

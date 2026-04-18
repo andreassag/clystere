@@ -1,8 +1,8 @@
 """Unit tests for bin/count_regions.py.
 
 Tests cover the pure-Python functions:
-  - tabulate_bgc_counts
-  - parse_antismash_json
+    - tabulate_bgc_counts
+    - parse_antismash_json
 """
 
 import json

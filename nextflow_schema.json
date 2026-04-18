@@ -10,10 +10,7 @@
       "type": "object",
       "fa_icon": "fas fa-terminal",
       "description": "Define where the pipeline should find input and save output data.",
-      "required": [
-        "input",
-        "outdir"
-      ],
+      "required": ["input", "outdir"],
       "properties": {
         "input": {
           "type": "string",
@@ -51,22 +48,14 @@
           "default": "bacteria",
           "description": "Taxonomic scope for antiSMASH detection rules.",
           "fa_icon": "fas fa-sitemap",
-          "enum": [
-            "bacteria",
-            "fungi"
-          ]
+          "enum": ["bacteria", "fungi"]
         },
         "antismash_genefinding_tool": {
           "type": "string",
           "default": "prodigal",
           "description": "Gene-finding tool used when no annotation is provided.",
           "fa_icon": "fas fa-search",
-          "enum": [
-            "prodigal",
-            "prodigal-m",
-            "none",
-            "error"
-          ]
+          "enum": ["prodigal", "prodigal-m", "none", "error"]
         },
         "antismash_minlength": {
           "type": "integer",
@@ -323,11 +312,7 @@
           "default": "relaxed",
           "description": "Strictness level for HMM-based rule detection.",
           "fa_icon": "fas fa-sliders-h",
-          "enum": [
-            "strict",
-            "relaxed",
-            "loose"
-          ]
+          "enum": ["strict", "relaxed", "loose"]
         },
         "antismash_hmmdetection_fungal_cutoff_multiplier": {
           "type": "number",
@@ -431,10 +416,7 @@
           "default": "none",
           "description": "Classification mode for BiG-SCAPE.",
           "fa_icon": "fas fa-tags",
-          "enum": [
-            "none",
-            "classify"
-          ]
+          "enum": ["none", "classify"]
         },
         "bigscape_include_singletons": {
           "type": "boolean",
@@ -493,13 +475,7 @@
           "default": "copy",
           "description": "Method used to save pipeline results to `--outdir`.",
           "fa_icon": "fas fa-copy",
-          "enum": [
-            "copy",
-            "symlink",
-            "move",
-            "rellink",
-            "link"
-          ],
+          "enum": ["copy", "symlink", "move", "rellink", "link"],
           "help_text": "Use `copy` for portability. `symlink` saves disk space but breaks when the work directory is cleaned."
         },
         "monochrome_logs": {

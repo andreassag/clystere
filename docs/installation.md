@@ -34,18 +34,17 @@ conda activate nf
 
 ### Docker
 
-Follow the [Docker installation guide](https://docs.docker.com/get-docker/).
-Verify with `docker --version`.
+Follow the [Docker installation guide](https://docs.docker.com/get-docker/). Verify with `docker --version`.
 
 ### Apptainer
 
-Follow the [Apptainer installation guide](https://apptainer.org/docs/user/latest/quick_start.html).
-Verify with `apptainer --version`.
+Follow the [Apptainer installation guide](https://apptainer.org/docs/user/latest/quick_start.html). Verify with
+`apptainer --version`.
 
 ### Conda
 
-Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or Mamba.
-All tool environments are managed per-process by Nextflow.
+Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or Mamba. All tool environments are managed
+per-process by Nextflow.
 
 ---
 

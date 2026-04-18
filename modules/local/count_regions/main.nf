@@ -32,4 +32,13 @@ process COUNT_REGIONS {
         python: \$(python --version 2>&1 | sed 's/Python //')
     END_VERSIONS
     """
+  stub:
+  """
+    printf 'sample\tcount\n' > region_counts.tsv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: 3.11.0
+    END_VERSIONS
+    """
 }

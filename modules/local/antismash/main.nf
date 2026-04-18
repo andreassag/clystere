@@ -52,14 +52,14 @@ process ANTISMASH {
         ${args} \\
         ${genome} \\
         || { rc=\$?
-             if [ "${accept_fail}" = "true" ]; then
-                 mkdir -p ${prefix}
-                 echo '{}' > ${prefix}/${prefix}.json
-                 echo "WARNING: antiSMASH failed for ${prefix} (exit \$rc). Continuing due to --antismash_accept_failure." >&2
-             else
-                 exit \$rc
-             fi
-           }
+          if [ "${accept_fail}" = "true" ]; then
+            mkdir -p ${prefix}
+            echo '{}' > ${prefix}/${prefix}.json
+            echo "WARNING: antiSMASH failed for ${prefix} (exit \$rc). Continuing due to --antismash_accept_failure." >&2
+          else
+            exit \$rc
+          fi
+        }
 
     # make outputs readable by host user
     chmod -R a+rX ${prefix}/
@@ -67,6 +67,18 @@ process ANTISMASH {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         antismash: \$(antismash --version 2>&1 | head -1 | sed 's/antiSMASH //')
+    END_VERSIONS
+    """
+  stub:
+  def prefix = meta.id
+  """
+    mkdir -p ${prefix}
+    echo '{}' > ${prefix}/${prefix}.json
+    touch ${prefix}/index.html
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        antismash: 8.0.1
     END_VERSIONS
     """
 }

@@ -1,0 +1,17 @@
+name: Get nf-test shards
+description: Read pipeline metadata and output the minimum Nextflow version
+
+outputs:
+  nextflow-version:
+    description: Nextflow version to install
+    value: ${{ steps.version.outputs.nextflow-version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Read Nextflow version from manifest
+      id: version
+      shell: bash
+      run: |
+        version=$(grep -oP "nextflowVersion\s*=\s*'!?>=\K[0-9]+\.[0-9]+\.[0-9]+" nextflow.config | head -1)
+        echo "nextflow-version=${version:-latest}" >> "$GITHUB_OUTPUT"

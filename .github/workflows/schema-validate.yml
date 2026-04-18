@@ -42,10 +42,13 @@ jobs:
           import json, sys
           with open("nextflow_schema.json") as f:
               schema = json.load(f)
-          required = {"$schema", "$id", "title", "description", "type", "properties"}
+          required = {"$schema", "$id", "title", "description", "type"}
           missing = required - schema.keys()
           if missing:
               print(f"Missing keys: {missing}", file=sys.stderr)
+              sys.exit(1)
+          if "properties" not in schema and "$defs" not in schema:
+              print("Schema must have either 'properties' or '$defs'", file=sys.stderr)
               sys.exit(1)
           print("All required top-level keys present")
           EOF

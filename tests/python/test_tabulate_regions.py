@@ -1,9 +1,9 @@
 """Unit tests for bin/tabulate_regions.py.
 
 Tests cover the pure-Python functions:
-  - extract_top_known_cluster_hit
-  - extract_known_cluster_blast_results
-  - parse_antismash_json
+    - extract_top_known_cluster_hit
+    - extract_known_cluster_blast_results
+    - parse_antismash_json
 """
 
 import json

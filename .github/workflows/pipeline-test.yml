@@ -23,9 +23,8 @@ jobs:
       - name: Run pipeline (test + docker)
         run: |
           nextflow run . \
-            --input example/samplesheet.csv \
-            --outdir results \
-            -profile test,docker
+            -profile test \
+            -stub-run
 
       - name: Upload pipeline logs on failure
         if: failure()

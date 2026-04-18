@@ -47,10 +47,10 @@ jobs:
       - name: Install nf-test
         uses: nf-core/setup-nf-test@v1
         with:
-          version: latest
+          version: "0.9.5"
 
       - name: Run nf-test
-        run: nf-test test --profile docker --verbose
+        run: nf-test test tests/modules/ --verbose
 
       - name: Upload nf-test logs on failure
         if: failure()

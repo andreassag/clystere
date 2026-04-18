@@ -40,9 +40,9 @@ def validateAndParseSamplesheet(samplesheet) {
       error "Samplesheet row missing 'genome' column: ${row}"
     }
     def meta = [id: row.sample]
-    def genomePath = row.genome.startsWith('/') ? row.genome : "${ssDir}/${row.genome}"
+    def genomePath = row.genome.startsWith('/') ? row.genome: "${ssDir}/${row.genome}"
     def genome = file(genomePath, checkIfExists: true)
-    def annotation = row.annotation ? file(row.annotation.startsWith('/') ? row.annotation : "${ssDir}/${row.annotation}", checkIfExists: true) : []
+    def annotation = row.annotation ? file(row.annotation.startsWith('/') ? row.annotation: "${ssDir}/${row.annotation}", checkIfExists: true): []
     return [meta, genome, annotation]
   }
 }
