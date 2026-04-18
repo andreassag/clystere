@@ -16,7 +16,7 @@ repos:
       - id: prettier
         additional_dependencies:
           - prettier@3.4.2
-          - prettier-plugin-groovy@1.0.0
+          - prettier-plugin-groovy@0.2.1
         files: \.(nf|config|json|yml|yaml|md)$
         types_or: [file]
 
@@ -28,6 +28,7 @@ repos:
         exclude: \.md$
       - id: end-of-file-fixer
       - id: check-yaml
+        exclude: ^mkdocs\.yml$
       - id: check-json
       - id: check-merge-conflict
       - id: mixed-line-ending

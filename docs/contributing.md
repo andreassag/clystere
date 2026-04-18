@@ -108,10 +108,10 @@ nextflow run . \
 Releases follow [Semantic Versioning](https://semver.org/). To cut a release:
 
 1. Update the version in `nextflow.config` (`manifest.version`).
-2. Commit with message `release: bump version to vX.Y.Z`.
-3. Push a `vX.Y.Z` tag — the `release.yml` workflow creates the GitHub Release automatically.
+2. Commit with message `release: bump version to X.Y.Z`.
+3. Push a `X.Y.Z` tag — the `release.yml` workflow creates the GitHub Release automatically.
 
 ```bash
-git tag v1.1.0
-git push origin v1.1.0
+git tag 1.1.0
+git push origin 1.1.0
 ```
