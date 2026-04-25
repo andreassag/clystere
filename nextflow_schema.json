@@ -387,7 +387,7 @@
       "fa_icon": "fas fa-project-diagram",
       "description": "Options for BiG-SCAPE gene cluster family (GCF) analysis.",
       "properties": {
-        "run_bigscape": {
+        "bigscape_run": {
           "type": "boolean",
           "default": false,
           "description": "Run BiG-SCAPE on the antiSMASH output.",
@@ -434,6 +434,32 @@
           "type": "boolean",
           "default": false,
           "description": "Archive the BiG-SCAPE output directory as a `.tar.gz` file.",
+          "fa_icon": "fas fa-file-archive"
+        }
+      }
+    },
+    "bigslice_options": {
+      "title": "BiG-SLiCE options",
+      "type": "object",
+      "fa_icon": "fas fa-project-diagram",
+      "description": "Options for BiG-SLiCE gene cluster family (GCF) analysis.",
+      "properties": {
+        "bigslice_run": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run BiG-SLiCE on the antiSMASH output. Mutually exclusive with --bigscape_run.",
+          "fa_icon": "fas fa-play"
+        },
+        "bigslice_extra_args": {
+          "type": "string",
+          "default": "",
+          "description": "Additional command-line arguments appended verbatim to the BiG-SLiCE invocation.",
+          "fa_icon": "fas fa-terminal"
+        },
+        "bigslice_zip_output": {
+          "type": "boolean",
+          "default": false,
+          "description": "Archive the BiG-SLiCE output directory as a `.tar.gz` file.",
           "fa_icon": "fas fa-file-archive"
         }
       }
@@ -524,10 +550,26 @@
       "$ref": "#/$defs/bigscape_options"
     },
     {
+      "$ref": "#/$defs/bigslice_options"
+    },
+    {
       "$ref": "#/$defs/tabulation_options"
     },
     {
       "$ref": "#/$defs/generic_options"
+    },
+    {
+      "not": {
+        "properties": {
+          "bigscape_run": {
+            "const": true
+          },
+          "bigslice_run": {
+            "const": true
+          }
+        },
+        "required": ["bigscape_run", "bigslice_run"]
+      }
     }
   ]
 }

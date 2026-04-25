@@ -10,11 +10,14 @@ results/
 │   │   ├── <sample>.gbk    # annotated GenBank output
 │   │   └── ...
 │   └── ...
-├── bigscape/               # only when --run_bigscape
+├── bigscape/               # only when --bigscape_run
 │   └── output_files/
 │       ├── *.network       # GCF network files (one per class + mix)
 │       ├── *.tsv           # cluster annotation tables
 │       └── ...
+├── bigslice/               # only when --bigslice_run
+│   ├── result/             # SQLite database and analysis outputs
+│   └── ...
 ├── summary/
 │   ├── all_regions.tsv     # per-BGC-region table
 │   └── region_counts.tsv   # per-genome BGC count table
@@ -74,6 +77,13 @@ files (HTML, GenBank, SVG plots) are present depending on the antiSMASH flags us
 
 Standard BiG-SCAPE output. The `.network` files are tab-separated edge lists suitable for import into Cytoscape or
 Python `networkx`. One network is generated per BGC class plus a `mix` network when `--bigscape_mix` (default).
+
+---
+
+## `bigslice/`
+
+Standard BiG-SLiCE output generated from antiSMASH folders. The directory includes the processed analysis results and
+SQLite-backed data used for downstream inspection.
 
 ---
 
