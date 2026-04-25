@@ -1,6 +1,6 @@
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ANTISMASH + BiG-SCAPE workflow
+    antiSMASH + BiG-SCAPE / BiG-SLiCE workflow
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
@@ -13,6 +13,9 @@ include {
 include {
   BIGSCAPE
 } from '../modules/local/bigscape/main'
+include {
+  BIGSLICE
+} from '../modules/local/bigslice/main'
 include {
   TABULATE_REGIONS
 } from '../modules/local/tabulate_regions/main'
@@ -84,6 +87,9 @@ workflow ANTISMASH_BIGSCAPE {
   if (!params.input) {
     error "Please provide a samplesheet with --input."
   }
+  if (params.bigscape_run && params.bigslice_run) {
+    error "Options --bigscape_run and --bigslice_run are mutually exclusive. Enable only one."
+  }
   ch_samples = validateAndParseSamplesheet(params.input)
   //
   // Resolve antiSMASH databases
@@ -138,7 +144,7 @@ workflow ANTISMASH_BIGSCAPE {
   //
   // BiG-SCAPE
   //
-  if (params.run_bigscape) {
+  if (params.bigscape_run) {
     // Collect all per-genome antiSMASH output directories
     ch_bgc_input = ch_antismash_dirs.map {
       it[1]
@@ -149,5 +155,14 @@ workflow ANTISMASH_BIGSCAPE {
       db -> findPfamHmm(db)
     }
     BIGSCAPE(ch_bgc_input, ch_pfam)
+  }
+  //
+  // BiG-SLiCE
+  //
+  if (params.bigslice_run) {
+    ch_bgc_input = ch_antismash_dirs.map {
+      it[1]
+    }.collect()
+    BIGSLICE(ch_bgc_input)
   }
 }

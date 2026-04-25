@@ -66,9 +66,24 @@ backend.
 nextflow run exterex/clystere \
     --input samplesheet.csv \
     --outdir results \
-    --run_bigscape \
+    --bigscape_run \
     -profile docker
 ```
+
+### BiG-SLiCE
+
+```bash
+nextflow run exterex/clystere \
+    --input samplesheet.csv \
+    --outdir results \
+    --bigslice_run \
+    -profile docker
+```
+
+`--bigscape_run` and `--bigslice_run` are mutually exclusive.
+
+On the first BiG-SLiCE task execution, the pipeline downloads the BiG-SLiCE HMM model bundle into the task work
+directory and reuses it via `-resume`. Ensure outbound network access is available for this initial download.
 
 ### KnownClusterBlast annotation
 

@@ -99,9 +99,11 @@ These flags enable additional detection modules. All require `--antismash_minima
 
 ## BiG-SCAPE
 
+`--bigscape_run` and `--bigslice_run` are mutually exclusive.
+
 | Parameter                       | Default       | Description                                                                   |
 | ------------------------------- | ------------- | ----------------------------------------------------------------------------- |
-| `--run_bigscape`                | `false`       | Enable BiG-SCAPE GCF clustering.                                              |
+| `--bigscape_run`                | `false`       | Enable BiG-SCAPE GCF clustering.                                              |
 | `--bigscape_pfam_path`          | `null`        | Path to `Pfam-A.hmm`. Resolved automatically from `--antismash_db` if absent. |
 | `--bigscape_gcf_cutoffs`        | `0.3 0.5 0.7` | Space-separated list of GCF similarity cutoffs.                               |
 | `--bigscape_mix`                | `true`        | Include a mixed-class network alongside class-specific networks.              |
@@ -109,6 +111,17 @@ These flags enable additional detection modules. All require `--antismash_minima
 | `--bigscape_include_singletons` | `true`        | Include singleton BGCs (no GCF membership) in output.                         |
 | `--bigscape_zip_output`         | `false`       | Compress BiG-SCAPE output directory.                                          |
 | `--bigscape_extra_args`         | `''`          | Arbitrary extra arguments passed to BiG-SCAPE.                                |
+
+## BiG-SLiCE
+
+BiG-SLiCE requires its HMM model bundle. The pipeline bootstraps this bundle automatically during the first BiG-SLiCE
+task execution.
+
+| Parameter               | Default | Description                                                            |
+| ----------------------- | ------- | ---------------------------------------------------------------------- |
+| `--bigslice_run`        | `false` | Enable BiG-SLiCE clustering. Mutually exclusive with `--bigscape_run`. |
+| `--bigslice_zip_output` | `false` | Compress BiG-SLiCE output directory.                                   |
+| `--bigslice_extra_args` | `''`    | Arbitrary extra arguments passed to BiG-SLiCE.                         |
 
 ---
 

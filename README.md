@@ -2,8 +2,9 @@
 
 **clystere** is a Nextflow pipeline for automated biosynthetic gene cluster (BGC) discovery and comparative analysis. It
 orchestrates [antiSMASH](https://antismash.secondarymetabolites.org/) across a collection of genomes, optionally groups
-the resulting BGCs into gene cluster families (GCFs) with [BiG-SCAPE](https://github.com/medema-group/BiG-SCAPE), and
-produces ready-to-use summary tables for downstream statistical analysis.
+the resulting BGCs into gene cluster families (GCFs) with [BiG-SCAPE](https://github.com/medema-group/BiG-SCAPE) or
+[BiG-SLiCE](https://github.com/medema-group/bigslice), and produces ready-to-use summary tables for downstream
+statistical analysis.
 
 ---
 
@@ -11,7 +12,7 @@ produces ready-to-use summary tables for downstream statistical analysis.
 
 - Parallel antiSMASH annotation across any number of genome assemblies or GenBank files
 - Per-region tabulation and per-genome BGC count summary
-- Optional BiG-SCAPE clustering
+- Optional BiG-SCAPE or BiG-SLiCE clustering (mutually exclusive)
 
 ---
 
@@ -90,10 +91,18 @@ below.
 
 | Parameter                       | Default       | Description                              |
 | ------------------------------- | ------------- | ---------------------------------------- |
-| `--run_bigscape`                | `false`       | Enable BiG-SCAPE GCF clustering          |
+| `--bigscape_run`                | `false`       | Enable BiG-SCAPE GCF clustering          |
 | `--bigscape_gcf_cutoffs`        | `0.3 0.5 0.7` | Space-separated list of distance cutoffs |
 | `--bigscape_mix`                | `true`        | Combine all BGC classes into one network |
 | `--bigscape_include_singletons` | `true`        | Include singletons in the output         |
+
+### BiG-SLiCE
+
+| Parameter               | Default | Description                                                            |
+| ----------------------- | ------- | ---------------------------------------------------------------------- |
+| `--bigslice_run`        | `false` | Enable BiG-SLiCE clustering (mutually exclusive with `--bigscape_run`) |
+| `--bigslice_extra_args` | `""`    | Additional arguments passed to BiG-SLiCE                               |
+| `--bigslice_zip_output` | `false` | Compress BiG-SLiCE output directory                                    |
 
 ### Tabulation
 
@@ -111,7 +120,8 @@ below.
 results/
 ├── antismash/
 │   └── <sample>/          # Full antiSMASH output per genome
-├── bigscape/              # BiG-SCAPE output (when --run_bigscape)
+├── bigscape/              # BiG-SCAPE output (when --bigscape_run)
+├── bigslice/              # BiG-SLiCE output (when --bigslice_run)
 ├── summary/
 │   ├── all_regions.tsv    # One row per BGC region across all samples
 │   └── region_counts.tsv  # BGC type counts per genome (or per contig)
@@ -166,7 +176,8 @@ plus `total_count` and `description` columns.
 
 ## Citations
 
-Please cite the pipeline and its dependencies. See [CITATIONS.md](CITATIONS.md) for full references.
+Please cite the pipeline and its dependencies (including BiG-SLiCE when used). See [CITATIONS.md](CITATIONS.md) for full
+references.
 
 ---
 

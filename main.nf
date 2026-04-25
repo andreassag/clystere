@@ -2,7 +2,7 @@
 
 nextflow.enable.dsl = 2
 
-include { ANTISMASH_BIGSCAPE } from './workflows/antismash_bigscape'
+include { ANTISMASH_BIGSCAPE } from './workflows/clystere'
 
 //
 // MAIN WORKFLOW

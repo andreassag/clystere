@@ -23,6 +23,12 @@
 > H. (2020). A computational framework to explore large-scale biosynthetic diversity. _Nature Chemical Biology_, 16,
 > 931–939. [https://doi.org/10.1038/s41589-019-0400-9](https://doi.org/10.1038/s41589-019-0400-9)
 
+### [BiG-SLiCE](https://github.com/medema-group/bigslice)
+
+> Kautsar, S. A., van der Hooft, J. J. J., de Ridder, D., & Medema, M. H. (2021). BiG-SLiCE: A highly scalable tool
+> maps the diversity of 1.2 million biosynthetic gene clusters. _GigaScience_, 10(1), giaa154.
+> [https://doi.org/10.1093/gigascience/giaa154](https://doi.org/10.1093/gigascience/giaa154)
+
 ### [Python](https://www.python.org/)
 
 > Van Rossum, G., & Drake, F. L. (2009). Python 3 Reference Manual. Scotts Valley, CA: CreateSpace.

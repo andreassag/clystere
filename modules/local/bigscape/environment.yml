@@ -3,4 +3,4 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - "bioconda::bigscape=2.*"
+  - "bioconda::bigscape=2.0.2"
