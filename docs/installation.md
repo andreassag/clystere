@@ -32,25 +32,24 @@ conda activate nf
 
 ## 2. Install a container engine
 
-=== Docker
+<!-- markdownlint-disable MD046 -->
 
-    ```text
-    Follow the [Docker installation guide](https://docs.docker.com/get-docker/). Verify with `docker --version`.
-    ```
+=== "Docker"
 
-=== Apptainer
+    Follow the [Docker installation guide](https://docs.docker.com/get-docker/).
+    Verify with `docker --version`.
 
-    ```text
-    Follow the [Apptainer installation guide](https://apptainer.org/docs/user/latest/quick_start.html). Verify with
-    `apptainer --version`.
-    ```
+=== "Apptainer"
 
-=== Conda
+    Follow the [Apptainer installation guide](https://apptainer.org/docs/user/latest/quick_start.html).
+    Verify with `apptainer --version`.
 
-    ```text
-    Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or Mamba. All tool environments are managed
-    per-process by Nextflow.
-    ```
+=== "Conda"
+
+    Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or Mamba.
+    All tool environments are managed per-process by Nextflow.
+
+<!-- markdownlint-enable MD046 -->
 
 ---
 
