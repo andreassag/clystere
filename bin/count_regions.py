@@ -1,29 +1,12 @@
 #!/usr/bin/env python3
-## Given a bunch of antismash results, count the BGC regions
-#
-## Usage:
-#   $ python antismash/count_regions.py -h
-#   usage: count_regions.py [-h] [--by_contig] [--split_hybrids] directory output
-#
-#   Given a bunch of antismash results, count the BGC regions
-#
-#   positional arguments:
-#     directory         Directory containing antiSMASH directories
-#     output            Desired path/to/filename for the output TSV
-#
-#   options:
-#     -h, --help        show this help message and exit
-#     --by_contig       Count regions per each individual contig rather than per assembly
-#     --split_hybrids   Count each hybrid region multiple times, once for each
-#                       constituent BGC class. The total_count column is unaffected.
-#     --threads THREADS Number of threads to use for parallel processing. Defaults to number of CPUs.
+"""Count BGC regions from antiSMASH JSON outputs."""
 
 import argparse
 from collections import Counter
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import csv
-import json
 from pathlib import Path
+
+from antismash_io import list_antismash_json_files, load_antismash_json, run_threaded
 
 
 def parse_antismash_json(json_path: Path) -> tuple[str, dict[str, list[list[str]]], dict[str, str]]:
@@ -39,8 +22,7 @@ def parse_antismash_json(json_path: Path) -> tuple[str, dict[str, list[list[str]
                 keyed by sequence record (contig) name.
             - dict[str, str]: Sequence descriptions keyed by record name.
     """
-    with json_path.open() as file:
-        antismash_data = json.load(file)
+    antismash_data = load_antismash_json(json_path)
 
     products_by_contig = {
         record["name"]: [biosynthetic_area["products"] for biosynthetic_area in record["areas"]]
@@ -139,17 +121,14 @@ def main(
     genome_products: dict[str, dict[str, list[list[str]]]] = {}
     contig_descriptions: dict[str, dict[str, str]] = {}
 
-    antismash_json_files = list(directory.glob("*/*.json"))
-
-    with ThreadPoolExecutor(max_workers=threads) as executor:
-        parse_futures = {
-            executor.submit(parse_antismash_json, json_path): json_path for json_path in antismash_json_files
-        }
-
-        for parse_future in as_completed(parse_futures):
-            genome_name, contig_products, genome_contig_descriptions = parse_future.result()
-            genome_products[genome_name] = contig_products
-            contig_descriptions[genome_name] = genome_contig_descriptions
+    antismash_json_files = list_antismash_json_files(directory)
+    for genome_name, contig_products, genome_contig_descriptions in run_threaded(
+        antismash_json_files,
+        parse_antismash_json,
+        threads,
+    ):
+        genome_products[genome_name] = contig_products
+        contig_descriptions[genome_name] = genome_contig_descriptions
 
     count_rows = tabulate_bgc_counts(genome_products, contig_descriptions, per_contig, split_hybrids)
 

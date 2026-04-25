@@ -1,28 +1,12 @@
 #!/usr/bin/env python3
-## Given a bunch of antismash results, tabulate BGC regions
-#
-## Usage:
-#   $ python antismash/tabulate_regions.py -h
-#   usage: tabulate_regions.py [-h] [--knownclusters] [--threads THREADS] directory output
-#
-#   Given a bunch of antismash results, tabulate BGC regions
-#
-#   positional arguments:
-#     directory            Directory containing antiSMASH directories
-#     output               Desired path/to/filename for the output TSV
-#
-#   options:
-#     -h, --help           show this help message and exit
-#     --knownclusters      Include KnownClusterBlast columns in the output.
-#                          Should be set when antiSMASH was run with --cb-knownclusters.
-#     --threads THREADS    Number of threads to use for parallel processing. Defaults to number of CPUs.
+"""Tabulate per-region annotations from antiSMASH JSON outputs."""
 
 import argparse
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import csv
-import json
 from pathlib import Path
 import re
+
+from antismash_io import list_antismash_json_files, load_antismash_json, run_threaded
 
 
 def extract_top_known_cluster_hit(known_cluster_blast_results: list | None, region_index: int) -> dict[str, str]:
@@ -96,8 +80,7 @@ def parse_antismash_json(json_path: Path) -> list[dict[str, str]]:
         List of row dictionaries, one per biosynthetic region, containing
         genomic coordinates, product class, and optionally KnownClusterBlast hits.
     """
-    with json_path.open() as json_file:
-        antismash_data = json.load(json_file)
+    antismash_data = load_antismash_json(json_path)
 
     region_rows: list[dict[str, str]] = []
 
@@ -131,15 +114,9 @@ def parse_antismash_json(json_path: Path) -> list[dict[str, str]]:
 def main(directory: Path, output: Path, knownclusters: bool = False, threads: int | None = None):
     region_rows: list[dict[str, str]] = []
 
-    antismash_json_files = list(directory.glob("*/*.json"))
-
-    with ThreadPoolExecutor(max_workers=threads) as executor:
-        parse_futures = {
-            executor.submit(parse_antismash_json, json_path): json_path for json_path in antismash_json_files
-        }
-
-        for parse_future in as_completed(parse_futures):
-            region_rows.extend(parse_future.result())
+    antismash_json_files = list_antismash_json_files(directory)
+    for parsed_rows in run_threaded(antismash_json_files, parse_antismash_json, threads):
+        region_rows.extend(parsed_rows)
 
     output_columns = [
         "file",
