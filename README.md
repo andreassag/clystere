@@ -176,8 +176,7 @@ plus `total_count` and `description` columns.
 
 ## Citations
 
-Please cite the pipeline and its dependencies (including BiG-SLiCE when used). See [CITATIONS.md](CITATIONS.md) for full
-references.
+Please cite the pipeline and its dependencies. See [CITATIONS.md](CITATIONS.md) for full references.
 
 ---
 
