@@ -60,25 +60,29 @@ backend.
 
 ## Enabling optional analyses
 
-### BiG-SCAPE
+<!-- markdownlint-disable MD046 -->
 
-```bash
-nextflow run exterex/clystere \
-    --input samplesheet.csv \
-    --outdir results \
-    --bigscape_run \
-    -profile docker
-```
+=== "BiG-SCAPE"
 
-### BiG-SLiCE
+    ```bash
+    nextflow run exterex/clystere \
+        --input samplesheet.csv \
+        --outdir results \
+        --bigscape_run \
+        -profile docker
+    ```
 
-```bash
-nextflow run exterex/clystere \
-    --input samplesheet.csv \
-    --outdir results \
-    --bigslice_run \
-    -profile docker
-```
+=== "BiG-SLiCE"
+
+    ```bash
+    nextflow run exterex/clystere \
+        --input samplesheet.csv \
+        --outdir results \
+        --bigslice_run \
+        -profile docker
+    ```
+
+<!-- markdownlint-enable MD046 -->
 
 `--bigscape_run` and `--bigslice_run` are mutually exclusive.
 

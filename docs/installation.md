@@ -57,24 +57,28 @@ conda activate nf
 
 The pipeline can download the database automatically on first run. To pre-download it manually:
 
-Using docker:
+<!-- markdownlint-disable MD046 -->
 
-```bash
-# pull the antiSMASH container and run the download helper
-docker pull antismash/standalone:8.0.4
-docker run --rm -v /path/to/db:/db \
-    antismash/standalone:8.0.4 \
-    antismash-download-databases /db
-```
+=== "Docker"
 
-Using conda:
+    ```bash
+    # pull the antiSMASH container and run the download helper
+    docker pull antismash/standalone:8.0.4
+    docker run --rm -v /path/to/db:/db \
+        antismash/standalone:8.0.4 \
+        antismash-download-databases /db
+    ```
 
-```bash
-# create an antiSMASH environment and run the download helper
-conda create -n antismash -c conda-forge -c bioconda antismash=8
-conda activate antismash
-antismash-download-databases
-```
+=== "Conda"
+
+    ```bash
+    # create an antiSMASH environment and run the download helper
+    conda create -n antismash -c conda-forge -c bioconda antismash=8
+    conda activate antismash
+    antismash-download-databases
+    ```
+
+<!-- markdownlint-enable MD046 -->
 
 Pass the database path to the pipeline with `--antismash_db /path/to/db`. If the path is absent or empty, the pipeline
 downloads the database there automatically before running antiSMASH.
