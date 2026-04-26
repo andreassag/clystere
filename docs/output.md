@@ -10,6 +10,23 @@ results/
 │   │   ├── <sample>.gbk    # annotated GenBank output
 │   │   └── ...
 │   └── ...
+├── gecco/
+│   ├── <sample>/           # GECCO output directory per genome
+│   │   ├── *.clusters.tsv
+│   │   ├── *.features.tsv
+│   │   └── *.region*.gbk   # generated when BiG-SCAPE or BiG-SLiCE is enabled
+│   └── ...
+├── deepbgc/
+│   ├── <sample>/           # deepBGC output directory per genome
+│   │   ├── *.bgc.tsv
+│   │   ├── *.full.gbk
+│   │   └── *.region*.gbk   # converted to antiSMASH-like region files
+│   └── ...
+├── combgc/
+│   ├── <sample>/
+│   │   ├── combgc_summary.tsv
+│   │   └── combined_regions/  # representative non-redundant region GBKs used for clustering
+│   └── ...
 ├── bigscape/               # only when --bigscape_run
 │   └── output_files/
 │       ├── *.network       # GCF network files (one per class + mix)
@@ -73,6 +90,27 @@ files (HTML, GenBank, SVG plots) are present depending on the antiSMASH flags us
 
 ---
 
+## `gecco/<sample>/`
+
+Raw GECCO output for each genome. When `--bigscape_run` or `--bigslice_run` is enabled, clystere also runs
+`gecco convert gbk --format bigslice` and publishes GECCO region GenBank files compatible with clustering tools.
+
+---
+
+## `deepbgc/<sample>/`
+
+Raw deepBGC output for each genome (`*.bgc.tsv` and `*.full.gbk`). clystere also generates antiSMASH-like
+`*.regionNNN.gbk` files using BiG-SLiCE's conversion script to ensure compatibility with BiG-SCAPE/BiG-SLiCE.
+
+---
+
+## `combgc/<sample>/`
+
+Unified per-sample BGC selection generated from antiSMASH, GECCO, and deepBGC predictions. The `combined_regions/`
+directory contains representative region GenBank files used as clustering input.
+
+---
+
 ## `bigscape/output_files/`
 
 Standard BiG-SCAPE output. The `.network` files are tab-separated edge lists suitable for import into Cytoscape or
@@ -82,8 +120,8 @@ Python `networkx`. One network is generated per BGC class plus a `mix` network w
 
 ## `bigslice/`
 
-Standard BiG-SLiCE output generated from antiSMASH folders. The directory includes the processed analysis results and
-SQLite-backed data used for downstream inspection.
+Standard BiG-SLiCE output generated from the unified `combgc/*/combined_regions/` folders. The directory includes the
+processed analysis results and SQLite-backed data used for downstream inspection.
 
 ---
 

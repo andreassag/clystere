@@ -97,13 +97,49 @@ These flags enable additional detection modules. All require `--antismash_minima
 
 ---
 
+## GECCO
+
+| Parameter            | Default | Description                                          |
+| -------------------- | ------- | ---------------------------------------------------- |
+| `--gecco_run`        | `true`  | Run GECCO for each input genome.                     |
+| `--gecco_extra_args` | `''`    | Arbitrary extra arguments passed to GECCO.           |
+
+---
+
+## deepBGC
+
+| Parameter              | Default | Description                                                           |
+| ---------------------- | ------- | --------------------------------------------------------------------- |
+| `--deepbgc_run`        | `true`  | Run deepBGC for each input genome.                                    |
+| `--deepbgc_data_dir`   | `null`  | Path to deepBGC downloads/models. Auto-downloaded when absent/empty.  |
+| `--deepbgc_extra_args` | `''`    | Arbitrary extra arguments passed to deepBGC.                          |
+
+---
+
+## comBGC unification
+
+These parameters control filtering while combining antiSMASH, GECCO, and deepBGC predictions prior to BiG-SCAPE or
+BiG-SLiCE.
+
+| Parameter              | Default | Description                                       |
+| ---------------------- | ------- | ------------------------------------------------- |
+| `--combgc_min_length`  | `3000`  | Minimum BGC length retained by comBGC.            |
+| `--combgc_contig_edge` | `2`     | Exclude BGCs near contig edges in comBGC.         |
+
+---
+
 ## BiG-SCAPE
 
 `--bigscape_run` and `--bigslice_run` are mutually exclusive.
 
+BiG-SCAPE in clystere runs on unified comBGC-filtered regions and requires `--gecco_run true` and
+`--deepbgc_run true`.
+
 | Parameter                       | Default       | Description                                                                   |
 | ------------------------------- | ------------- | ----------------------------------------------------------------------------- |
 | `--bigscape_run`                | `false`       | Enable BiG-SCAPE GCF clustering.                                              |
+| `--bigscape_dereplicate`        | `true`        | Run `bigscape dereplicate` before clustering.                                 |
+| `--bigscape_dereplicate_cutoff` | `0.8`         | Similarity cutoff used for BiG-SCAPE dereplication.                           |
 | `--bigscape_pfam_path`          | `null`        | Path to `Pfam-A.hmm`. Resolved automatically from `--antismash_db` if absent. |
 | `--bigscape_gcf_cutoffs`        | `0.3 0.5 0.7` | Space-separated list of GCF similarity cutoffs.                               |
 | `--bigscape_mix`                | `true`        | Include a mixed-class network alongside class-specific networks.              |
@@ -116,6 +152,9 @@ These flags enable additional detection modules. All require `--antismash_minima
 
 BiG-SLiCE requires its HMM model bundle. The pipeline bootstraps this bundle automatically during the first BiG-SLiCE
 task execution.
+
+BiG-SLiCE in clystere runs on unified comBGC-filtered regions and requires `--gecco_run true` and
+`--deepbgc_run true`.
 
 | Parameter               | Default | Description                                                            |
 | ----------------------- | ------- | ---------------------------------------------------------------------- |

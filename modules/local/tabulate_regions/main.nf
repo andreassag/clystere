@@ -8,19 +8,23 @@
 */
 
 process TABULATE_REGIONS {
-  label 'process_low'
-  conda 'conda-forge::python=3.11'
-  container 'python:3.11'
-  input:
-  path(antismash_dirs)
-  output:
-  path "all_regions.tsv", emit: tsv
-  path "versions.yml", emit: versions
-  when:
-  task.ext.when == null || task.ext.when
-  script:
-  def knownclusters_arg = params.antismash_cb_knownclusters ? '--knownclusters': ''
-  """
+    label 'process_low'
+    conda 'conda-forge::python=3.11'
+    container 'python:3.11'
+
+    input:
+    path antismash_dirs
+
+    output:
+    path "all_regions.tsv", emit: tsv
+    path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
+
+    script:
+    def knownclusters_arg = params.antismash_cb_knownclusters ? '--knownclusters' : ''
+    """
     tabulate_regions.py . all_regions.tsv \\
         ${knownclusters_arg} \\
         --threads ${task.cpus}
@@ -30,8 +34,9 @@ process TABULATE_REGIONS {
         python: \$(python --version 2>&1 | sed 's/Python //')
     END_VERSIONS
     """
-  stub:
-  """
+
+    stub:
+    """
     printf 'sample\tregion\tproduct\n' > all_regions.tsv
 
     cat <<-END_VERSIONS > versions.yml

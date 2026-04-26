@@ -28,6 +28,13 @@ nextflow run exterex/clystere \
     -profile docker
 ```
 
+By default, clystere runs antiSMASH, GECCO, and deepBGC for every sample. To disable an individual predictor:
+
+```bash
+--gecco_run false
+--deepbgc_run false
+```
+
 ---
 
 ## Profile combinations
@@ -86,6 +93,14 @@ backend.
 
 `--bigscape_run` and `--bigslice_run` are mutually exclusive.
 
+When `--bigscape_run` is enabled, clystere runs `bigscape dereplicate` by default before clustering to collapse
+redundant regions found by multiple predictors. You can disable or tune this behavior with:
+
+```bash
+--bigscape_dereplicate false
+--bigscape_dereplicate_cutoff 0.8
+```
+
 On the first BiG-SLiCE task execution, the pipeline downloads the BiG-SLiCE HMM model bundle into the task work
 directory and reuses it via `-resume`. Ensure outbound network access is available for this initial download.
 
@@ -132,9 +147,12 @@ nextflow run exterex/clystere --input samplesheet.csv --outdir results -profile 
 
 ## Reusing existing antiSMASH results
 
-If antiSMASH has already been run, set `--antismash_reuse_results` to skip re-annotation and go directly to tabulation
-and BiG-SCAPE:
+If antiSMASH has already been run, set `--antismash_reuse_results` to skip antiSMASH re-annotation and go directly to
+tabulation:
 
 ```bash
 --antismash_reuse_results   # skip antiSMASH; use results already in --outdir/antismash/
 ```
+
+For BiG-SCAPE or BiG-SLiCE, GECCO and deepBGC also need to run (or their results must already exist in the expected
+published layout) because clustering now uses the unified comBGC-filtered region set.

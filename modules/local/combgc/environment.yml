@@ -1,0 +1,11 @@
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - "conda-forge::python=3.11"
+  - "conda-forge::pip"
+  - "conda-forge::biopython>=1.79"
+  - "conda-forge::pandas>=1.0"
+  - pip:
+      - "combgc==0.6.9"

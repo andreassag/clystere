@@ -83,6 +83,9 @@ The pipeline can download the database automatically on first run. To pre-downlo
 Pass the database path to the pipeline with `--antismash_db /path/to/db`. If the path is absent or empty, the pipeline
 downloads the database there automatically before running antiSMASH.
 
+deepBGC model data is also downloaded automatically on first run unless `--deepbgc_data_dir` points to an existing
+directory. Ensure outbound network access for the initial deepBGC run.
+
 ---
 
 ## 4. Clone the repository (optional)

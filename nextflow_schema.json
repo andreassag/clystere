@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/exterex/clystere/main/nextflow_schema.json",
   "title": "clystere pipeline parameters",
-  "description": "Nextflow pipeline for antiSMASH + BiG-SCAPE biosynthetic gene cluster analysis",
+  "description": "Nextflow pipeline for antiSMASH + GECCO + deepBGC biosynthetic gene cluster analysis",
   "type": "object",
   "$defs": {
     "input_output_options": {
@@ -381,6 +381,72 @@
         }
       }
     },
+    "gecco_options": {
+      "title": "GECCO options",
+      "type": "object",
+      "fa_icon": "fas fa-dragon",
+      "description": "Options for GECCO BGC prediction.",
+      "properties": {
+        "gecco_run": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run GECCO alongside antiSMASH by default.",
+          "fa_icon": "fas fa-play"
+        },
+        "gecco_extra_args": {
+          "type": "string",
+          "default": "",
+          "description": "Additional command-line arguments appended verbatim to the GECCO invocation.",
+          "fa_icon": "fas fa-terminal"
+        }
+      }
+    },
+    "deepbgc_options": {
+      "title": "deepBGC options",
+      "type": "object",
+      "fa_icon": "fas fa-brain",
+      "description": "Options for deepBGC prediction.",
+      "properties": {
+        "deepbgc_run": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run deepBGC alongside antiSMASH by default.",
+          "fa_icon": "fas fa-play"
+        },
+        "deepbgc_data_dir": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "Path to deepBGC model/Pfam downloads. Downloaded automatically when absent.",
+          "fa_icon": "fas fa-database"
+        },
+        "deepbgc_extra_args": {
+          "type": "string",
+          "default": "",
+          "description": "Additional command-line arguments appended verbatim to the deepBGC invocation.",
+          "fa_icon": "fas fa-terminal"
+        }
+      }
+    },
+    "combgc_options": {
+      "title": "comBGC unification",
+      "type": "object",
+      "fa_icon": "fas fa-layer-group",
+      "description": "Parameters for comBGC filtering used before BiG-SCAPE/BiG-SLiCE.",
+      "properties": {
+        "combgc_min_length": {
+          "type": "integer",
+          "default": 3000,
+          "description": "Minimum BGC length (bp) retained by comBGC.",
+          "fa_icon": "fas fa-ruler-horizontal"
+        },
+        "combgc_contig_edge": {
+          "type": "integer",
+          "default": 2,
+          "description": "Exclude BGCs within this distance from contig edges in comBGC.",
+          "fa_icon": "fas fa-arrows-alt-h"
+        }
+      }
+    },
     "bigscape_options": {
       "title": "BiG-SCAPE options",
       "type": "object",
@@ -390,7 +456,7 @@
         "bigscape_run": {
           "type": "boolean",
           "default": false,
-          "description": "Run BiG-SCAPE on the antiSMASH output.",
+          "description": "Run BiG-SCAPE on the unified comBGC-filtered region set.",
           "fa_icon": "fas fa-play"
         },
         "bigscape_pfam_path": {
@@ -398,6 +464,20 @@
           "format": "path",
           "description": "Path to `Pfam-A.hmm`. Resolved automatically from `--antismash_db` when absent.",
           "fa_icon": "fas fa-database"
+        },
+        "bigscape_dereplicate": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run `bigscape dereplicate` before `bigscape cluster` to remove near-identical BGCs.",
+          "fa_icon": "fas fa-copy"
+        },
+        "bigscape_dereplicate_cutoff": {
+          "type": "number",
+          "default": 0.8,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Similarity cutoff passed to `bigscape dereplicate --cutoff`.",
+          "fa_icon": "fas fa-sliders-h"
         },
         "bigscape_gcf_cutoffs": {
           "type": "string",
@@ -447,7 +527,7 @@
         "bigslice_run": {
           "type": "boolean",
           "default": false,
-          "description": "Run BiG-SLiCE on the antiSMASH output. Mutually exclusive with --bigscape_run.",
+          "description": "Run BiG-SLiCE on the unified comBGC-filtered region set. Mutually exclusive with --bigscape_run.",
           "fa_icon": "fas fa-play"
         },
         "bigslice_extra_args": {
@@ -547,6 +627,15 @@
       "$ref": "#/$defs/antismash_output_options"
     },
     {
+      "$ref": "#/$defs/gecco_options"
+    },
+    {
+      "$ref": "#/$defs/deepbgc_options"
+    },
+    {
+      "$ref": "#/$defs/combgc_options"
+    },
+    {
       "$ref": "#/$defs/bigscape_options"
     },
     {
@@ -569,6 +658,48 @@
           }
         },
         "required": ["bigscape_run", "bigslice_run"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "bigscape_run": {
+            "const": true
+          }
+        },
+        "required": ["bigscape_run"]
+      },
+      "then": {
+        "properties": {
+          "gecco_run": {
+            "const": true
+          },
+          "deepbgc_run": {
+            "const": true
+          }
+        },
+        "required": ["gecco_run", "deepbgc_run"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "bigslice_run": {
+            "const": true
+          }
+        },
+        "required": ["bigslice_run"]
+      },
+      "then": {
+        "properties": {
+          "gecco_run": {
+            "const": true
+          },
+          "deepbgc_run": {
+            "const": true
+          }
+        },
+        "required": ["gecco_run", "deepbgc_run"]
       }
     }
   ]

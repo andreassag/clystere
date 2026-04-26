@@ -74,12 +74,15 @@ Tests live in `tests/python/` and exercise the pure Python functions in `bin/`. 
 ### nf-test (Nextflow module tests)
 
 ```bash
-# requires Nextflow and Docker
+# runs module tests under tests/modules/
 nf-test test --profile docker --verbose
+
+# run only heavyweight-module tests in stub mode
+nf-test test tests/modules/local/antismash tests/modules/local/deepbgc --verbose
 ```
 
-Module tests live in `tests/modules/local/<module_name>/main.nf.test` and use a minimal antiSMASH JSON fixture in
-`tests/data/`.
+Module tests live under `tests/modules/local/**/main.nf.test` and include both lightweight script-backed tests and
+stub-oriented tests for heavyweight tools (antiSMASH/deepBGC). Test fixtures are stored in `tests/data/`.
 
 ### Full pipeline test
 

@@ -1,18 +1,21 @@
 # clystere
 
 **clystere** is a Nextflow pipeline for automated biosynthetic gene cluster (BGC) discovery and comparative analysis. It
-orchestrates [antiSMASH](https://antismash.secondarymetabolites.org/) across a collection of genomes, optionally groups
-the resulting BGCs into gene cluster families (GCFs) with [BiG-SCAPE](https://github.com/medema-group/BiG-SCAPE) or
-[BiG-SLiCE](https://github.com/medema-group/bigslice), and produces ready-to-use summary tables for downstream
-statistical analysis.
+runs [antiSMASH](https://antismash.secondarymetabolites.org/), [GECCO](https://github.com/zellerlab/GECCO), and
+[deepBGC](https://github.com/Merck/deepbgc) by default across a collection of genomes, unifies predictions with
+[comBGC](https://github.com/tomrichtermeier/comBGC-Filter), and optionally groups resulting BGCs into gene cluster
+families (GCFs) with [BiG-SCAPE](https://github.com/medema-group/BiG-SCAPE) or
+[BiG-SLiCE](https://github.com/medema-group/bigslice).
 
 ---
 
 ## Features
 
-- Parallel antiSMASH annotation across any number of genome assemblies or GenBank files
+- Parallel antiSMASH + GECCO + deepBGC annotation across any number of genome assemblies or GenBank files
+- comBGC-based unification of overlapping predictions from all three tools before clustering
 - Per-region tabulation and per-genome BGC count summary
 - Optional BiG-SCAPE or BiG-SLiCE clustering (mutually exclusive)
+- Optional automatic `bigscape dereplicate` step before BiG-SCAPE clustering
 
 ---
 
@@ -87,11 +90,38 @@ below.
 | `--antismash_accept_failure`   | `false`    | Continue if antiSMASH fails for a sample                            |
 | `--antismash_extra_args`       | `""`       | Arbitrary additional flags passed to antiSMASH                      |
 
+### GECCO
+
+| Parameter            | Default | Description                                   |
+| -------------------- | ------- | --------------------------------------------- |
+| `--gecco_run`        | `true`  | Run GECCO BGC prediction                       |
+| `--gecco_extra_args` | `""`    | Additional arguments passed to GECCO           |
+
+### deepBGC
+
+| Parameter              | Default | Description                                                      |
+| ---------------------- | ------- | ---------------------------------------------------------------- |
+| `--deepbgc_run`        | `true`  | Run deepBGC prediction                                           |
+| `--deepbgc_data_dir`   | —       | Path to deepBGC model/Pfam downloads (auto-downloaded if absent) |
+| `--deepbgc_extra_args` | `""`    | Additional arguments passed to deepBGC                           |
+
+### comBGC unification
+
+| Parameter               | Default | Description                                       |
+| ----------------------- | ------- | ------------------------------------------------- |
+| `--combgc_min_length`   | `3000`  | Minimum BGC length retained by comBGC             |
+| `--combgc_contig_edge`  | `2`     | Exclude BGCs close to contig edges in comBGC      |
+
 ### BiG-SCAPE
+
+BiG-SCAPE and BiG-SLiCE in clystere run on unified comBGC-filtered regions and require `--gecco_run true` and
+`--deepbgc_run true`.
 
 | Parameter                       | Default       | Description                              |
 | ------------------------------- | ------------- | ---------------------------------------- |
 | `--bigscape_run`                | `false`       | Enable BiG-SCAPE GCF clustering          |
+| `--bigscape_dereplicate`        | `true`        | Run `bigscape dereplicate` before clustering |
+| `--bigscape_dereplicate_cutoff` | `0.8`         | Similarity cutoff for dereplication       |
 | `--bigscape_gcf_cutoffs`        | `0.3 0.5 0.7` | Space-separated list of distance cutoffs |
 | `--bigscape_mix`                | `true`        | Combine all BGC classes into one network |
 | `--bigscape_include_singletons` | `true`        | Include singletons in the output         |
@@ -120,6 +150,14 @@ below.
 results/
 ├── antismash/
 │   └── <sample>/          # Full antiSMASH output per genome
+├── gecco/
+│   └── <sample>/          # GECCO outputs per genome (+ BiG-SLiCE-compatible regions)
+├── deepbgc/
+│   └── <sample>/          # deepBGC outputs per genome (+ converted region GBKs)
+├── combgc/
+│   └── <sample>/
+│       ├── combgc_summary.tsv
+│       └── combined_regions/   # Unified representative region GBKs used for clustering
 ├── bigscape/              # BiG-SCAPE output (when --bigscape_run)
 ├── bigslice/              # BiG-SLiCE output (when --bigslice_run)
 ├── summary/

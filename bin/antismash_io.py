@@ -1,9 +1,10 @@
 """Shared I/O helpers for antiSMASH JSON processing scripts."""
 
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 from pathlib import Path
-from typing import Callable, TypeVar
+from typing import TypeVar
 
 T = TypeVar("T")
 

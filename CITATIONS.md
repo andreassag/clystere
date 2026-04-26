@@ -15,6 +15,24 @@
 > regulation, and visualisation. _Nucleic Acids Research_, 51(W1), W46–W50.
 > [https://doi.org/10.1093/nar/gkad344](https://doi.org/10.1093/nar/gkad344)
 
+### [GECCO](https://github.com/zellerlab/GECCO)
+
+> Carroll, L. M., Larralde, M., Fleck, J. S., Ponnudurai, R., Milanese, A., Cappio Barazzone, E., & Zeller, G.
+> (2021). Accurate de novo identification of biosynthetic gene clusters with GECCO. _bioRxiv_.
+> [https://doi.org/10.1101/2021.05.03.442509](https://doi.org/10.1101/2021.05.03.442509)
+
+### [deepBGC](https://github.com/Merck/deepbgc)
+
+> Hannigan, G. D., Prihoda, D., Palicka, A., Soukup, J., Klempir, O., Rampula, L., Durcak, J., Wurst, M., Kotowski,
+> J., Chang, D., Wang, R., & Medema, M. H. (2019). A deep learning genome-mining strategy for biosynthetic gene
+> cluster prediction. _Nucleic Acids Research_, 47(18), e110.
+> [https://doi.org/10.1093/nar/gkz654](https://doi.org/10.1093/nar/gkz654)
+
+### [comBGC](https://github.com/tomrichtermeier/comBGC-Filter)
+
+> Richtermeier, T. et al. comBGC-Filter (software), version 0.6.9.
+> [https://github.com/tomrichtermeier/comBGC-Filter](https://github.com/tomrichtermeier/comBGC-Filter)
+
 ### [BiG-SCAPE](https://github.com/medema-group/BiG-SCAPE)
 
 > Navarro-Muñoz, J. C., Selem-Mojica, N., Mullowney, M. W., Kautsar, S. A., Tryon, J. H., Parkinson, E. I., De Los
