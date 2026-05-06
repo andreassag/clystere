@@ -114,23 +114,19 @@ workflow CLYSTERE {
   // 3. --antismash_db not provided                         → download to $TMPDIR/antismash_db
   // ─────────────────────────────────────────────────────────────────────────
   ch_antismash_db = channel.empty()
-  def db_path = params.antismash_db ? file(params.antismash_db): null
-  def pfam_dir = db_path ? file("${db_path}/pfam"): null
-  def db_exists = pfam_dir && pfam_dir.isDirectory()
+  def _db_tmp = System.getenv('TMPDIR') ?: System.getenv('TMP') ?: '/tmp'
+  def db_path = params.antismash_db ? file(params.antismash_db) : file("${_db_tmp}/antismash_db")
+  def db_exists = file("${db_path}/pfam").isDirectory()
   if (db_exists) {
     log.info "Using existing antiSMASH databases at: ${db_path}"
     ch_antismash_db = channel.value(db_path)
   } else {
-    def download_dest
-    if (db_path) {
+    if (params.antismash_db) {
       log.info "antiSMASH database not found at ${db_path} — downloading there."
-      download_dest = db_path.toString()
     } else {
-      def tmp = System.getenv('TMPDIR') ?: System.getenv('TMP') ?: '/tmp'
-      download_dest = "${tmp}/antismash_db"
-      log.info "No --antismash_db provided — downloading to ${download_dest}"
+      log.info "No --antismash_db provided — downloading to ${db_path}"
     }
-    ANTISMASH_DOWNLOAD_DATABASES(channel.value(download_dest))
+    ANTISMASH_DOWNLOAD_DATABASES(channel.value(db_path.toString()))
     ch_antismash_db = ANTISMASH_DOWNLOAD_DATABASES.out.databases
       .map { dbDir ->
       file(dbDir)
@@ -159,23 +155,19 @@ workflow CLYSTERE {
   // Resolve deepBGC models and run deepBGC (one task per genome)
   //
   ch_deepbgc_data = channel.empty()
-  def data_path = params.deepbgc_data_dir ? file(params.deepbgc_data_dir): null
-  def detector = data_path ? file("${data_path}/detector/deepbgc.pkl"): null
-  def data_exists = detector && detector.exists()
+  def _data_tmp = System.getenv('TMPDIR') ?: System.getenv('TMP') ?: '/tmp'
+  def data_path = params.deepbgc_data_dir ? file(params.deepbgc_data_dir) : file("${_data_tmp}/deepbgc_data")
+  def data_exists = file("${data_path}/detector/deepbgc.pkl").exists()
   if (data_exists) {
     log.info "Using existing deepBGC data at: ${data_path}"
     ch_deepbgc_data = channel.value(data_path)
   } else {
-    def download_dest
-    if (data_path) {
+    if (params.deepbgc_data_dir) {
       log.info "deepBGC data not found at ${data_path} — downloading there."
-      download_dest = data_path.toString()
     } else {
-      def tmp = System.getenv('TMPDIR') ?: System.getenv('TMP') ?: '/tmp'
-      download_dest = "${tmp}/deepbgc_data"
-      log.info "No --deepbgc_data_dir provided — downloading deepBGC data to ${download_dest}"
+      log.info "No --deepbgc_data_dir provided — downloading deepBGC data to ${data_path}"
     }
-    DEEPBGC_DOWNLOAD_DATA(channel.value(download_dest))
+    DEEPBGC_DOWNLOAD_DATA(channel.value(data_path.toString()))
     ch_deepbgc_data = DEEPBGC_DOWNLOAD_DATA.out.data_dir
       .map { deepbgcDir ->
       file(deepbgcDir)

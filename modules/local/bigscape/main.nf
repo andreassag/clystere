@@ -37,7 +37,8 @@ process BIGSCAPE {
         -i . \\
         -o bigscape_dereplicate \\
         -c ${task.cpus} \\
-        --cutoff ${params.bigscape_dereplicate_cutoff}
+        --cutoff ${params.bigscape_dereplicate_cutoff} \\
+        --exclude-gbk final,deepbgc
   """
     : ''
   def cluster_input = params.bigscape_dereplicate ? 'bigscape_dereplicate/representative_clusters' : '.'
@@ -52,6 +53,8 @@ process BIGSCAPE {
         -o bigscape \\
         -c ${task.cpus} \\
         ${pfam_arg} \\
+        --force-gbk \\
+        --exclude-gbk final,deepbgc \\
         ${args}
 
     ${archive_cmd}

@@ -1,6 +1,8 @@
 process DEEPBGC_DOWNLOAD {
     label 'process_single'
 
+    storeDir "${data_dest}"
+
     conda "${moduleDir}/environment.yml"
     container 'quay.io/biocontainers/deepbgc:0.1.31--pyhca03a8a_0'
 
@@ -9,7 +11,7 @@ process DEEPBGC_DOWNLOAD {
 
     output:
     val(data_dest), emit: data_dir
-    tuple val("${task.process}"), val('deepbgc'), eval("deepbgc info 2>&1 | sed '6!d;s/.*= version //;s/ .*//'"), emit: versions_deepbgc, topic: versions
+    path(".deepbgc_data_complete"), emit: marker
 
     when:
     task.ext.when == null || task.ext.when
@@ -24,12 +26,13 @@ process DEEPBGC_DOWNLOAD {
         ${args}
 
     chmod -R a+rX ${data_dest}
+    touch .deepbgc_data_complete
     """
 
     stub:
     """
     mkdir -p ${data_dest}/detector
     touch ${data_dest}/detector/deepbgc.pkl
-
+    touch .deepbgc_data_complete
     """
 }
