@@ -1,88 +1,52 @@
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ANTISMASH process
-    Runs antiSMASH v8 on a single genome file.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
 process ANTISMASH_ANTISMASH {
     tag "${meta.id}"
     label 'process_medium'
+
     conda "${moduleDir}/environment.yml"
     container 'quay.io/biocontainers/antismash:8.0.1--pyhdfd78af_0'
 
     input:
-    tuple val(meta), path(genome), path(annotation), path(databases)
+    tuple val(meta), path(sequence_input)
+    path databases
 
     output:
-    tuple val(meta), path("${meta.id}/"), emit: output_dir
-    tuple val(meta), path("${meta.id}/${meta.id}.json"), emit: json_results
-    tuple val(meta), path("${meta.id}/index.html"), emit: html, optional: true
-    tuple val(meta), path("${meta.id}/${meta.id}.zip"), emit: zip, optional: true
-    tuple val(meta), path("${meta.id}/region*.gbk"), emit: gbk_results, optional: true
-    tuple val(meta), path("${meta.id}/knownclusterblast/"), emit: knownclusterblast_dir, optional: true
-    tuple val(meta), path("${meta.id}/clusterblast/"), emit: clusterblast_dir, optional: true
-    path "versions.yml", emit: versions, topic: versions
+    tuple val(meta), path("${prefix}/"), emit: output_dir
+    tuple val(meta), path("${prefix}/*.json"), emit: json_results
+    tuple val(meta), path("${prefix}/index.html"), emit: html, optional: true
+    tuple val(meta), path("${prefix}/*.zip"), emit: zip, optional: true
+    tuple val(meta), path("${prefix}/*region*.gbk"), emit: gbk_results, optional: true
+    tuple val(meta), path("${prefix}/knownclusterblast/"), emit: knownclusterblast_dir, optional: true
+    tuple val(meta), path("${prefix}/clusterblast/"), emit: clusterblast_dir, optional: true
+    tuple val("${task.process}"), val('antismash'), eval("antismash --version | sed 's/antiSMASH //;s/-.*//g'"), emit: versions_antismash, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: meta.id
-    def annotation_arg = annotation ? "--genefinding-gff3 ${annotation}" : ''
+    prefix = task.ext.prefix ?: "${meta.id}"
     def reuse_arg = params.antismash_reuse_results ? '--reuse-results' : ''
-    def genefinding_arg = annotation ? '' : "--genefinding-tool ${params.antismash_genefinding_tool}"
-    def accept_fail = params.antismash_accept_failure
-
-    // Detect pre-annotated input formats (GenBank / EMBL) when no GFF3 is supplied.
-    if (!annotation) {
-        def ext = genome.name.replaceAll(/\.gz$/, '').tokenize('.')[-1]
-        if (ext in ['gbk', 'gb', 'gbff', 'gbf', 'embl', 'emb']) {
-            genefinding_arg = '--genefinding-tool none'
-        }
-    }
 
     """
     antismash \\
+        ${args} \\
+        -c ${task.cpus} \\
         --output-dir ${prefix} \\
         --output-basename ${prefix} \\
-        --databases ${databases} \\
-        -c ${task.cpus} \\
+        --genefinding-tool none \\
         --logfile ${prefix}/${prefix}.log \\
-        ${genefinding_arg} \\
-        ${annotation_arg} \\
+        --databases ${databases} \\
         ${reuse_arg} \\
-        ${args} \\
-        ${genome} \\
-        || { rc=\$?
-          if [ "${accept_fail}" = "true" ]; then
-            mkdir -p ${prefix}
-            echo '{}' > ${prefix}/${prefix}.json
-            echo "WARNING: antiSMASH failed for ${prefix} (exit \$rc). Continuing due to --antismash_accept_failure." >&2
-          else
-            exit \$rc
-          fi
-        }
-
-    chmod -R a+rX ${prefix}/
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        antismash: \$(antismash --version 2>&1 | head -1 | sed 's/antiSMASH //')
-    END_VERSIONS
+        ${sequence_input}
     """
 
     stub:
-    def prefix = task.ext.prefix ?: meta.id
+    prefix = task.ext.prefix ?: "${meta.id}"
     """
     mkdir -p ${prefix}
-    echo '{}' > ${prefix}/${prefix}.json
+    touch ${prefix}/${prefix}.json
     touch ${prefix}/index.html
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        antismash: 8.0.1
-    END_VERSIONS
+    touch ${prefix}/${prefix}.zip
+    touch ${prefix}/${prefix}.region001.gbk
     """
 }

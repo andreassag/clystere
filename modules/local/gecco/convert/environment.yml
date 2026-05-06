@@ -2,4 +2,4 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - bioconda::antismash=8.0.1
+  - bioconda::gecco=0.10.1

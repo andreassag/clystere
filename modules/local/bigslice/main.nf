@@ -7,6 +7,7 @@
 
 process BIGSLICE {
   label 'process_high'
+
   conda "${moduleDir}/environment.yml"
   container 'quay.io/biocontainers/bigslice:2.0.2--pyh8ed023e_0'
 

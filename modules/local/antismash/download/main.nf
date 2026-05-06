@@ -1,6 +1,7 @@
-process ANTISMASH_ANTISMASHDOWNLOADDATABASES {
+process ANTISMASH_DOWNLOAD {
     label 'process_single'
-    conda "${moduleDir}/../antismash/environment.yml"
+
+    conda "${moduleDir}/environment.yml"
     container 'quay.io/biocontainers/antismash:8.0.1--pyhdfd78af_0'
 
     input:
@@ -8,7 +9,7 @@ process ANTISMASH_ANTISMASHDOWNLOADDATABASES {
 
     output:
     val(db_dest), emit: databases
-    path "versions.yml", emit: versions, topic: versions
+    tuple val("${task.process}"), val('antismash'), eval("antismash --version | sed 's/antiSMASH //;s/-.*//g'"), emit: versions_antismash, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -21,20 +22,11 @@ process ANTISMASH_ANTISMASHDOWNLOADDATABASES {
         ${args}
 
     chmod -R a+rX ${db_dest}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        antismash: \$(antismash --version 2>&1 | head -1 | sed 's/antiSMASH //')
-    END_VERSIONS
     """
 
     stub:
     """
     mkdir -p ${db_dest}
 
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        antismash: 8.0.1
-    END_VERSIONS
     """
 }

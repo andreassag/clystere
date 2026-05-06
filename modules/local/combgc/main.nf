@@ -13,7 +13,12 @@ process COMBGC_FILTER {
   container 'quay.io/biocontainers/python:3.11.12--h9e4cc4f_0'
 
   input:
-  tuple val(meta), path(antismash_dir), path(gecco_bigslice_dir), path(deepbgc_bigslice_dir), path(gecco_clusters_tsv), path(deepbgc_bgc_tsv)
+  tuple val(meta),
+    path(antismash_dir, stageAs: 'antismash_dir'),
+    path(gecco_dir, stageAs: 'gecco_dir'),
+    path(deepbgc_bgc_gbk, stageAs: 'deepbgc_bgc.gbk'),
+    path(gecco_clusters_tsv, stageAs: 'gecco.clusters.tsv'),
+    path(deepbgc_bgc_tsv, stageAs: 'deepbgc.bgc.tsv')
 
   output:
   tuple val(meta), path("combgc_out/combgc_summary.tsv"), emit: summary_tsv
@@ -47,15 +52,27 @@ process COMBGC_FILTER {
           --outdir combgc_out \\
         --input "\${input_args[@]}"
 
-        mkdir -p combgc_out/${prefix}_regions
+    mkdir -p combgc_out/${prefix}_regions
 
-    python select_combined_regions.py \\
-        --summary combgc_out/combgc_summary.tsv \\
-        --sample-id ${prefix} \\
-        --antismash-dir ${antismash_dir} \\
-        --gecco-dir ${gecco_bigslice_dir} \\
-        --deepbgc-dir ${deepbgc_bigslice_dir} \\
-          --out-dir combgc_out/${prefix}_regions
+    # Build a unified region directory using only native module outputs.
+    shopt -s nullglob
+    for gbk in "${antismash_dir}"/*region*.gbk; do
+      cp "\${gbk}" "combgc_out/${prefix}_regions/"
+    done
+
+    for gbk in "${gecco_dir}"/*_cluster_*.gbk; do
+      if [[ -f "\${gbk}" ]]; then
+        cp "\${gbk}" "combgc_out/${prefix}_regions/"
+      fi
+    done
+
+    if [[ -f "${deepbgc_bgc_gbk}" ]]; then
+      cp "${deepbgc_bgc_gbk}" "combgc_out/${prefix}_regions/${prefix}.deepbgc.region001.gbk"
+    fi
+
+    if [[ -z "\$(ls -A combgc_out/${prefix}_regions)" ]]; then
+      touch "combgc_out/${prefix}_regions/${prefix}.region001.gbk"
+    fi
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

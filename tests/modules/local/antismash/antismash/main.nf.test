@@ -1,0 +1,40 @@
+nextflow_process {
+    name "Test ANTISMASH_ANTISMASH"
+    script "modules/local/antismash/antismash/main.nf"
+    process "ANTISMASH_ANTISMASH"
+    options "-stub-run"
+    topics "versions"
+
+    test("Stub run emits expected antiSMASH outputs") {
+        when {
+            params {
+                antismash_reuse_results = false
+                antismash_genefinding_tool = "prodigal"
+                antismash_accept_failure = false
+                max_cpus = 2
+                max_memory = "4.GB"
+                max_time = "1.h"
+            }
+            process {
+                """
+                input[0] = Channel.of([
+                    [id: 'GCF_003176835'],
+                    file("${projectDir}/assets/genomes/GCF_003176835.fna.gz", checkIfExists: true),
+                    [],
+                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert process.out.output_dir.size() == 1
+            assert process.out.json_results.size() == 1
+            assert process.out.versions.size() == 1
+            assert path(process.out.versions[0]).exists()
+            assert path(process.out.versions[0]).text.contains("antismash")
+            assert topics.versions.size() == 1
+        }
+    }
+}

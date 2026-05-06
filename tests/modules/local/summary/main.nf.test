@@ -1,0 +1,98 @@
+nextflow_process {
+    name "Test SUMMARY"
+    script "modules/local/summary/main.nf"
+    process "SUMMARY"
+
+    test("Default summary emits both TSVs") {
+        when {
+            params {
+                antismash_cb_knownclusters = false
+                count_per_contig = false
+                split_hybrids = false
+                max_cpus = 2
+                max_memory = "4.GB"
+                max_time = "1.h"
+            }
+            process {
+                """
+                input[0] = [
+                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert path(process.out.all_regions_tsv[0]).exists()
+            assert path(process.out.region_counts_tsv[0]).exists()
+
+            def regionHeader = path(process.out.all_regions_tsv[0]).readLines()[0].split("\t")
+            assert "file" in regionHeader
+            assert "record_id" in regionHeader
+            assert !('knownclusterblast_hit' in regionHeader)
+
+            def countLines = path(process.out.region_counts_tsv[0]).readLines()
+            assert countLines.size() >= 2
+            def countHeader = countLines[0].split("\t")
+            assert "record" in countHeader
+            assert "total_count" in countHeader
+            assert "description" in countHeader
+        }
+    }
+
+    test("KnownClusterBlast and per-contig flags affect outputs") {
+        when {
+            params {
+                antismash_cb_knownclusters = true
+                count_per_contig = true
+                split_hybrids = false
+                max_cpus = 2
+                max_memory = "4.GB"
+                max_time = "1.h"
+            }
+            process {
+                """
+                input[0] = [
+                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            def regionHeader = path(process.out.all_regions_tsv[0]).readLines()[0].split("\t")
+            assert "knownclusterblast_hit" in regionHeader
+            assert "knownclusterblast_accession" in regionHeader
+            assert "knownclusterblast_similarity" in regionHeader
+
+            def countLines = path(process.out.region_counts_tsv[0]).readLines()
+            assert countLines.size() == 3
+            assert countLines[1].contains("U00096.3")
+        }
+    }
+
+    test("Versions file is emitted") {
+        when {
+            params {
+                antismash_cb_knownclusters = false
+                count_per_contig = false
+                split_hybrids = false
+                max_cpus = 2
+                max_memory = "4.GB"
+                max_time = "1.h"
+            }
+            process {
+                """
+                input[0] = [
+                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert path(process.out.versions[0]).exists()
+            assert path(process.out.versions[0]).text.contains("python")
+        }
+    }
+}
