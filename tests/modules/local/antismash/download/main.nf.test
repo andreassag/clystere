@@ -3,9 +3,8 @@ nextflow_process {
     script "modules/local/antismash/download/main.nf"
     process "ANTISMASH_DOWNLOAD"
     options "-stub-run"
-    topics "versions"
 
-    test("Stub run emits destination and versions topic") {
+    test("Stub run emits destination and marker") {
         when {
             params {
                 max_cpus = 2
@@ -23,7 +22,7 @@ nextflow_process {
             assert process.success
             assert process.out.databases.size() == 1
             assert process.out.databases[0].toString().contains("antismash_db")
-            assert topics.versions.size() == 1
+            assert process.out.marker.size() == 1
         }
     }
 }

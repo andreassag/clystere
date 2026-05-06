@@ -99,20 +99,20 @@ These flags enable additional detection modules. All require `--antismash_minima
 
 ## GECCO
 
-| Parameter            | Default | Description                                          |
-| -------------------- | ------- | ---------------------------------------------------- |
-| `--gecco_run`        | `true`  | Run GECCO for each input genome.                     |
-| `--gecco_extra_args` | `''`    | Arbitrary extra arguments passed to GECCO.           |
+| Parameter            | Default | Description                                |
+| -------------------- | ------- | ------------------------------------------ |
+| `--gecco_run`        | `true`  | Run GECCO for each input genome.           |
+| `--gecco_extra_args` | `''`    | Arbitrary extra arguments passed to GECCO. |
 
 ---
 
 ## deepBGC
 
-| Parameter              | Default | Description                                                           |
-| ---------------------- | ------- | --------------------------------------------------------------------- |
-| `--deepbgc_run`        | `true`  | Run deepBGC for each input genome.                                    |
-| `--deepbgc_data_dir`   | `null`  | Path to deepBGC downloads/models. Auto-downloaded when absent/empty.  |
-| `--deepbgc_extra_args` | `''`    | Arbitrary extra arguments passed to deepBGC.                          |
+| Parameter              | Default | Description                                                          |
+| ---------------------- | ------- | -------------------------------------------------------------------- |
+| `--deepbgc_run`        | `true`  | Run deepBGC for each input genome.                                   |
+| `--deepbgc_data_dir`   | `null`  | Path to deepBGC downloads/models. Auto-downloaded when absent/empty. |
+| `--deepbgc_extra_args` | `''`    | Arbitrary extra arguments passed to deepBGC.                         |
 
 ---
 
@@ -121,10 +121,10 @@ These flags enable additional detection modules. All require `--antismash_minima
 These parameters control filtering while combining antiSMASH, GECCO, and deepBGC predictions prior to BiG-SCAPE or
 BiG-SLiCE.
 
-| Parameter              | Default | Description                                       |
-| ---------------------- | ------- | ------------------------------------------------- |
-| `--combgc_min_length`  | `3000`  | Minimum BGC length retained by comBGC.            |
-| `--combgc_contig_edge` | `2`     | Exclude BGCs near contig edges in comBGC.         |
+| Parameter              | Default | Description                               |
+| ---------------------- | ------- | ----------------------------------------- |
+| `--combgc_min_length`  | `3000`  | Minimum BGC length retained by comBGC.    |
+| `--combgc_contig_edge` | `2`     | Exclude BGCs near contig edges in comBGC. |
 
 ---
 
@@ -132,8 +132,7 @@ BiG-SLiCE.
 
 `--bigscape_run` and `--bigslice_run` are mutually exclusive.
 
-BiG-SCAPE in clystere runs on unified comBGC-filtered regions and requires `--gecco_run true` and
-`--deepbgc_run true`.
+BiG-SCAPE in clystere runs on unified comBGC-filtered regions and requires `--gecco_run true` and `--deepbgc_run true`.
 
 | Parameter                       | Default       | Description                                                                   |
 | ------------------------------- | ------------- | ----------------------------------------------------------------------------- |
@@ -153,8 +152,7 @@ BiG-SCAPE in clystere runs on unified comBGC-filtered regions and requires `--ge
 BiG-SLiCE requires its HMM model bundle. The pipeline bootstraps this bundle automatically during the first BiG-SLiCE
 task execution.
 
-BiG-SLiCE in clystere runs on unified comBGC-filtered regions and requires `--gecco_run true` and
-`--deepbgc_run true`.
+BiG-SLiCE in clystere runs on unified comBGC-filtered regions and requires `--gecco_run true` and `--deepbgc_run true`.
 
 | Parameter               | Default | Description                                                            |
 | ----------------------- | ------- | ---------------------------------------------------------------------- |

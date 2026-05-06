@@ -92,10 +92,10 @@ below.
 
 ### GECCO
 
-| Parameter            | Default | Description                                   |
-| -------------------- | ------- | --------------------------------------------- |
-| `--gecco_run`        | `true`  | Run GECCO BGC prediction                       |
-| `--gecco_extra_args` | `""`    | Additional arguments passed to GECCO           |
+| Parameter            | Default | Description                          |
+| -------------------- | ------- | ------------------------------------ |
+| `--gecco_run`        | `true`  | Run GECCO BGC prediction             |
+| `--gecco_extra_args` | `""`    | Additional arguments passed to GECCO |
 
 ### deepBGC
 
@@ -107,24 +107,24 @@ below.
 
 ### comBGC unification
 
-| Parameter               | Default | Description                                       |
-| ----------------------- | ------- | ------------------------------------------------- |
-| `--combgc_min_length`   | `3000`  | Minimum BGC length retained by comBGC             |
-| `--combgc_contig_edge`  | `2`     | Exclude BGCs close to contig edges in comBGC      |
+| Parameter              | Default | Description                                  |
+| ---------------------- | ------- | -------------------------------------------- |
+| `--combgc_min_length`  | `3000`  | Minimum BGC length retained by comBGC        |
+| `--combgc_contig_edge` | `2`     | Exclude BGCs close to contig edges in comBGC |
 
 ### BiG-SCAPE
 
 BiG-SCAPE and BiG-SLiCE in clystere run on unified comBGC-filtered regions and require `--gecco_run true` and
 `--deepbgc_run true`.
 
-| Parameter                       | Default       | Description                              |
-| ------------------------------- | ------------- | ---------------------------------------- |
-| `--bigscape_run`                | `false`       | Enable BiG-SCAPE GCF clustering          |
+| Parameter                       | Default       | Description                                  |
+| ------------------------------- | ------------- | -------------------------------------------- |
+| `--bigscape_run`                | `false`       | Enable BiG-SCAPE GCF clustering              |
 | `--bigscape_dereplicate`        | `true`        | Run `bigscape dereplicate` before clustering |
-| `--bigscape_dereplicate_cutoff` | `0.8`         | Similarity cutoff for dereplication       |
-| `--bigscape_gcf_cutoffs`        | `0.3 0.5 0.7` | Space-separated list of distance cutoffs |
-| `--bigscape_mix`                | `true`        | Combine all BGC classes into one network |
-| `--bigscape_include_singletons` | `true`        | Include singletons in the output         |
+| `--bigscape_dereplicate_cutoff` | `0.8`         | Similarity cutoff for dereplication          |
+| `--bigscape_gcf_cutoffs`        | `0.3 0.5 0.7` | Space-separated list of distance cutoffs     |
+| `--bigscape_mix`                | `true`        | Combine all BGC classes into one network     |
+| `--bigscape_include_singletons` | `true`        | Include singletons in the output             |
 
 ### BiG-SLiCE
 
