@@ -19,10 +19,11 @@ nextflow_process {
                 """
                 input[0] = Channel.of([
                     [id: 'GCF_003176835'],
-                    file("${projectDir}/assets/genomes/GCF_003176835.fna.gz", checkIfExists: true),
-                    [],
-                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true)
+                    file("${projectDir}/assets/genomes/GCF_003176835.fna.gz", checkIfExists: true)
                 ])
+                input[1] = Channel.of(
+                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true)
+                )
                 """
             }
         }
@@ -31,9 +32,6 @@ nextflow_process {
             assert process.success
             assert process.out.output_dir.size() == 1
             assert process.out.json_results.size() == 1
-            assert process.out.versions.size() == 1
-            assert path(process.out.versions[0]).exists()
-            assert path(process.out.versions[0]).text.contains("antismash")
             assert topics.versions.size() == 1
         }
     }
