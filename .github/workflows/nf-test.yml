@@ -28,7 +28,7 @@ jobs:
     outputs:
       nextflow-version: ${{ steps.get-shards.outputs.nextflow-version }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/get-shards
         id: get-shards
 
@@ -37,7 +37,7 @@ jobs:
     needs: [get-shards]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Install Nextflow
         uses: nf-core/setup-nextflow@v3
