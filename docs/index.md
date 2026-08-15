@@ -40,7 +40,7 @@ graph LR
 ## Quick start
 
 ```bash
-nextflow run exterex/clystere \
+nextflow run andreassag/clystere \
     --input samplesheet.csv \
     --outdir results \
     -profile docker

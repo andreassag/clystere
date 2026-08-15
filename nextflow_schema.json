@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/exterex/clystere/main/nextflow_schema.json",
+  "$id": "https://raw.githubusercontent.com/andreassag/clystere/main/nextflow_schema.json",
   "title": "clystere pipeline parameters",
   "description": "Nextflow pipeline for antiSMASH + GECCO + deepBGC biosynthetic gene cluster analysis",
   "type": "object",

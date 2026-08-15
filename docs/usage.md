@@ -22,7 +22,7 @@ strain_C,data/strain_C.fna.gz,data/strain_C.gff3
 ## Basic run
 
 ```bash
-nextflow run exterex/clystere \
+nextflow run andreassag/clystere \
     --input samplesheet.csv \
     --outdir results \
     -profile docker
@@ -72,7 +72,7 @@ backend.
 === "BiG-SCAPE"
 
     ```bash
-    nextflow run exterex/clystere \
+    nextflow run andreassag/clystere \
         --input samplesheet.csv \
         --outdir results \
         --bigscape_run \
@@ -82,7 +82,7 @@ backend.
 === "BiG-SLiCE"
 
     ```bash
-    nextflow run exterex/clystere \
+    nextflow run andreassag/clystere \
         --input samplesheet.csv \
         --outdir results \
         --bigslice_run \
@@ -140,7 +140,7 @@ Nextflow caches intermediate results in the `work/` directory. Use `-resume` to 
 pipeline modification or failure:
 
 ```bash
-nextflow run exterex/clystere --input samplesheet.csv --outdir results -profile docker -resume
+nextflow run andreassag/clystere --input samplesheet.csv --outdir results -profile docker -resume
 ```
 
 ---

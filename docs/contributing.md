@@ -8,7 +8,7 @@ project follows.
 ## Development setup
 
 ```bash
-git clone https://github.com/exterex/clystere.git
+git clone https://github.com/andreassag/clystere.git
 cd clystere
 
 # Create a Python virtual environment (Python 3.11+)

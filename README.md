@@ -31,7 +31,7 @@ families (GCFs) with [BiG-SCAPE](https://github.com/medema-group/BiG-SCAPE) or
 Run with Docker on the bundled example data
 
 ```bash
-nextflow run exterex/clystere \
+nextflow run andreassag/clystere \
     --input assets/samplesheet.csv \
     --outdir results \
     -profile docker
