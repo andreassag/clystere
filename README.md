@@ -11,9 +11,10 @@ families (GCFs) with [BiG-SCAPE](https://github.com/medema-group/BiG-SCAPE) or
 
 ## Features
 
-- Parallel antiSMASH + GECCO + deepBGC annotation across any number of genome assemblies or GenBank files
+- Parallel antiSMASH + GECCO + deepBGC annotation across any number of pre-annotated GenBank files
 - comBGC-based unification of overlapping predictions from all three tools before clustering
 - Per-region tabulation and per-genome BGC count summary
+- MultiQC HTML report aggregating software versions and BGC metrics
 - Optional BiG-SCAPE or BiG-SLiCE clustering (mutually exclusive)
 - Optional automatic `bigscape dereplicate` step before BiG-SCAPE clustering
 
@@ -21,17 +22,18 @@ families (GCFs) with [BiG-SCAPE](https://github.com/medema-group/BiG-SCAPE) or
 
 ## Requirements
 
-- [Nextflow](https://www.nextflow.io/) ≥ 23.04.0
-- One of: Docker, Singularity, Podman, or Conda
+- [Nextflow](https://www.nextflow.io/) ≥ 25.10.0
+- Java ≥ 17 (required by Nextflow)
+- One of: Docker, Singularity, Apptainer, Podman, or Conda
 
 ---
 
 ## Quick start
 
-Run with Docker on the bundled example data
+Run with Docker on the bundled example data:
 
 ```bash
-nextflow run exterex/clystere \
+nextflow run andreassag/clystere \
     --input assets/samplesheet.csv \
     --outdir results \
     -profile docker
@@ -162,6 +164,9 @@ results/
 ├── summary/
 │   ├── all_regions.tsv    # One row per BGC region across all samples
 │   └── region_counts.tsv  # BGC type counts per genome (or per contig)
+├── multiqc/
+│   ├── clystere-MultiQC-Report_multiqc_report.html
+│   └── clystere-MultiQC-Report_multiqc_report_data/
 └── pipeline_info/         # Execution timeline, report, trace, and DAG
 ```
 

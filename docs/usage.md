@@ -4,17 +4,16 @@
 
 Prepare a comma-separated samplesheet describing your input genomes:
 
-| Column       | Required | Description                                                                                                                       |
-| ------------ | -------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `sample`     | Yes      | Unique sample identifier (used as the output directory name)                                                                      |
-| `genome`     | Yes      | Path to a genome file (GenBank `.gbff`/`.gbk`, EMBL `.embl`, or FASTA `.fna`/`.fa`/`.fasta`). Gzip-compressed files are accepted. |
-| `annotation` | No       | Path to a GFF3 annotation file. When provided, antiSMASH skips its built-in gene-finding step.                                    |
+| Column       | Required | Description                                                                                                |
+| ------------ | -------- | ---------------------------------------------------------------------------------------------------------- |
+| `sample`     | Yes      | Unique sample identifier (used as the output directory name)                                               |
+| `genome`     | Yes      | Path to a pre-annotated GenBank file (`.gbff`, `.gbk`, `.gbff.gz`, `.gbk.gz`). Gzip compression supported. |
+| `annotation` | No       | Path to an optional GFF3 annotation file.                                                                  |
 
 ```csv title="samplesheet.csv"
 sample,genome,annotation
 strain_A,data/strain_A.gbff.gz,
-strain_B,data/strain_B.fna,
-strain_C,data/strain_C.fna.gz,data/strain_C.gff3
+strain_B,data/strain_B.gbk,
 ```
 
 ---
@@ -22,8 +21,8 @@ strain_C,data/strain_C.fna.gz,data/strain_C.gff3
 ## Basic run
 
 ```bash
-nextflow run exterex/clystere \
-    --input samplesheet.csv \
+nextflow run andreassag/clystere \
+    --input assets/samplesheet.csv \
     --outdir results \
     -profile docker
 ```
@@ -72,7 +71,7 @@ backend.
 === "BiG-SCAPE"
 
     ```bash
-    nextflow run exterex/clystere \
+    nextflow run andreassag/clystere \
         --input samplesheet.csv \
         --outdir results \
         --bigscape_run \
@@ -82,7 +81,7 @@ backend.
 === "BiG-SLiCE"
 
     ```bash
-    nextflow run exterex/clystere \
+    nextflow run andreassag/clystere \
         --input samplesheet.csv \
         --outdir results \
         --bigslice_run \
@@ -140,5 +139,5 @@ Nextflow caches intermediate results in the `work/` directory. Use `-resume` to 
 pipeline modification or failure:
 
 ```bash
-nextflow run exterex/clystere --input samplesheet.csv --outdir results -profile docker -resume
+nextflow run andreassag/clystere --input samplesheet.csv --outdir results -profile docker -resume
 ```

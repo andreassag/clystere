@@ -4,8 +4,8 @@
 
 | Dependency                           | Minimum version | Notes                                                   |
 | ------------------------------------ | --------------- | ------------------------------------------------------- |
-| [Nextflow](https://www.nextflow.io/) | 23.04.0         | `NXF_VER` env var can pin the version                   |
-| Java                                 | 11              | Required by Nextflow                                    |
+| [Nextflow](https://www.nextflow.io/) | 25.10.0         | `NXF_VER` env var can pin the version                   |
+| Java                                 | 17              | Required by Nextflow (Java 17 or higher)                |
 | Container engine                     | —               | One of Docker, Singularity, Apptainer, Podman, or Conda |
 
 ---
@@ -90,10 +90,10 @@ directory. Ensure outbound network access for the initial deepBGC run.
 
 ## 4. Clone the repository (optional)
 
-Running `nextflow run exterex/clystere` pulls the pipeline automatically from GitHub. To work with a local copy:
+Running `nextflow run andreassag/clystere` pulls the pipeline automatically from GitHub. To work with a local copy:
 
 ```bash
-git clone https://github.com/exterex/clystere.git
+git clone https://github.com/andreassag/clystere.git
 cd clystere
-nextflow run . --input samplesheet.csv --outdir results -profile docker
+nextflow run . --input assets/samplesheet.csv --outdir results -profile docker
 ```

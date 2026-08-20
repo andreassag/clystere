@@ -13,7 +13,7 @@ into gene cluster families (GCFs) with [BiG-SCAPE](https://github.com/medema-gro
 
 ```mermaid
 graph LR
-    A[Genome assemblies<br/>samplesheet.csv] --> B[ANTISMASH<br/>per-genome]
+    A[GenBank genomes<br/>samplesheet.csv] --> B[ANTISMASH<br/>per-genome]
     A --> C[GECCO<br/>per-genome]
     A --> D[deepBGC<br/>per-genome]
     B --> E[TABULATE_REGIONS<br/>all_regions.tsv]
@@ -23,15 +23,18 @@ graph LR
     D --> G
     G --> H[BIGSCAPE dereplicate + cluster<br/>optional]
     G --> I[BIGSLICE cluster<br/>optional]
+    E --> J[MULTIQC<br/>multiqc_report.html]
+    F --> J
 ```
 
 ---
 
 ## Features
 
-- Parallel antiSMASH + GECCO + deepBGC annotation across any number of genome assemblies or GenBank files
+- Parallel antiSMASH + GECCO + deepBGC annotation across any number of GenBank genome files
 - comBGC-based unification of overlapping predictions before clustering
 - Per-region tabulation and per-genome BGC count summary
+- MultiQC HTML report aggregating software versions and BGC metrics
 - Optional BiG-SCAPE or BiG-SLiCE clustering (mutually exclusive)
 - Optional BiG-SCAPE dereplication of redundant regions before clustering
 
@@ -40,8 +43,8 @@ graph LR
 ## Quick start
 
 ```bash
-nextflow run exterex/clystere \
-    --input samplesheet.csv \
+nextflow run andreassag/clystere \
+    --input assets/samplesheet.csv \
     --outdir results \
     -profile docker
 ```

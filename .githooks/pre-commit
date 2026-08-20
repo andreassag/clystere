@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -e
+
+echo "=== Running pre-commit validation checks ==="
+
+# 1. Python linting and format checking with Ruff
+if command -v ruff >/dev/null 2>&1; then
+    echo "-> Running ruff check..."
+    ruff check .
+    echo "-> Running ruff format check..."
+    ruff format --check .
+else
+    echo "-> [WARN] ruff not found in PATH; skipping ruff checks."
+fi
+
+# 2. EditorConfig checking
+if command -v npx >/dev/null 2>&1; then
+    echo "-> Running editorconfig-checker..."
+    npx -y editorconfig-checker
+    echo "-> Running prettier format check..."
+    npx -y prettier --check .
+else
+    echo "-> [WARN] npx not found in PATH; skipping editorconfig and prettier checks."
+fi
+
+echo "=== All pre-commit checks passed successfully ==="

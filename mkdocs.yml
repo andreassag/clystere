@@ -1,8 +1,8 @@
 site_name: clystere
-site_description: Nextflow pipeline for antiSMASH + BiG-SCAPE BGC analysis
-site_author: exTerEX
-repo_name: exterex/clystere
-repo_url: https://github.com/exterex/clystere
+site_description: Nextflow pipeline for antiSMASH + GECCO + deepBGC biosynthetic gene cluster analysis
+site_author: Andreas Sagen
+repo_name: andreassag/clystere
+repo_url: https://github.com/andreassag/clystere
 edit_uri: edit/main/docs/
 
 theme:

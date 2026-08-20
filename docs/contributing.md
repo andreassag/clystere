@@ -8,7 +8,7 @@ project follows.
 ## Development setup
 
 ```bash
-git clone https://github.com/exterex/clystere.git
+git clone https://github.com/andreassag/clystere.git
 cd clystere
 
 # Create a Python virtual environment (Python 3.11+)
@@ -17,9 +17,10 @@ source .venv/bin/activate
 
 # Install development tools
 pip install pre-commit pytest ruff
+npm install
 
-# Install and activate the pre-commit hooks
-pre-commit install
+# Activate the pre-commit git hooks
+git config core.hooksPath .githooks
 ```
 
 ---
@@ -31,31 +32,37 @@ pre-commit install
 Python scripts are linted and formatted with [Ruff](https://docs.astral.sh/ruff/). The target interpreter is Python
 3.11.
 
-### Nextflow (`.nf`, `.config`)
+```bash
+ruff check .
+ruff format --check .
+```
 
-Nextflow files are formatted with [Prettier](https://prettier.io/) via `prettier-plugin-groovy`.
+### Nextflow (`.nf`, `.config`) & Documentation
+
+Nextflow and config files follow EditorConfig rules and Prettier standards:
+
+```bash
+npx editorconfig-checker
+npx prettier --check .
+```
 
 ---
 
 ## Pre-commit hooks
 
-The following hooks run automatically on `git commit`:
+Pre-commit git hooks run automatically before each `git commit` to guarantee clean code and formatting:
 
-| Hook                  | Purpose                                       |
-| --------------------- | --------------------------------------------- |
-| `ruff`                | Python linting with auto-fix                  |
-| `ruff-format`         | Python formatting                             |
-| `prettier`            | Formatting for Nextflow, JSON, YAML, Markdown |
-| `trailing-whitespace` | Strip trailing whitespace                     |
-| `end-of-file-fixer`   | Ensure files end with a newline               |
-| `check-yaml`          | Validate YAML syntax                          |
-| `check-json`          | Validate JSON syntax                          |
-| `mixed-line-ending`   | Enforce LF line endings                       |
+| Check                   | Tool                   | Purpose                          |
+| :---------------------- | :--------------------- | :------------------------------- |
+| Python Linting          | `ruff check`           | Code style and import order      |
+| Python Formatting       | `ruff format`          | Code layout consistency          |
+| Line Length & Standards | `editorconfig-checker` | Indentation and line endings     |
+| Document Formatting     | `prettier`             | Markdown, JSON, and YAML styling |
 
-Run all hooks manually:
+Run all checks manually:
 
 ```bash
-pre-commit run --all-files
+npm run check:all
 ```
 
 ---
@@ -68,21 +75,19 @@ pre-commit run --all-files
 pytest tests/python/ -v
 ```
 
-Tests live in `tests/python/` and exercise the pure Python functions in `bin/`. Fixtures are built inline with
-`tmp_path` — no external data files needed.
+Tests live in `tests/python/` and exercise the pure Python functions in `bin/`.
 
-### nf-test (Nextflow module tests)
+### nf-test (Nextflow pipeline & module tests)
 
 ```bash
-# runs module tests under tests/modules/
-nf-test test --profile docker --verbose
+# Run all nf-test suites (integration + local modules)
+nf-test test tests/ --verbose
 
-# run only heavyweight-module tests in stub mode
-nf-test test tests/modules/local/antismash tests/modules/local/deepbgc --verbose
+# Run specific local module tests
+nf-test test tests/modules/local/summary --verbose
+nf-test test tests/modules/local/combgc --verbose
+nf-test test tests/modules/local/bigscape --verbose
 ```
-
-Module tests live under `tests/modules/local/**/main.nf.test` and include both lightweight script-backed tests and
-stub-oriented tests for heavyweight tools (antiSMASH/deepBGC). Test fixtures are stored in `tests/data/`.
 
 ### Full pipeline test
 

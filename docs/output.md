@@ -38,6 +38,9 @@ results/
 ├── summary/
 │   ├── all_regions.tsv     # per-BGC-region table
 │   └── region_counts.tsv   # per-genome BGC count table
+├── multiqc/
+│   ├── clystere-MultiQC-Report_multiqc_report.html
+│   └── clystere-MultiQC-Report_multiqc_report_data/
 └── pipeline_info/
     ├── execution_timeline_<timestamp>.html
     ├── execution_report_<timestamp>.html
@@ -122,6 +125,16 @@ Python `networkx`. One network is generated per BGC class plus a `mix` network w
 
 Standard BiG-SLiCE output generated from the unified `combgc/*/combined_regions/` folders. The directory includes the
 processed analysis results and SQLite-backed data used for downstream inspection.
+
+---
+
+## `multiqc/`
+
+Aggregated MultiQC summary report (`clystere-MultiQC-Report_multiqc_report.html`) and associated data tables/plots.
+Contains:
+
+- Pipeline execution parameters and software tool versions.
+- Unified BGC counts and region distributions across antiSMASH, GECCO, and deepBGC.
 
 ---
 
