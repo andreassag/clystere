@@ -7,26 +7,26 @@ set in a params YAML/JSON file (`-params-file params.yml`).
 
 ## Input / output
 
-| Parameter              | Default                          | Description                                                                |
-| ---------------------- | -------------------------------- | -------------------------------------------------------------------------- |
-| `--input`              | `null`                           | **Required.** Path to a samplesheet CSV.                                   |
-| `--outdir`             | `results`                        | Output directory for published files.                                      |
+| Parameter              | Default                            | Description                                                                |
+| ---------------------- | ---------------------------------- | -------------------------------------------------------------------------- |
+| `--input`              | `null`                             | **Required.** Path to a samplesheet CSV.                                   |
+| `--outdir`             | `results`                          | Output directory for published files.                                      |
 | `--clystere_db_dir`    | `${launchDir}/.clystere/databases` | Workspace directory for downloading and caching reference databases.       |
 | `--clystere_cache_dir` | `${launchDir}/.clystere/cache`     | Directory where pipeline cache files are stored.                           |
-| `--publish_dir_mode`   | `copy`                           | How Nextflow stages outputs: `copy`, `symlink`, `move`, `rellink`, `link`. |
+| `--publish_dir_mode`   | `copy`                             | How Nextflow stages outputs: `copy`, `symlink`, `move`, `rellink`, `link`. |
 
 ---
 
 ## antiSMASH — basic options
 
-| Parameter                      | Default    | Description                                                                  |
-| ------------------------------ | ---------- | ---------------------------------------------------------------------------- |
-| `--antismash_db`               | `null`     | Path to an antiSMASH database directory. Downloaded automatically if absent. |
-| `--antismash_taxon`            | `bacteria` | Taxon preset: `bacteria` or `fungi`.                                         |
-| `--antismash_minlength`        | `1000`     | Minimum sequence length (bp) to annotate.                                    |
-| `--antismash_limit`            | `-1`       | Maximum number of sequences to annotate (`-1` = no limit).                   |
-| `--antismash_minimal`          | `true`     | Run in minimal mode (core detection only).                                   |
-| `--antismash_extra_args`       | `''`       | Arbitrary extra arguments appended verbatim to the antiSMASH command.        |
+| Parameter                | Default    | Description                                                                  |
+| ------------------------ | ---------- | ---------------------------------------------------------------------------- |
+| `--antismash_db`         | `null`     | Path to an antiSMASH database directory. Downloaded automatically if absent. |
+| `--antismash_taxon`      | `bacteria` | Taxon preset: `bacteria` or `fungi`.                                         |
+| `--antismash_minlength`  | `1000`     | Minimum sequence length (bp) to annotate.                                    |
+| `--antismash_limit`      | `-1`       | Maximum number of sequences to annotate (`-1` = no limit).                   |
+| `--antismash_minimal`    | `true`     | Run in minimal mode (core detection only).                                   |
+| `--antismash_extra_args` | `''`       | Arbitrary extra arguments appended verbatim to the antiSMASH command.        |
 
 ---
 

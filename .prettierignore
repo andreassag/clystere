@@ -1,4 +1,7 @@
 # nf-core .prettierignore
+.agents/
+.clystere/
+node_modules/
 assets/
 *.png
 *.svg
@@ -13,5 +16,5 @@ CITATIONS.md
 .nf-test/
 .nextflow/
 work/
-results/
+results*/
 

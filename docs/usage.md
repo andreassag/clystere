@@ -142,5 +142,3 @@ pipeline modification or failure:
 ```bash
 nextflow run exterex/clystere --input samplesheet.csv --outdir results -profile docker -resume
 ```
-
-
