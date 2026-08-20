@@ -2,6 +2,6 @@
   "name": "clystere",
   "version": "1.0.0-dev",
   "devDependencies": {
-    "prettier": "^3.0.0"
+    "prettier": "3.9.6"
   }
 }
