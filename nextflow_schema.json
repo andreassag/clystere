@@ -28,6 +28,18 @@
           "description": "Directory where pipeline results will be published.",
           "fa_icon": "fas fa-folder-open",
           "default": "results"
+        },
+        "clystere_db_dir": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "Directory where reference databases (antiSMASH, DeepBGC) will be downloaded and cached.",
+          "fa_icon": "fas fa-database"
+        },
+        "clystere_cache_dir": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "Directory where pipeline cache files are stored.",
+          "fa_icon": "fas fa-archive"
         }
       }
     },
@@ -49,13 +61,6 @@
           "description": "Taxonomic scope for antiSMASH detection rules.",
           "fa_icon": "fas fa-sitemap",
           "enum": ["bacteria", "fungi"]
-        },
-        "antismash_genefinding_tool": {
-          "type": "string",
-          "default": "prodigal",
-          "description": "Gene-finding tool used when no annotation is provided.",
-          "fa_icon": "fas fa-search",
-          "enum": ["prodigal", "prodigal-m", "none", "error"]
         },
         "antismash_minlength": {
           "type": "integer",
@@ -80,18 +85,6 @@
           "default": "",
           "description": "Additional command-line arguments appended verbatim to the antiSMASH invocation.",
           "fa_icon": "fas fa-terminal"
-        },
-        "antismash_accept_failure": {
-          "type": "boolean",
-          "default": false,
-          "description": "Continue the pipeline if antiSMASH fails for a sample instead of aborting.",
-          "fa_icon": "fas fa-exclamation-triangle"
-        },
-        "antismash_reuse_results": {
-          "type": "boolean",
-          "default": false,
-          "description": "Pass `--reuse-results` to antiSMASH to reuse a previous output directory.",
-          "fa_icon": "fas fa-redo"
         }
       }
     },
@@ -602,6 +595,52 @@
           "default": false,
           "description": "Display the pipeline version and exit.",
           "fa_icon": "fas fa-tag",
+          "hidden": true
+        },
+        "validate_params": {
+          "type": "boolean",
+          "default": true,
+          "hidden": true
+        },
+        "email": {
+          "type": "string",
+          "hidden": true
+        },
+        "email_on_fail": {
+          "type": "string",
+          "hidden": true
+        },
+        "hook_url": {
+          "type": "string",
+          "hidden": true
+        },
+        "multiqc_config": {
+          "type": "string",
+          "hidden": true
+        },
+        "multiqc_title": {
+          "type": "string",
+          "hidden": true
+        },
+        "multiqc_logo": {
+          "type": "string",
+          "hidden": true
+        },
+        "max_multiqc_email_size": {
+          "type": "string",
+          "default": "25.MB",
+          "hidden": true
+        },
+        "pipelines_test_data_base_path": {
+          "type": "string",
+          "hidden": true
+        },
+        "config_profile_name": {
+          "type": "string",
+          "hidden": true
+        },
+        "config_profile_description": {
+          "type": "string",
           "hidden": true
         }
       }

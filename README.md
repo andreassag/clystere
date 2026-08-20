@@ -45,17 +45,16 @@ nextflow run exterex/clystere \
 
 A comma-separated file with the following columns:
 
-| Column       | Required | Description                                              |
-| ------------ | -------- | -------------------------------------------------------- |
-| `sample`     | Yes      | Unique sample identifier                                 |
-| `genome`     | Yes      | Path to a genome file (GenBank, EMBL, or FASTA)          |
-| `annotation` | No       | Path to a GFF3 annotation file (suppresses gene-finding) |
+| Column       | Required | Description                                                  |
+| ------------ | -------- | ------------------------------------------------------------ |
+| `sample`     | Yes      | Unique sample identifier                                     |
+| `genome`     | Yes      | Path to a pre-annotated GenBank file (`.gbk`, `.gbff`, etc.) |
+| `annotation` | No       | Path to an optional GFF3 annotation file                     |
 
 ```csv
 sample,genome,annotation
 strain_A,data/strain_A.gbff.gz,
-strain_B,data/strain_B.fna,,
-strain_C,data/strain_C.fna.gz,data/strain_C.gff3
+strain_B,data/strain_B.gbk,
 ```
 
 ### antiSMASH database
@@ -78,6 +77,8 @@ below.
 | `--outdir`       | `results` | Directory for all pipeline outputs   |
 | `--antismash_db` | —         | Path to antiSMASH database directory |
 
+## Key Parameters
+
 ### antiSMASH
 
 | Parameter                      | Default    | Description                                                         |
@@ -85,9 +86,7 @@ below.
 | `--antismash_taxon`            | `bacteria` | Taxonomic scope (`bacteria` or `fungi`)                             |
 | `--antismash_minimal`          | `true`     | Run in minimal mode; enable modules individually                    |
 | `--antismash_cb_knownclusters` | `false`    | Run KnownClusterBlast; adds similarity columns to `all_regions.tsv` |
-| `--antismash_genefinding_tool` | `prodigal` | Gene caller when no annotation is supplied                          |
 | `--antismash_minlength`        | `1000`     | Minimum sequence length (bp)                                        |
-| `--antismash_accept_failure`   | `false`    | Continue if antiSMASH fails for a sample                            |
 | `--antismash_extra_args`       | `""`       | Arbitrary additional flags passed to antiSMASH                      |
 
 ### GECCO

@@ -9,8 +9,10 @@
 process COMBGC_FILTER {
   tag "${meta.id}"
   label 'process_medium'
-  conda "${moduleDir}/environment.yml"
-  container 'quay.io/biocontainers/python:3.11.12--h9e4cc4f_0'
+  conda "conda-forge::python=3.11.0 conda-forge::biopython=1.80 conda-forge::pandas=1.5.2"
+  container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container ?
+      'https://depot.galaxyproject.org/singularity/mulled-v2-27978155697a3671f3ef9aead4b5c823a02cc0b7:548df772fe13c0232a7eab1bc1deb98b495a05ab-0' :
+      'quay.io/biocontainers/mulled-v2-27978155697a3671f3ef9aead4b5c823a02cc0b7:548df772fe13c0232a7eab1bc1deb98b495a05ab-0' }"
 
   input:
   tuple val(meta),
@@ -23,7 +25,7 @@ process COMBGC_FILTER {
   output:
   tuple val(meta), path("combgc_out/combgc_summary.tsv"), emit: summary_tsv
   tuple val(meta), path("combgc_out/${meta.id}_regions/"), emit: combined_regions_dir
-  path "versions.yml", emit: versions
+  tuple val("${task.process}"), val('combgc'), val("0.6.9"), topic: versions, emit: versions_combgc
 
   when:
   task.ext.when == null || task.ext.when
@@ -32,24 +34,27 @@ process COMBGC_FILTER {
   def args = task.ext.args ?: ''
   def prefix = meta.id
   """
-    if ! command -v combgc >/dev/null 2>&1; then
-      python -m pip install --no-cache-dir "combgc==0.6.9"
+    input_args=()
+
+    if [[ -f "${antismash_dir}/${prefix}.gbk" ]]; then
+      input_args+=("${antismash_dir}/${prefix}.gbk")
     fi
 
-    input_args=(
-      "${antismash_dir}/${prefix}.gbk"
-      "${gecco_clusters_tsv}"
-      "${deepbgc_bgc_tsv}"
-    )
+    if [[ -f "${gecco_clusters_tsv}" ]]; then
+      input_args+=("${gecco_clusters_tsv}")
+    fi
+
+    if [[ -f "${deepbgc_bgc_tsv}" ]]; then
+      input_args+=("${deepbgc_bgc_tsv}")
+    fi
 
     if [[ -d "${antismash_dir}/knownclusterblast" ]]; then
       input_args+=("${antismash_dir}/knownclusterblast/")
     fi
 
     combgc \\
-        --cores ${task.cpus} \\
-      ${args} \\
-          --outdir combgc_out \\
+        ${args} \\
+        --outdir combgc_out \\
         --input "\${input_args[@]}"
 
     mkdir -p combgc_out/${prefix}_regions
@@ -60,7 +65,7 @@ process COMBGC_FILTER {
       cp "\${gbk}" "combgc_out/${prefix}_regions/"
     done
 
-    for gbk in "${gecco_dir}"/*_cluster_*.gbk; do
+    for gbk in "${gecco_dir}"/*_cluster_*.gbk "${gecco_dir}"/*.region*.gbk; do
       if [[ -f "\${gbk}" ]]; then
         cp "\${gbk}" "combgc_out/${prefix}_regions/"
       fi
@@ -73,11 +78,6 @@ process COMBGC_FILTER {
     if [[ -z "\$(ls -A combgc_out/${prefix}_regions)" ]]; then
       touch "combgc_out/${prefix}_regions/${prefix}.region001.gbk"
     fi
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        combgc: \$(python -c "import importlib.metadata as m; print(m.version('combgc'))")
-    END_VERSIONS
     """
 
   stub:
@@ -85,13 +85,8 @@ process COMBGC_FILTER {
   """
     mkdir -p combgc_out/${prefix}_regions
 
-    printf 'sample_id\tcontig_id\tBGC_start\tBGC_end\tTool_representative\n' > combgc_out/combgc_summary.tsv
-    printf '${prefix}\t${prefix}\t1\t100\tantiSMASH\n' >> combgc_out/combgc_summary.tsv
-      touch combgc_out/${prefix}_regions/${prefix}.region001.gbk
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        combgc: 0.6.9
-    END_VERSIONS
+    printf 'sample_id\tcontig_id\tBGC_start\tBGC_end\tTool_representative\\n' > combgc_out/combgc_summary.tsv
+    printf '${prefix}\t${prefix}\t1\t100\tantiSMASH\\n' >> combgc_out/combgc_summary.tsv
+    touch combgc_out/${prefix}_regions/${prefix}.region001.gbk
     """
 }

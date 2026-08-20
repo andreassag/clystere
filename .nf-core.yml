@@ -1,0 +1,12 @@
+nf_core_version: "4.1.0"
+repository_type: pipeline
+template:
+  author: Andreas Sagen
+  description: Nextflow pipeline for antiSMASH + GECCO + deepBGC biosynthetic gene cluster analysis
+  name: clystere
+  org: exterex
+lint:
+  files_exist:
+    - conf/igenomes.config
+    - conf/igenomes_ignored.config
+    - .github/workflows/linting_comment.yml

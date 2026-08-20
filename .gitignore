@@ -8,7 +8,10 @@
 
 # Pipeline work and output directories
 work/
-results/
+results*/
+
+# Pipeline runtime database cache
+.clystere/
 
 # Nextflow execution reports (generated per run)
 pipeline_info/
@@ -26,6 +29,12 @@ __pycache__/
 .venv/
 dist/
 build/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
 
 # Editor / IDE
 .vscode/
@@ -37,7 +46,9 @@ build/
 
 # Test artefacts
 .nf-test/
+.nf-test.log
 .nf-test.timestamp
+.nf-test-*.nf
 
 # MkDocs build output
 site/

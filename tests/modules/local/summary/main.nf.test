@@ -2,6 +2,7 @@ nextflow_process {
     name "Test SUMMARY"
     script "modules/local/summary/main.nf"
     process "SUMMARY"
+    topics "versions"
 
     test("Default summary emits both TSVs") {
         when {
@@ -71,7 +72,7 @@ nextflow_process {
         }
     }
 
-    test("Versions file is emitted") {
+    test("Versions topic is emitted") {
         when {
             params {
                 antismash_cb_knownclusters = false
@@ -91,8 +92,7 @@ nextflow_process {
         }
         then {
             assert process.success
-            assert path(process.out.versions[0]).exists()
-            assert path(process.out.versions[0]).text.contains("python")
+            assert topics.versions.size() == 1
         }
     }
 }

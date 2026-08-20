@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/exterex/clystere/main/assets/schema_input.json",
+  "title": "clystere input samplesheet schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["sample", "genome"],
+    "properties": {
+      "sample": {
+        "type": "string",
+        "pattern": "^\\S+$",
+        "meta": ["id"]
+      },
+      "genome": {
+        "type": "string",
+        "format": "file-path",
+        "pattern": "^\\S+\\.(gbk|gb|gbff|gbf|gbk\\.gz|gb\\.gz|gbff\\.gz|gbf\\.gz)$"
+      },
+      "annotation": {
+        "type": "string",
+        "format": "file-path"
+      }
+    }
+  }
+}

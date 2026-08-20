@@ -10,7 +10,9 @@
 process BIGSCAPE {
   label 'process_high'
   conda "${moduleDir}/environment.yml"
-  container 'quay.io/biocontainers/bigscape:2.0.2--pyhdfd78af_0'
+  container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container ?
+      'https://depot.galaxyproject.org/singularity/bigscape:2.0.2--pyhdfd78af_0' :
+      'quay.io/biocontainers/bigscape:2.0.2--pyhdfd78af_0' }"
 
   input:
   path bgc_dirs
@@ -21,7 +23,7 @@ process BIGSCAPE {
   path "bigscape/bigscape.db", emit: db
   path "bigscape/", emit: results_dir
   path "bigscape.tar.gz", emit: archive, optional: true
-  path "versions.yml", emit: versions
+  tuple val("${task.process}"), val('bigscape'), val("2.0.2"), topic: versions, emit: versions_bigscape
 
   when:
   task.ext.when == null || task.ext.when
@@ -58,11 +60,6 @@ process BIGSCAPE {
         ${args}
 
     ${archive_cmd}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        bigscape: \$(bigscape --version 2>&1 | head -1 | sed 's/bigscape //')
-    END_VERSIONS
     """
 
   stub:
@@ -70,10 +67,5 @@ process BIGSCAPE {
     mkdir -p bigscape_dereplicate/representative_clusters
     mkdir -p bigscape
     touch bigscape/bigscape.db
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        bigscape: 2.0.2
-    END_VERSIONS
     """
 }

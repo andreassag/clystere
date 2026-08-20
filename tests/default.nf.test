@@ -2,6 +2,7 @@ nextflow_pipeline {
     name "Test pipeline default run"
     script "main.nf"
     profile "test,docker"
+    options "-stub"
 
     test("Pipeline runs with test profile") {
         when {

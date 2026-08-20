@@ -1,0 +1,30 @@
+nextflow_process {
+    name "Test COMBGC_FILTER"
+    script "modules/local/combgc/main.nf"
+    process "COMBGC_FILTER"
+    options "-stub"
+    topics "versions"
+
+    test("COMBGC_FILTER stub execution") {
+        when {
+            process {
+                """
+                input[0] = [
+                    [id: 'GCA_000005845'],
+                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true),
+                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true),
+                    file("${projectDir}/assets/samplesheet.csv", checkIfExists: true),
+                    file("${projectDir}/assets/samplesheet.csv", checkIfExists: true),
+                    file("${projectDir}/assets/samplesheet.csv", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert path(process.out.summary_tsv[0][1]).exists()
+            assert path(process.out.combined_regions_dir[0][1]).exists()
+            assert topics.versions.size() == 1
+        }
+    }
+}

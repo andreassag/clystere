@@ -143,16 +143,4 @@ pipeline modification or failure:
 nextflow run exterex/clystere --input samplesheet.csv --outdir results -profile docker -resume
 ```
 
----
 
-## Reusing existing antiSMASH results
-
-If antiSMASH has already been run, set `--antismash_reuse_results` to skip antiSMASH re-annotation and go directly to
-tabulation:
-
-```bash
---antismash_reuse_results   # skip antiSMASH; use results already in --outdir/antismash/
-```
-
-For BiG-SCAPE or BiG-SLiCE, GECCO and deepBGC also need to run (or their results must already exist in the expected
-published layout) because clustering now uses the unified comBGC-filtered region set.

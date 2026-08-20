@@ -9,3 +9,9 @@ CITATIONS.md
 # prettier-plugin-groovy does not emit a trailing newline; editorconfig handles these
 *.nf
 *.config
+.pytest_cache/
+.nf-test/
+.nextflow/
+work/
+results/
+

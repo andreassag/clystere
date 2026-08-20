@@ -5,6 +5,7 @@ on:
     branches: [main, develop]
     paths:
       - "modules/**"
+      - "subworkflows/**"
       - "workflows/**"
       - "tests/**"
       - "nf-test.config"
@@ -15,6 +16,7 @@ on:
     types: [opened, synchronize, reopened, labeled]
     paths:
       - "modules/**"
+      - "subworkflows/**"
       - "workflows/**"
       - "tests/**"
       - "nf-test.config"
