@@ -22,7 +22,7 @@ runs [antiSMASH](https://antismash.secondarymetabolites.org/), [GECCO](https://g
 
 ## Requirements
 
-- [Nextflow](https://www.nextflow.io/) ≥ 25.10.0
+- [Nextflow](https://www.nextflow.io/) ≥ 26.04.0
 - Java ≥ 17 (required by Nextflow)
 - One of: Docker, Apptainer, Singularity, Podman, or Conda
 

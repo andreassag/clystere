@@ -4,6 +4,7 @@ on:
   push:
     branches: [main, develop]
     paths:
+      - "bin/**"
       - "modules/**"
       - "subworkflows/**"
       - "workflows/**"
@@ -11,10 +12,13 @@ on:
       - "nf-test.config"
       - "nextflow.config"
       - "conf/**"
+      - ".github/workflows/nf-test.yml"
+      - ".github/actions/**"
   pull_request:
     branches: [main, develop]
     types: [opened, synchronize, reopened, labeled]
     paths:
+      - "bin/**"
       - "modules/**"
       - "subworkflows/**"
       - "workflows/**"
@@ -22,6 +26,9 @@ on:
       - "nf-test.config"
       - "nextflow.config"
       - "conf/**"
+      - ".github/workflows/nf-test.yml"
+      - ".github/actions/**"
+  workflow_dispatch:
 
 jobs:
   get-shards:
@@ -35,16 +42,22 @@ jobs:
         id: get-shards
 
   nf-test:
-    name: nf-test suite
+    name: nf-test suite (${{ matrix.nextflow-version }})
     needs: [get-shards]
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        nextflow-version:
+          - ${{ needs.get-shards.outputs.nextflow-version }}
+          - latest-stable
     steps:
       - uses: actions/checkout@v7
 
       - name: Install Nextflow
         uses: nf-core/setup-nextflow@v3
         with:
-          version: "${{ needs.get-shards.outputs.nextflow-version }}"
+          version: "${{ matrix.nextflow-version }}"
 
       - name: Install nf-test
         uses: nf-core/setup-nf-test@v2
@@ -58,6 +71,6 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: nf-test-logs
+          name: nf-test-logs-${{ matrix.nextflow-version }}
           path: .nf-test/
           retention-days: 7

@@ -5,6 +5,7 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+  workflow_dispatch:
 
 jobs:
   EditorConfig:
@@ -49,6 +50,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - name: Install Nextflow
+        uses: nf-core/setup-nextflow@v3
+        with:
+          version: latest-stable
       - uses: actions/setup-python@v7
         with:
           python-version: "3.11"

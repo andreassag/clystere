@@ -4,7 +4,7 @@
 
 | Dependency                           | Minimum version | Notes                                                   |
 | ------------------------------------ | --------------- | ------------------------------------------------------- |
-| [Nextflow](https://www.nextflow.io/) | 25.10.0         | `NXF_VER` env var can pin the version                   |
+| [Nextflow](https://www.nextflow.io/) | 26.04.0         | `NXF_VER` env var can pin the version                   |
 | Java                                 | 17              | Required by Nextflow (Java 17 or higher)                |
 | Container engine                     | —               | One of Docker, Apptainer, Singularity, Podman, or Conda |
 
