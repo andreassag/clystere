@@ -82,7 +82,7 @@ def processVersionsFromYAML(yaml_file) {
         def procName = yaml_file[0]?.toString()?.tokenize(':')?.getAt(-1) ?: 'tool'
         def tool = yaml_file[1] ?: procName
         def ver = yaml_file[2] ?: 'unknown'
-        def map = [(tool.toString()): ver.toString()]
+        def map = [(procName): [(tool.toString()): ver.toString()]]
         return new org.yaml.snakeyaml.Yaml().dumpAsMap(map).trim()
     }
     def text = (yaml_file instanceof Path || yaml_file instanceof File) ? yaml_file.text : yaml_file.toString()

@@ -1,0 +1,41 @@
+name: "summary"
+description: Tabulates per-region annotations and per-genome/per-contig BGC product counts from antiSMASH JSON outputs.
+keywords:
+  - biosynthetic gene clusters
+  - antismash
+  - summary
+  - tabulation
+tools:
+  - "python":
+      description: "Python 3 standard library scripts for antiSMASH JSON tabulation"
+      homepage: "https://www.python.org/"
+      licence:
+        - "PSF-2.0"
+input:
+  - antismash_jsons:
+      type: file
+      description: Collected antiSMASH JSON files or sample directories containing `*.json`
+      pattern: "*.json"
+output:
+  all_regions_tsv:
+    - all_regions.tsv:
+        type: file
+        description: Tab-separated table with one row per detected antiSMASH BGC region
+        pattern: "all_regions.tsv"
+  region_counts_tsv:
+    - region_counts.tsv:
+        type: file
+        description: Tab-separated table of BGC counts per genome assembly or contig
+        pattern: "region_counts.tsv"
+  versions_summary:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - python:
+          type: string
+          description: The name of the tool
+      - python3 --version 2>&1 | sed 's/Python //':
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

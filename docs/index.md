@@ -2,10 +2,9 @@
 
 **clystere** is a Nextflow pipeline for automated biosynthetic gene cluster (BGC) discovery and comparative analysis. It
 runs [antiSMASH](https://antismash.secondarymetabolites.org/), [GECCO](https://github.com/zellerlab/GECCO), and
-[deepBGC](https://github.com/Merck/deepbgc) across a collection of bacterial or fungal genomes, merges overlapping
-predictions with [comBGC](https://github.com/tomrichtermeier/comBGC-Filter), and optionally groups representative BGCs
-into gene cluster families (GCFs) with [BiG-SCAPE](https://github.com/medema-group/BiG-SCAPE) or
-[BiG-SLiCE](https://github.com/medema-group/bigslice).
+[deepBGC](https://github.com/Merck/deepbgc) across a collection of bacterial or fungal genomes, aggregates predictions
+with [comBGC](https://nf-co.re/funcscan), and optionally groups representative BGCs into gene cluster families (GCFs)
+with [BiG-SCAPE](https://github.com/medema-group/BiG-SCAPE) or [BiG-SLiCE](https://github.com/medema-group/bigslice).
 
 ---
 
@@ -13,30 +12,28 @@ into gene cluster families (GCFs) with [BiG-SCAPE](https://github.com/medema-gro
 
 ```mermaid
 graph LR
-    A[GenBank genomes<br/>samplesheet.csv] --> B[ANTISMASH<br/>per-genome]
-    A --> C[GECCO<br/>per-genome]
-    A --> D[deepBGC<br/>per-genome]
-    B --> E[TABULATE_REGIONS<br/>all_regions.tsv]
-    B --> F[COUNT_REGIONS<br/>region_counts.tsv]
-    B --> G[comBGC unification]
+    A[GenBank genomes<br/>samplesheet.csv] --> B[ANTISMASH_ANTISMASH<br/>per-genome]
+    A --> C[GECCO_RUN<br/>optional per-genome]
+    A --> D[DEEPBGC_PIPELINE<br/>optional per-genome]
+    B --> E[SUMMARY<br/>all_regions.tsv & region_counts.tsv]
+    B --> G[COMBGC_FILTER<br/>summary + staged regions]
     C --> G
     D --> G
     G --> H[BIGSCAPE dereplicate + cluster<br/>optional]
-    G --> I[BIGSLICE cluster<br/>optional]
+    G --> I[BIGSLICE_BIGSLICE cluster<br/>optional]
     E --> J[MULTIQC<br/>multiqc_report.html]
-    F --> J
 ```
 
 ---
 
 ## Features
 
-- Parallel antiSMASH + GECCO + deepBGC annotation across any number of GenBank genome files
-- comBGC-based unification of overlapping predictions before clustering
-- Per-region tabulation and per-genome BGC count summary
+- Parallel antiSMASH + GECCO + deepBGC annotation across GenBank genome files (with optional GFF3 annotation)
+- Configurable predictor toggles (`--gecco_run`, `--deepbgc_run`)
+- `comBGC.py`-based summary aggregation and sample-prefixed region GBK staging before clustering
+- Per-region tabulation (`all_regions.tsv`) and per-genome/per-contig BGC count summary (`region_counts.tsv`)
 - MultiQC HTML report aggregating software versions and BGC metrics
-- Optional BiG-SCAPE or BiG-SLiCE clustering (mutually exclusive)
-- Optional BiG-SCAPE dereplication of redundant regions before clustering
+- Optional BiG-SCAPE (with optional `bigscape dereplicate`) or BiG-SLiCE (with `BIGSLICE_DOWNLOADDB`) clustering
 
 ---
 

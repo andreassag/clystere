@@ -1,0 +1,28 @@
+LOCUS       ctg1                     500 bp    DNA     linear   BCT 01-JAN-2026
+DEFINITION  Test contig 1.
+ACCESSION   ctg1
+VERSION     ctg1.1
+KEYWORDS    .
+COMMENT     ##antiSMASH-Data-START##
+            Version      :: 8.0.1
+            Run date     :: 2026-01-01 00:00:00
+            ##antiSMASH-Data-END##
+FEATURES             Location/Qualifiers
+     protocluster    1..500
+                     /product="siderophore"
+                     /contig_edge="False"
+     CDS             10..250
+                     /locus_tag="TST_0001"
+                     /sec_met_domain="IucA_IucC (E-value: 1e-20, bitscore: 70.0)"
+                     /translation="MKTLLILTCLVAVALARPKHPIKHQGLPQEVLNENLLRFFVAPFPE"
+ORIGIN
+        1 atgaaaaccc tcctcatcct gacctgcctg gtggctgtgg ccctggctcg tcccaagcac
+       61 cccatcaagc accagggact gcctcaggaa gtgctgaacg aaaacctgct gcggttcttc
+      121 gtggcaccct tccctgaata agcggccgct aatagctagc tagctagcta gctagctagc
+      181 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      241 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      301 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      361 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      421 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      481 tagctagcta gctagctagc
+//

@@ -1,0 +1,36 @@
+Changes in component 'nf-core/utils_nfcore_pipeline'
+Changes in 'utils_nfcore_pipeline/main.nf':
+--- subworkflows/nf-core/utils_nfcore_pipeline/main.nf
++++ subworkflows/nf-core/utils_nfcore_pipeline/main.nf
+@@ -78,9 +78,21 @@
+ // Get software versions for pipeline
+ //
+ def processVersionsFromYAML(yaml_file) {
++    if (yaml_file instanceof List || yaml_file?.getClass()?.isArray()) {
++        def procName = yaml_file[0]?.toString()?.tokenize(':')?.getAt(-1) ?: 'tool'
++        def tool = yaml_file[1] ?: procName
++        def ver = yaml_file[2] ?: 'unknown'
++        def map = [(procName): [(tool.toString()): ver.toString()]]
++        return new org.yaml.snakeyaml.Yaml().dumpAsMap(map).trim()
++    }
++    def text = (yaml_file instanceof Path || yaml_file instanceof File) ? yaml_file.text : yaml_file.toString()
+     def yaml = new org.yaml.snakeyaml.Yaml()
+-    def versions = yaml.load(yaml_file).collectEntries { k, v -> [k.tokenize(':')[-1], v] }
+-    return yaml.dumpAsMap(versions).trim()
++    def loaded = yaml.load(text)
++    if (loaded instanceof Map) {
++        def versions = loaded.collectEntries { k, v -> [k.tokenize(':')[-1], v] }
++        return yaml.dumpAsMap(versions).trim()
++    }
++    return text.trim()
+ }
+ 
+ //
+
+'subworkflows/nf-core/utils_nfcore_pipeline/meta.yml' is unchanged
+'subworkflows/nf-core/utils_nfcore_pipeline/tests/main.function.nf.test.snap' was removed
+'subworkflows/nf-core/utils_nfcore_pipeline/tests/main.nf.test.snap' was removed
+'subworkflows/nf-core/utils_nfcore_pipeline/tests/main.nf.test' was removed
+'subworkflows/nf-core/utils_nfcore_pipeline/tests/nextflow.config' was removed
+'subworkflows/nf-core/utils_nfcore_pipeline/tests/main.function.nf.test' was removed
+************************************************************

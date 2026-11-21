@@ -9,15 +9,15 @@ repos:
       - id: ruff-format
         types_or: [python, pyi]
 
-  # Formatting for Nextflow (Groovy), JSON, YAML, Markdown via Prettier
+  # Formatting for JSON, YAML, and Markdown via Prettier
+  # (.nf and .config are excluded in .prettierignore because prettier-plugin-groovy strips trailing newlines)
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
         additional_dependencies:
-          - prettier@3.4.2
-          - prettier-plugin-groovy@0.2.1
-        files: \.(nf|config|json|yml|yaml|md)$
+          - prettier@3.9.6
+        files: \.(json|yml|yaml|md)$
         types_or: [file]
 
   # Generic file hygiene
@@ -25,8 +25,9 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
-        exclude: \.md$
+        exclude: \.(md|diff)$|^tests/data/
       - id: end-of-file-fixer
+        exclude: \.snap$|^tests/data/
       - id: check-yaml
         exclude: ^mkdocs\.yml$
       - id: check-json

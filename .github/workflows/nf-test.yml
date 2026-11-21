@@ -35,7 +35,7 @@ jobs:
         id: get-shards
 
   nf-test:
-    name: nf-test modules
+    name: nf-test suite
     needs: [get-shards]
     runs-on: ubuntu-latest
     steps:
@@ -52,7 +52,7 @@ jobs:
           version: "0.9.5"
 
       - name: Run nf-test
-        run: nf-test test tests/modules/ --verbose
+        run: nf-test test tests/ --profile docker --verbose
 
       - name: Upload nf-test logs on failure
         if: failure()

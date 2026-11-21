@@ -1,0 +1,74 @@
+name: "combgc_filter"
+description: Aggregates antiSMASH, GECCO, and deepBGC BGC predictions via comBGC and stages unified region GBK files for downstream clustering.
+keywords:
+  - biosynthetic gene clusters
+  - bgc
+  - antismash
+  - gecco
+  - deepbgc
+tools:
+  - "combgc":
+      description: "Aggregates BGC prediction outputs from antiSMASH, deepBGC, and GECCO"
+      homepage: "https://nf-co.re/funcscan"
+      licence:
+        - "MIT"
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information e.g. `[ id:'sample1' ]`
+    - antismash_gbk:
+        type: file
+        description: antiSMASH summary GenBank file (`<sample>.gbk`)
+        pattern: "*.gbk"
+    - antismash_region_gbks:
+        type: file
+        description: antiSMASH per-region GenBank files
+        pattern: "*region*.gbk"
+    - knownclusterblast_dir:
+        type: directory
+        description: Optional antiSMASH KnownClusterBlast directory
+    - gecco_clusters_tsv:
+        type: file
+        description: Optional GECCO clusters TSV file (`*.clusters.tsv`)
+        pattern: "*.clusters.tsv"
+    - gecco_gbks:
+        type: file
+        description: Optional GECCO region/cluster GenBank files
+        pattern: "*.gbk"
+    - deepbgc_bgc_gbk:
+        type: file
+        description: Optional deepBGC combined BGC GenBank file (`*.bgc.gbk`)
+        pattern: "*.bgc.gbk"
+    - deepbgc_bgc_tsv:
+        type: file
+        description: Optional deepBGC predictions TSV file (`*.bgc.tsv`)
+        pattern: "*.bgc.tsv"
+output:
+  summary_tsv:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information e.g. `[ id:'sample1' ]`
+      - "${prefix}/combgc_summary.tsv":
+          type: file
+          description: Unified BGC summary TSV across active predictors
+          pattern: "*/combgc_summary.tsv"
+  combined_regions_dir:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information e.g. `[ id:'sample1' ]`
+      - "${prefix}/${prefix}_regions/":
+          type: directory
+          description: Directory of staged, sample-prefixed BGC region GenBank files
+          pattern: "*/*_regions/"
+  versions_combgc:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - combgc:
+          type: string
+          description: The name of the tool
+      - comBGC.py --version | sed 's/comBGC //':
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

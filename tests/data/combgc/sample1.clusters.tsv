@@ -1,0 +1,2 @@
+sequence_id	bgc_id	start	end	average_p	max_p	proteins	domains	type	alkaloid_probability	polyketide_probability	ripp_probability	saccharide_probability	terpene_probability	nrp_probability
+ctg1	sample1_cluster_1	1	450	0.92	0.98	TST_0001	PF04183	NRP	0.01	0.02	0.01	0.01	0.01	0.95

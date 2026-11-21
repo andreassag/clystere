@@ -26,5 +26,15 @@ indent_style = space
 indent_size = 2
 trim_trailing_whitespace = false
 
+[*.diff]
+trim_trailing_whitespace = false
+
+[*.snap]
+insert_final_newline = unset
+
+[tests/data/**]
+trim_trailing_whitespace = false
+insert_final_newline = unset
+
 [Makefile]
 indent_style = tab

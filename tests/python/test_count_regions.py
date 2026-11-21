@@ -7,7 +7,7 @@ Tests cover the pure-Python functions:
 
 import json
 
-from count_regions import parse_antismash_json, tabulate_bgc_counts
+from count_regions import main, parse_antismash_json, tabulate_bgc_counts
 
 # ── Shared fixtures ───────────────────────────────────────────────────────────
 
@@ -117,6 +117,50 @@ def test_genome_with_no_bgcs_produces_row():
     contig_descriptions = {"GCF_empty": {"contig_1": "Empty contig"}}
     rows = tabulate_bgc_counts(genome_products, contig_descriptions)
     assert rows[0]["total_count"] == 0
+
+
+def test_genome_with_empty_records_list_produces_zero_row():
+    """A genome with an empty records dict does not crash on StopIteration."""
+    genome_products = {"GCF_norec": {}}
+    contig_descriptions = {"GCF_norec": {}}
+    rows = tabulate_bgc_counts(genome_products, contig_descriptions)
+    assert len(rows) == 1
+    assert rows[0]["total_count"] == 0
+    assert rows[0]["description"] == "[0 total records]"
+
+
+def test_main_writes_tsv_deterministically(tmp_path):
+    for name in ("sampleB", "sampleA"):
+        sdir = tmp_path / name
+        sdir.mkdir()
+        (sdir / f"{name}.json").write_text(
+            json.dumps(
+                {
+                    "input_file": f"{name}.gbff",
+                    "records": [
+                        {
+                            "name": f"{name}_ctg1",
+                            "description": f"{name} contig",
+                            "areas": [{"products": ["NRPS", "T1PKS"]}],
+                        }
+                    ],
+                }
+            )
+        )
+
+    out_default = tmp_path / "counts.tsv"
+    main(tmp_path, out_default, per_contig=False, split_hybrids=False, threads=2)
+    lines = out_default.read_text().splitlines()
+    assert len(lines) == 3
+    assert lines[1].startswith("sampleA.gbff\t")
+    assert lines[2].startswith("sampleB.gbff\t")
+
+    out_split = tmp_path / "counts_split.tsv"
+    main(tmp_path, out_split, per_contig=True, split_hybrids=True, threads=2)
+    split_header = out_split.read_text().splitlines()[0].split("\t")
+    assert "hybrid" not in split_header
+    assert "NRPS" in split_header
+    assert "T1PKS" in split_header
 
 
 # ── parse_antismash_json ──────────────────────────────────────────────────────

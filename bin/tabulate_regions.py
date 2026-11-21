@@ -24,7 +24,7 @@ def extract_top_known_cluster_hit(known_cluster_blast_results: list | None, regi
     """
     no_hit = {"knownclusterblast_hit": "", "knownclusterblast_accession": "", "knownclusterblast_similarity": ""}
 
-    if not known_cluster_blast_results:
+    if not known_cluster_blast_results or region_index >= len(known_cluster_blast_results):
         return no_hit
 
     ranked_hits = known_cluster_blast_results[region_index]["ranking"]
@@ -92,7 +92,8 @@ def parse_antismash_json(json_path: Path) -> list[dict[str, str]]:
         known_cluster_blast_results = extract_known_cluster_blast_results(genomic_record)
 
         for region_index, region_feature in enumerate(region_features):
-            start, end = re.findall(r"\d+", region_feature["location"])
+            coords = re.findall(r"\d+", region_feature["location"])
+            start, end = coords[0], coords[-1]
             region_qualifiers = region_feature["qualifiers"]
 
             region_row = {

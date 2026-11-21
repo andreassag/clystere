@@ -10,28 +10,30 @@
 
 ### [antiSMASH](https://antismash.secondarymetabolites.org/)
 
-> Blin, K., Shaw, S., Augustijn, H. E., Reitz, Z. L., Biermann, F., Alanjary, M., Fetter, A., Barbara, R. B., Helf, M.
-> J., Engel, Y., Weber, T., & Medema, M. H. (2023). antiSMASH 7.0: new and improved predictions for detection,
-> regulation, and visualisation. _Nucleic Acids Research_, 51(W1), W46–W50.
-> [https://doi.org/10.1093/nar/gkad344](https://doi.org/10.1093/nar/gkad344)
+> Blin, K., Shaw, S., Vader, L., Szenei, J., Reitz, Z. L., Augustijn, H. E., Cediel-Becerra, J. D. D., de Crécy-Lagard,
+> V., Koetsier, R. A., Williams, S. E., Cruz-Morales, P., Wongwas, S., Segurado Luchsinger, A. E., Biermann, F.,
+> Korenskaia, A., Zdouc, M. M., Meijer, D., Terlouw, B. R., van der Hooft, J. J. J., Ziemert, N., Weber, T., & Medema,
+> M. H. (2025). antiSMASH 8.0: extended gene cluster detection capabilities and analyses of chemistry, enzymology, and
+> regulatory functions. _Nucleic Acids Research_, 53(W1), W32–W38.
+> [https://doi.org/10.1093/nar/gkaf334](https://doi.org/10.1093/nar/gkaf334)
 
 ### [GECCO](https://github.com/zellerlab/GECCO)
 
-> Carroll, L. M., Larralde, M., Fleck, J. S., Ponnudurai, R., Milanese, A., Cappio Barazzone, E., & Zeller, G.
-> (2021). Accurate de novo identification of biosynthetic gene clusters with GECCO. _bioRxiv_.
+> Carroll, L. M., Larralde, M., Fleck, J. S., Ponnudurai, R., Milanese, A., Cappio Barazzone, E., & Zeller, G. (2021).
+> Accurate de novo identification of biosynthetic gene clusters with GECCO. _bioRxiv_.
 > [https://doi.org/10.1101/2021.05.03.442509](https://doi.org/10.1101/2021.05.03.442509)
 
 ### [deepBGC](https://github.com/Merck/deepbgc)
 
-> Hannigan, G. D., Prihoda, D., Palicka, A., Soukup, J., Klempir, O., Rampula, L., Durcak, J., Wurst, M., Kotowski,
-> J., Chang, D., Wang, R., & Medema, M. H. (2019). A deep learning genome-mining strategy for biosynthetic gene
-> cluster prediction. _Nucleic Acids Research_, 47(18), e110.
+> Hannigan, G. D., Prihoda, D., Palicka, A., Soukup, J., Klempir, O., Rampula, L., Durcak, J., Wurst, M., Kotowski, J.,
+> Chang, D., Wang, R., & Medema, M. H. (2019). A deep learning genome-mining strategy for biosynthetic gene cluster
+> prediction. _Nucleic Acids Research_, 47(18), e110.
 > [https://doi.org/10.1093/nar/gkz654](https://doi.org/10.1093/nar/gkz654)
 
-### [comBGC](https://github.com/tomrichtermeier/comBGC-Filter)
+### [comBGC](https://nf-co.re/funcscan)
 
-> Richtermeier, T. et al. comBGC-Filter (software), version 0.6.9.
-> [https://github.com/tomrichtermeier/comBGC-Filter](https://github.com/tomrichtermeier/comBGC-Filter)
+> Frangenberg, J. (2023). comBGC v0.6.3 (bundled in nf-core/funcscan).
+> [https://github.com/nf-core/funcscan](https://github.com/nf-core/funcscan)
 
 ### [BiG-SCAPE](https://github.com/medema-group/BiG-SCAPE)
 
@@ -46,6 +48,12 @@
 > Kautsar, S. A., van der Hooft, J. J. J., de Ridder, D., & Medema, M. H. (2021). BiG-SLiCE: A highly scalable tool
 > maps the diversity of 1.2 million biosynthetic gene clusters. _GigaScience_, 10(1), giaa154.
 > [https://doi.org/10.1093/gigascience/giaa154](https://doi.org/10.1093/gigascience/giaa154)
+
+### [MultiQC](https://seqera.io/multiqc/)
+
+> Ewels, P., Magnusson, M., Lundin, S., & Käller, M. (2016). MultiQC: summarize analysis results for multiple tools and
+> samples in a single report. _Bioinformatics_, 32(19), 3047–3048.
+> [https://doi.org/10.1093/bioinformatics/btw354](https://doi.org/10.1093/bioinformatics/btw354)
 
 ### [Python](https://www.python.org/)
 
@@ -67,8 +75,8 @@
 
 ### [BioContainers](https://biocontainers.pro/)
 
-> da Veiga Leprevost, F., Grüning, B. A., Alves Aflitos, S., Röst, H. L., Uszkoreit, J., Barsnes, H., Vaudel, M.,
-> Moreno, P., Gatto, L., Weber, J., Bai, M., Jimenez, R. C., Sachsenberg, T., Pfeuffer, J., Vera Alvarez, R., Griss, J.,
+> da Veiga Leprevost, F., Grüning, B. A., Alves Aflitos, S., Röst, H. L., Uszkoreit, J., Barsnes, H., Vaudel, M., Moreno,
+> P., Gatto, L., Weber, J., Bai, M., Jimenez, R. C., Sachsenberg, T., Pfeuffer, J., Vera Alvarez, R., Griss, J.,
 > Nesvizhskii, A. I., & Perez-Riverol, Y. (2017). BioContainers: an open-source and community-driven framework for
 > software standardization. _Bioinformatics_, 33(16), 2580–2582.
 > [https://doi.org/10.1093/bioinformatics/btx192](https://doi.org/10.1093/bioinformatics/btx192)

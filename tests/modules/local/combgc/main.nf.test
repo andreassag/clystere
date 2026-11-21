@@ -2,20 +2,109 @@ nextflow_process {
     name "Test COMBGC_FILTER"
     script "modules/local/combgc/main.nf"
     process "COMBGC_FILTER"
-    options "-stub"
     topics "versions"
 
+    test("COMBGC_FILTER real execution across antiSMASH, GECCO, and deepBGC") {
+        when {
+            process {
+                """
+                input[0] = [
+                    [id: 'sample1'],
+                    file("${projectDir}/tests/data/combgc/sample1.gbk", checkIfExists: true),
+                    file("${projectDir}/tests/data/combgc/sample1.region001.gbk", checkIfExists: true),
+                    file("${projectDir}/tests/data/combgc/knownclusterblast", checkIfExists: true),
+                    file("${projectDir}/tests/data/combgc/sample1.clusters.tsv", checkIfExists: true),
+                    file("${projectDir}/tests/data/combgc/sample1_cluster_1.gbk", checkIfExists: true),
+                    file("${projectDir}/tests/data/combgc/sample1.bgc.gbk", checkIfExists: true),
+                    file("${projectDir}/tests/data/combgc/sample1.bgc.tsv", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            def summaryLines = path(process.out.summary_tsv[0][1]).readLines()
+            assert summaryLines.size() == 4
+            assert summaryLines.any { it.contains("antiSMASH") && it.contains("BGC0000349") }
+            assert summaryLines.any { it.contains("GECCO") && it.contains("IPR007310") }
+            assert summaryLines.any { it.contains("deepBGC") }
+
+            def regionsDir = path(process.out.combined_regions_dir[0][1])
+            def gbkNames = regionsDir.toFile().listFiles().collect { it.name }.sort()
+            assert "sample1.region001.gbk" in gbkNames
+            assert "sample1_cluster_1.gbk" in gbkNames
+            assert "sample1.deepbgc.region001.gbk" in gbkNames
+            assert "sample1.deepbgc.region002.gbk" in gbkNames
+            assert topics.versions.size() == 1
+        }
+    }
+
+    test("COMBGC_FILTER antiSMASH-only execution") {
+        when {
+            process {
+                """
+                input[0] = [
+                    [id: 'sample1'],
+                    file("${projectDir}/tests/data/combgc/sample1.gbk", checkIfExists: true),
+                    file("${projectDir}/tests/data/combgc/sample1.region001.gbk", checkIfExists: true),
+                    [],
+                    [],
+                    [],
+                    [],
+                    []
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            def summaryLines = path(process.out.summary_tsv[0][1]).readLines()
+            assert summaryLines.size() == 2
+            assert summaryLines[1].contains("antiSMASH")
+            assert path(process.out.combined_region_gbks[0][1]).exists()
+        }
+    }
+
+    test("COMBGC_FILTER zero-input execution emits header-only summary") {
+        when {
+            process {
+                """
+                input[0] = [
+                    [id: 'empty_sample'],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    []
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            def summaryLines = path(process.out.summary_tsv[0][1]).readLines()
+            assert summaryLines.size() == 1
+            assert summaryLines[0].startsWith("sample_id\tcontig_id\tPrediction_tool")
+            assert path(process.out.combined_regions_dir[0][1]).exists()
+        }
+    }
+
     test("COMBGC_FILTER stub execution") {
+        options "-stub"
         when {
             process {
                 """
                 input[0] = [
                     [id: 'GCA_000005845'],
-                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true),
-                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true),
-                    file("${projectDir}/assets/samplesheet.csv", checkIfExists: true),
-                    file("${projectDir}/assets/samplesheet.csv", checkIfExists: true),
-                    file("${projectDir}/assets/samplesheet.csv", checkIfExists: true)
+                    file("${projectDir}/tests/data/combgc/sample1.gbk", checkIfExists: true),
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    []
                 ]
                 """
             }

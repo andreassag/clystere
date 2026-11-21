@@ -4,16 +4,16 @@
 
 Prepare a comma-separated samplesheet describing your input genomes:
 
-| Column       | Required | Description                                                                                                |
-| ------------ | -------- | ---------------------------------------------------------------------------------------------------------- |
-| `sample`     | Yes      | Unique sample identifier (used as the output directory name)                                               |
-| `genome`     | Yes      | Path to a pre-annotated GenBank file (`.gbff`, `.gbk`, `.gbff.gz`, `.gbk.gz`). Gzip compression supported. |
-| `annotation` | No       | Path to an optional GFF3 annotation file.                                                                  |
+| Column       | Required | Description                                                                          |
+| ------------ | -------- | ------------------------------------------------------------------------------------ |
+| `sample`     | Yes      | Unique sample identifier (used as the output directory name)                         |
+| `genome`     | Yes      | Path to a GenBank or FASTA file (`.gbff`, `.gbk`, `.fa`, `.fna`, `.fasta`, or `.gz`) |
+| `annotation` | No       | Path to an optional GFF3 annotation file (`.gff`, `.gff3`, or `.gz`)                 |
 
 ```csv title="samplesheet.csv"
 sample,genome,annotation
 strain_A,data/strain_A.gbff.gz,
-strain_B,data/strain_B.gbk,
+strain_B,data/strain_B.fna,data/strain_B.gff3
 ```
 
 ---
@@ -42,25 +42,29 @@ Profiles are combined with commas. The first group selects the software environm
 backend.
 
 ```bash
-# Singularity on a local machine
--profile singularity
+# Apptainer on a local machine
+-profile apptainer
 
 # Docker on SLURM (elevated resource ceiling)
 -profile docker,slurm
 
 # Conda on an HPC without a scheduler integration
 -profile conda,hpc
+
+# Compact fast test dataset with Apptainer
+-profile test,apptainer
 ```
 
-| Profile                 | Type        | Description                                              |
-| ----------------------- | ----------- | -------------------------------------------------------- |
-| `docker`                | Container   | Run all processes in Docker containers                   |
-| `apptainer/singularity` | Container   | Run all processes in Apptainer images                    |
-| `podman`                | Container   | Run all processes in Podman containers                   |
-| `conda`                 | Environment | Use per-process Conda environments                       |
-| `hpc`                   | Resource    | Raise default CPU/memory/time ceilings for cluster nodes |
-| `slurm`                 | Executor    | Submit jobs to a SLURM scheduler (combine with `hpc`)    |
-| `test`                  | Test        | Preset params for the bundled example data               |
+| Profile                 | Type        | Description                                                       |
+| ----------------------- | ----------- | ----------------------------------------------------------------- |
+| `docker`                | Container   | Run all processes in Docker containers                            |
+| `apptainer/singularity` | Container   | Run all processes in Apptainer/Singularity images                 |
+| `podman`                | Container   | Run all processes in Podman containers                            |
+| `conda`                 | Environment | Use per-process Conda environments                                |
+| `hpc`                   | Resource    | Raise default CPU/memory/time ceilings for cluster nodes          |
+| `slurm`                 | Executor    | Submit jobs to a SLURM scheduler (combine with `hpc`)             |
+| `test`                  | Test        | Fast compact BGC-bearing genome slice dataset                     |
+| `test_full`             | Test        | Full bundled _E. coli_ + _B. subtilis_ dataset with BiG-SCAPE run |
 
 ---
 
@@ -90,18 +94,19 @@ backend.
 
 <!-- markdownlint-enable MD046 -->
 
-`--bigscape_run` and `--bigslice_run` are mutually exclusive.
+`--bigscape_run` and `--bigslice_run` are mutually exclusive. Both work with any enabled subset of predictors (antiSMASH
+always runs; GECCO and deepBGC are optional).
 
 When `--bigscape_run` is enabled, clystere runs `bigscape dereplicate` by default before clustering to collapse
-redundant regions found by multiple predictors. You can disable or tune this behavior with:
+redundant regions found across tools. You can disable or tune this behavior with:
 
 ```bash
 --bigscape_dereplicate false
 --bigscape_dereplicate_cutoff 0.8
 ```
 
-On the first BiG-SLiCE task execution, the pipeline downloads the BiG-SLiCE HMM model bundle into the task work
-directory and reuses it via `-resume`. Ensure outbound network access is available for this initial download.
+When `--bigslice_run` is enabled and `--bigslice_db` is not supplied, `BIGSLICE_DOWNLOADDB` automatically downloads the
+BiG-SLiCE HMM database into `--clystere_db_dir`.
 
 ### KnownClusterBlast annotation
 

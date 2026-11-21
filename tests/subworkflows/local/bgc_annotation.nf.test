@@ -1,0 +1,98 @@
+nextflow_workflow {
+    name "Test BGC_ANNOTATION"
+    script "subworkflows/local/bgc_annotation.nf"
+    workflow "BGC_ANNOTATION"
+    options "-stub"
+
+    test("All predictors enabled (default) with DB download stubs") {
+        when {
+            params {
+                gecco_run = true
+                deepbgc_run = true
+                bigscape_run = false
+                bigslice_run = false
+                antismash_db = "${outputDir}/nonexistent_antismash_db"
+                deepbgc_data_dir = "${outputDir}/nonexistent_deepbgc_db"
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'GCA_000005845'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.gbff.gz", checkIfExists: true),
+                        []
+                    ]
+                )
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.antismash_gbk_input.size() == 1
+            assert workflow.out.antismash_json.size() == 1
+            assert workflow.out.gecco_clusters.size() == 1
+            assert workflow.out.gecco_gbks.size() == 1
+            assert workflow.out.deepbgc_bgc_gbk.size() == 1
+            assert workflow.out.deepbgc_tsv.size() == 1
+        }
+    }
+
+    test("GECCO and deepBGC disabled with optional GFF3 annotation passed to antiSMASH") {
+        when {
+            params {
+                gecco_run = false
+                deepbgc_run = false
+                bigscape_run = false
+                bigslice_run = false
+                antismash_db = "${outputDir}/nonexistent_antismash_db"
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'GCA_000005845'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.gbff.gz", checkIfExists: true),
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.gff3", checkIfExists: true)
+                    ]
+                )
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.antismash_gbk_input.size() == 1
+            assert workflow.out.gecco_clusters.size() == 0
+            assert workflow.out.gecco_gbks.size() == 0
+            assert workflow.out.deepbgc_bgc_gbk.size() == 0
+            assert workflow.out.deepbgc_tsv.size() == 0
+        }
+    }
+
+    test("Clustering enabled triggers GECCO_CONVERT") {
+        when {
+            params {
+                gecco_run = true
+                deepbgc_run = false
+                bigscape_run = true
+                bigslice_run = false
+                antismash_db = "${outputDir}/nonexistent_antismash_db"
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'GCA_000005845'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.gbff.gz", checkIfExists: true),
+                        []
+                    ]
+                )
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.gecco_clusters.size() == 1
+            assert workflow.trace.succeeded().any { it.name.contains("GECCO_CONVERT") }
+        }
+    }
+}

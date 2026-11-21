@@ -1,0 +1,23 @@
+LOCUS       sample1_cluster_1        450 bp    DNA     linear   BCT 01-JAN-2026
+DEFINITION  GECCO cluster 1.
+ACCESSION   sample1_cluster_1
+VERSION     sample1_cluster_1
+KEYWORDS    .
+COMMENT     ##GECCO-Data-START##
+            Version      :: 0.10.1
+            ##GECCO-Data-END##
+FEATURES             Location/Qualifiers
+     CDS             10..250
+                     /locus_tag="TST_0001"
+                     /db_xref="InterPro:IPR007310"
+                     /translation="MKTLLILTCLVAVALARPKHPIKHQGLPQEVLNENLLRFFVAPFPE"
+ORIGIN
+        1 atgaaaaccc tcctcatcct gacctgcctg gtggctgtgg ccctggctcg tcccaagcac
+       61 cccatcaagc accagggact gcctcaggaa gtgctgaacg aaaacctgct gcggttcttc
+      121 gtggcaccct tccctgaata agcggccgct aatagctagc tagctagcta gctagctagc
+      181 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      241 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      301 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      361 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      421 tagctagcta gctagctagc tagctagcta
+//

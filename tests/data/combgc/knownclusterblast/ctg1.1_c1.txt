@@ -1,0 +1,8 @@
+ClusterBlast scores for ctg1.1
+
+Table of genes, locations, lengths, etc.
+
+Significant hits: 
+1. BGC0000349	enterobactin
+
+Details:

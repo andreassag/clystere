@@ -2,20 +2,19 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUMMARY
     Produces both per-region and per-genome summary TSVs across all antiSMASH results.
-    All per-sample antiSMASH output directories must be collected and passed together
-    so the summary scripts can glob *\/*.json across all of them.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
 process SUMMARY {
     label 'process_low'
-    conda 'conda-forge::python=3.11'
-    container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/python:3.11' :
-        'python:3.11' }"
+
+    conda "${moduleDir}/environment.yml"
+    container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
+        ? 'https://depot.galaxyproject.org/singularity/python:3.11'
+        : 'python:3.11'}"
 
     input:
-    path antismash_dirs
+    path antismash_jsons, stageAs: 'antismash_inputs/?/*'
 
     output:
     path 'all_regions.tsv', emit: all_regions_tsv
@@ -26,23 +25,21 @@ process SUMMARY {
     task.ext.when == null || task.ext.when
 
     script:
-    def knownclusters_arg = params.antismash_cb_knownclusters ? '--knownclusters' : ''
-    def by_contig_arg = params.count_per_contig ? '--by_contig' : ''
-    def split_hybrid_arg = params.split_hybrids ? '--split_hybrids' : ''
+    def args = task.ext.args ?: ''
+    def args2 = task.ext.args2 ?: ''
     """
-    tabulate_regions.py . all_regions.tsv \
-        ${knownclusters_arg} \
+    tabulate_regions.py antismash_inputs all_regions.tsv \\
+        ${args} \\
         --threads ${task.cpus}
 
-    count_regions.py . region_counts.tsv \
-        ${by_contig_arg} \
-        ${split_hybrid_arg} \
+    count_regions.py antismash_inputs region_counts.tsv \\
+        ${args2} \\
         --threads ${task.cpus}
     """
 
     stub:
     """
-    printf 'sample\tregion\tproduct\n' > all_regions.tsv
-    printf 'sample\tcount\n' > region_counts.tsv
+    printf 'file\\trecord_id\\tregion\\tstart\\tend\\tcontig_edge\\tproduct\\trecord_desc\\n' > all_regions.tsv
+    printf 'record\\ttotal_count\\tdescription\\n' > region_counts.tsv
     """
 }

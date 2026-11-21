@@ -91,13 +91,16 @@ def tabulate_bgc_counts(
                     else:
                         genome_bgc_counts.update(bgc_products)
 
-            representative_contig = next(iter(contig_products))
             contig_count = len(contig_products)
-            plural_suffix = "s" if contig_count > 1 else ""
-            genome_description = (
-                f"{contig_descriptions[genome_name][representative_contig]} "
-                f"[{contig_count} total record{plural_suffix}]"
-            )
+            if contig_count == 0:
+                genome_description = "[0 total records]"
+            else:
+                representative_contig = next(iter(contig_products))
+                plural_suffix = "s" if contig_count > 1 else ""
+                genome_description = (
+                    f"{contig_descriptions[genome_name][representative_contig]} "
+                    f"[{contig_count} total record{plural_suffix}]"
+                )
             count_rows.append(
                 {
                     **genome_bgc_counts,

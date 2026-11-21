@@ -5,54 +5,40 @@ All results are written to `--outdir` (default: `results`). The directory struct
 ```text
 results/
 ├── antismash/
-│   ├── <sample>/           # one directory per input genome
-│   │   ├── <sample>.json   # antiSMASH JSON (parsed by tabulation scripts)
-│   │   ├── <sample>.gbk    # annotated GenBank output
-│   │   └── ...
-│   └── ...
+│   └── <sample>/               # Full antiSMASH output per genome (<sample>.json, <sample>.gbk, *region*.gbk)
 ├── gecco/
-│   ├── <sample>/           # GECCO output directory per genome
-│   │   ├── *.clusters.tsv
-│   │   ├── *.features.tsv
-│   │   └── *.region*.gbk   # generated when BiG-SCAPE or BiG-SLiCE is enabled
-│   └── ...
+│   └── <sample>/               # GECCO outputs per genome (*.clusters.tsv, *.features.tsv, *.region*.gbk)
 ├── deepbgc/
-│   ├── <sample>/           # deepBGC output directory per genome
-│   │   ├── *.bgc.tsv
-│   │   ├── *.full.gbk
-│   │   └── *.region*.gbk   # converted to antiSMASH-like region files
-│   └── ...
+│   └── <sample>/               # deepBGC outputs per genome (*.bgc.tsv, *.bgc.gbk, *.full.gbk)
 ├── combgc/
-│   ├── <sample>/
-│   │   ├── combgc_summary.tsv
-│   │   └── combined_regions/  # representative non-redundant region GBKs used for clustering
-│   └── ...
-├── bigscape/               # only when --bigscape_run
-│   └── output_files/
-│       ├── *.network       # GCF network files (one per class + mix)
-│       ├── *.tsv           # cluster annotation tables
-│       └── ...
-├── bigslice/               # only when --bigslice_run
-│   ├── result/             # SQLite database and analysis outputs
-│   └── ...
+│   └── <sample>/
+│       ├── combgc_summary.tsv
+│       └── <sample>_regions/   # Sample-prefixed region GBKs staged for clustering
+├── bigscape/                   # only when --bigscape_run
+│   ├── bigscape.db
+│   └── output_files/           # GCF networks and annotation tables
+├── bigscape_dereplicate/       # only when --bigscape_run and --bigscape_dereplicate
+├── bigslice/                   # only when --bigslice_run
+│   └── all_samples/result/     # SQLite database and tsv_export/
 ├── summary/
-│   ├── all_regions.tsv     # per-BGC-region table
-│   └── region_counts.tsv   # per-genome BGC count table
+│   ├── all_regions.tsv         # per-BGC-region table
+│   └── region_counts.tsv       # per-genome (or per-contig) BGC count table
 ├── multiqc/
-│   ├── clystere-MultiQC-Report_multiqc_report.html
-│   └── clystere-MultiQC-Report_multiqc_report_data/
+│   ├── multiqc_report.html
+│   └── multiqc_data/
 └── pipeline_info/
-    ├── execution_timeline_<timestamp>.html
-    ├── execution_report_<timestamp>.html
-    ├── execution_trace_<timestamp>.txt
-    └── pipeline_dag_<timestamp>.html
+    ├── execution_timeline.html
+    ├── execution_report.html
+    ├── execution_trace.txt
+    ├── pipeline_dag.html
+    └── params_*.json
 ```
 
 ---
 
 ## `summary/all_regions.tsv`
 
-One row per biosynthetic region across all input genomes. Produced by `TABULATE_REGIONS`.
+One row per biosynthetic region across all input genomes. Produced by `SUMMARY` (`tabulate_regions.py`).
 
 | Column                         | Description                                                                       |
 | ------------------------------ | --------------------------------------------------------------------------------- |
@@ -68,13 +54,14 @@ One row per biosynthetic region across all input genomes. Produced by `TABULATE_
 | `knownclusterblast_similarity` | Similarity category: `high` (>75 %), `medium` (>50 %), or `low` (>15 %)           |
 | `record_desc`                  | Full sequence record description                                                  |
 
-!!! note The three `knownclusterblast_*` columns are only included when `--antismash_cb_knownclusters` is set.
+!!! note "KnownClusterBlast columns" The three `knownclusterblast_*` columns are only included when
+`--antismash_cb_knownclusters` is set.
 
 ---
 
 ## `summary/region_counts.tsv`
 
-One row per genome assembly (or contig when `--count_per_contig`). Produced by `COUNT_REGIONS`.
+One row per genome assembly (or contig when `--count_per_contig`). Produced by `SUMMARY` (`count_regions.py`).
 
 | Column        | Description                                                                                      |
 | ------------- | ------------------------------------------------------------------------------------------------ |
@@ -86,65 +73,29 @@ One row per genome assembly (or contig when `--count_per_contig`). Produced by `
 
 ---
 
-## `antismash/<sample>/`
-
-Raw antiSMASH output for each genome. The key file is `<sample>.json`, which is read by the tabulation scripts. Other
-files (HTML, GenBank, SVG plots) are present depending on the antiSMASH flags used.
-
----
-
-## `gecco/<sample>/`
-
-Raw GECCO output for each genome. When `--bigscape_run` or `--bigslice_run` is enabled, clystere also runs
-`gecco convert gbk --format bigslice` and publishes GECCO region GenBank files compatible with clustering tools.
-
----
-
-## `deepbgc/<sample>/`
-
-Raw deepBGC output for each genome (`*.bgc.tsv` and `*.full.gbk`). clystere also generates antiSMASH-like
-`*.regionNNN.gbk` files using BiG-SLiCE's conversion script to ensure compatibility with BiG-SCAPE/BiG-SLiCE.
-
----
-
 ## `combgc/<sample>/`
 
-Unified per-sample BGC selection generated from antiSMASH, GECCO, and deepBGC predictions. The `combined_regions/`
-directory contains representative region GenBank files used as clustering input.
+Aggregated per-sample BGC summary (`combgc_summary.tsv`) generated across active predictors (`antiSMASH`, `GECCO`, and
+`deepBGC`), along with `<sample>_regions/` containing sample-prefixed region GenBank files (`*.gbk`) staged for
+clustering.
 
 ---
 
-## `bigscape/output_files/`
+## `bigscape/` & `bigscape_dereplicate/`
 
-Standard BiG-SCAPE output. The `.network` files are tab-separated edge lists suitable for import into Cytoscape or
-Python `networkx`. One network is generated per BGC class plus a `mix` network when `--bigscape_mix` (default).
+Standard BiG-SCAPE v2 output generated from the staged `<sample>_regions/` directories, including `bigscape/bigscape.db`
+and network/annotation files. When `--bigscape_dereplicate` is enabled (default), representative clusters are first
+written to `bigscape_dereplicate/`.
 
 ---
 
 ## `bigslice/`
 
-Standard BiG-SLiCE output generated from the unified `combgc/*/combined_regions/` folders. The directory includes the
-processed analysis results and SQLite-backed data used for downstream inspection.
+Standard BiG-SLiCE output generated from the staged region GBK files. Includes `result/data.db` and
+`result/tsv_export/`.
 
 ---
 
 ## `multiqc/`
 
-Aggregated MultiQC summary report (`clystere-MultiQC-Report_multiqc_report.html`) and associated data tables/plots.
-Contains:
-
-- Pipeline execution parameters and software tool versions.
-- Unified BGC counts and region distributions across antiSMASH, GECCO, and deepBGC.
-
----
-
-## `pipeline_info/`
-
-Nextflow execution metadata generated per run:
-
-| File                        | Description                                          |
-| --------------------------- | ---------------------------------------------------- |
-| `execution_timeline_*.html` | Gantt chart of process execution times               |
-| `execution_report_*.html`   | Resource usage report (CPU, memory, I/O per process) |
-| `execution_trace_*.txt`     | Raw per-task resource trace (parseable TSV)          |
-| `pipeline_dag_*.html`       | Directed acyclic graph of the pipeline               |
+Aggregated MultiQC HTML report and associated data tables/plots summarizing software versions and `region_counts.tsv`.

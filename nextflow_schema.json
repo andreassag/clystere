@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/exterex/clystere/main/nextflow_schema.json",
-  "title": "clystere pipeline parameters",
+  "$id": "https://raw.githubusercontent.com/andreassag/clystere/main/nextflow_schema.json",
+  "title": "andreassag/clystere pipeline parameters",
   "description": "Nextflow pipeline for antiSMASH + GECCO + deepBGC biosynthetic gene cluster analysis",
   "type": "object",
   "$defs": {
@@ -32,14 +32,8 @@
         "clystere_db_dir": {
           "type": "string",
           "format": "directory-path",
-          "description": "Directory where reference databases (antiSMASH, DeepBGC) will be downloaded and cached.",
+          "description": "Directory where reference databases (antiSMASH, deepBGC, BiG-SLiCE) will be downloaded and cached.",
           "fa_icon": "fas fa-database"
-        },
-        "clystere_cache_dir": {
-          "type": "string",
-          "format": "directory-path",
-          "description": "Directory where pipeline cache files are stored.",
-          "fa_icon": "fas fa-archive"
         }
       }
     },
@@ -420,26 +414,6 @@
         }
       }
     },
-    "combgc_options": {
-      "title": "comBGC unification",
-      "type": "object",
-      "fa_icon": "fas fa-layer-group",
-      "description": "Parameters for comBGC filtering used before BiG-SCAPE/BiG-SLiCE.",
-      "properties": {
-        "combgc_min_length": {
-          "type": "integer",
-          "default": 3000,
-          "description": "Minimum BGC length (bp) retained by comBGC.",
-          "fa_icon": "fas fa-ruler-horizontal"
-        },
-        "combgc_contig_edge": {
-          "type": "integer",
-          "default": 2,
-          "description": "Exclude BGCs within this distance from contig edges in comBGC.",
-          "fa_icon": "fas fa-arrows-alt-h"
-        }
-      }
-    },
     "bigscape_options": {
       "title": "BiG-SCAPE options",
       "type": "object",
@@ -449,7 +423,7 @@
         "bigscape_run": {
           "type": "boolean",
           "default": false,
-          "description": "Run BiG-SCAPE on the unified comBGC-filtered region set.",
+          "description": "Run BiG-SCAPE on the unified comBGC-staged region set.",
           "fa_icon": "fas fa-play"
         },
         "bigscape_pfam_path": {
@@ -520,20 +494,20 @@
         "bigslice_run": {
           "type": "boolean",
           "default": false,
-          "description": "Run BiG-SLiCE on the unified comBGC-filtered region set. Mutually exclusive with --bigscape_run.",
+          "description": "Run BiG-SLiCE on the unified comBGC-staged region set. Mutually exclusive with `--bigscape_run`.",
           "fa_icon": "fas fa-play"
+        },
+        "bigslice_db": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "Path to a BiG-SLiCE HMM database (`bigslice-models`) directory. Downloaded automatically when absent.",
+          "fa_icon": "fas fa-database"
         },
         "bigslice_extra_args": {
           "type": "string",
           "default": "",
           "description": "Additional command-line arguments appended verbatim to the BiG-SLiCE invocation.",
           "fa_icon": "fas fa-terminal"
-        },
-        "bigslice_zip_output": {
-          "type": "boolean",
-          "default": false,
-          "description": "Archive the BiG-SLiCE output directory as a `.tar.gz` file.",
-          "fa_icon": "fas fa-file-archive"
         }
       }
     },
@@ -647,99 +621,24 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/input_output_options"
+    { "$ref": "#/$defs/input_output_options" },
+    { "$ref": "#/$defs/antismash_basic_options" },
+    { "$ref": "#/$defs/antismash_modules_options" },
+    { "$ref": "#/$defs/antismash_clusterblast_options" },
+    { "$ref": "#/$defs/antismash_hmmdetection_options" },
+    { "$ref": "#/$defs/antismash_output_options" },
+    { "$ref": "#/$defs/gecco_options" },
+    { "$ref": "#/$defs/deepbgc_options" },
+    { "$ref": "#/$defs/bigscape_options" },
+    { "$ref": "#/$defs/bigslice_options" },
+    { "$ref": "#/$defs/tabulation_options" },
+    { "$ref": "#/$defs/generic_options" }
+  ],
+  "not": {
+    "properties": {
+      "bigscape_run": { "const": true },
+      "bigslice_run": { "const": true }
     },
-    {
-      "$ref": "#/$defs/antismash_basic_options"
-    },
-    {
-      "$ref": "#/$defs/antismash_modules_options"
-    },
-    {
-      "$ref": "#/$defs/antismash_clusterblast_options"
-    },
-    {
-      "$ref": "#/$defs/antismash_hmmdetection_options"
-    },
-    {
-      "$ref": "#/$defs/antismash_output_options"
-    },
-    {
-      "$ref": "#/$defs/gecco_options"
-    },
-    {
-      "$ref": "#/$defs/deepbgc_options"
-    },
-    {
-      "$ref": "#/$defs/combgc_options"
-    },
-    {
-      "$ref": "#/$defs/bigscape_options"
-    },
-    {
-      "$ref": "#/$defs/bigslice_options"
-    },
-    {
-      "$ref": "#/$defs/tabulation_options"
-    },
-    {
-      "$ref": "#/$defs/generic_options"
-    },
-    {
-      "not": {
-        "properties": {
-          "bigscape_run": {
-            "const": true
-          },
-          "bigslice_run": {
-            "const": true
-          }
-        },
-        "required": ["bigscape_run", "bigslice_run"]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "bigscape_run": {
-            "const": true
-          }
-        },
-        "required": ["bigscape_run"]
-      },
-      "then": {
-        "properties": {
-          "gecco_run": {
-            "const": true
-          },
-          "deepbgc_run": {
-            "const": true
-          }
-        },
-        "required": ["gecco_run", "deepbgc_run"]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "bigslice_run": {
-            "const": true
-          }
-        },
-        "required": ["bigslice_run"]
-      },
-      "then": {
-        "properties": {
-          "gecco_run": {
-            "const": true
-          },
-          "deepbgc_run": {
-            "const": true
-          }
-        },
-        "required": ["gecco_run", "deepbgc_run"]
-      }
-    }
-  ]
+    "required": ["bigscape_run", "bigslice_run"]
+  }
 }

@@ -1,0 +1,100 @@
+##gff-version 3
+##sequence-region NC_000913.3 1 100000
+NC_000913.3	GenBank	CDS	893	1444	.	+	0	ID=b0545;locus_tag=b0545;product=periplasmic protein YbcL
+NC_000913.3	GenBank	CDS	1454	2251	.	+	0	ID=b0546;locus_tag=b0546;product=putative DNA-binding transcriptional regulator
+NC_000913.3	GenBank	CDS	2368	2469	.	+	0	ID=b4588;locus_tag=b4588;product=uncharacterized protein YlcH
+NC_000913.3	GenBank	CDS	2466	2921	.	+	0	ID=b0547;locus_tag=b0547;product=DNA base-flipping protein
+NC_000913.3	GenBank	CDS	2921	3091	.	+	0	ID=b0548;locus_tag=b0548;product=NinE family prophage protein
+NC_000913.3	GenBank	CDS	3084	3374	.	+	0	ID=b0549;locus_tag=b0549;product=putative nuclease YbcO
+NC_000913.3	GenBank	CDS	3371	3733	.	+	0	ID=b0550;locus_tag=b0550;product=crossover junction endodeoxyribonuclease RusA
+NC_000913.3	GenBank	CDS	3730	3870	.	+	0	ID=b4509;locus_tag=b4509;product=uncharacterized protein YlcG
+NC_000913.3	GenBank	CDS	3956	4339	.	+	0	ID=b0551;locus_tag=b0551;product=prophage antitermination protein Q homolog QuuD
+NC_000913.3	GenBank	CDS	4529	6825	.	-	0	ID=b0553;locus_tag=b0553;product=DLP12 prophage, putative outer membrane porin NmpC
+NC_000913.3	GenBank	CDS	4737	5717	.	-	0	ID=b0552;locus_tag=b0552;product=IS5 transposase and trans-activator
+NC_000913.3	GenBank	CDS	7398	7613	.	+	0	ID=b0554;locus_tag=b0554;product=putative phage lysis protein
+NC_000913.3	GenBank	CDS	7613	8110	.	+	0	ID=b0555;locus_tag=b0555;product=lysozyme
+NC_000913.3	GenBank	CDS	8107	8568	.	+	0	ID=b0556;locus_tag=b0556;product=putative prophage endopeptidase RzpD
+NC_000913.3	GenBank	CDS	8327	8509	.	+	0	ID=b4510;locus_tag=b4510;product=putative prophage lysis lipoprotein RzoD
+NC_000913.3	GenBank	CDS	8600	8893	.	-	0	ID=b0557;locus_tag=b0557;product=prophage lipoprotein BorD
+NC_000913.3	GenBank	CDS	9184	9594	.	-	0	ID=b0558;locus_tag=b0558;product=DUF1398 domain-containing protein YbcV
+NC_000913.3	GenBank	CDS	9880	10086	.	+	0	ID=b0559;locus_tag=b0559;product=uncharacterized protein YbcW
+NC_000913.3	GenBank	CDS	10251	10445	.	-	0	ID=b4589;locus_tag=b4589;product=DUF3950 domain-containing protein YlcI
+NC_000913.3	GenBank	CDS	10834	11379	.	+	0	ID=b0560;locus_tag=b0560;product=putative DNA-packaging protein NohD
+NC_000913.3	GenBank	CDS	11534	12097	.	+	0	ID=b0561;locus_tag=b0561;product=putative tail fiber assembly protein TfaD
+NC_000913.3	GenBank	CDS	12875	13060	.	+	0	ID=b0563;locus_tag=b0563;product=protein TfaX
+NC_000913.3	GenBank	CDS	13681	14430	.	+	0	ID=b0564;locus_tag=b0564;product=DNA-binding transcriptional activator AppY
+NC_000913.3	GenBank	CDS	14680	15633	.	-	0	ID=b0565;locus_tag=b0565;product=omptin family outer membrane protease OmpT
+NC_000913.3	GenBank	CDS	16147	16908	.	-	0	ID=b0566;locus_tag=b0566;product=DNA-binding transcriptional activator EnvY
+NC_000913.3	GenBank	CDS	17091	17981	.	-	0	ID=b0567;locus_tag=b0567;product=putative exopolysaccharide secretion system auxiliary component
+NC_000913.3	GenBank	CDS	17982	20954	.	-	0	ID=b0568;locus_tag=b0568;product=exopolysaccharide secretion system outer membrane protein NfrA
+NC_000913.3	GenBank	CDS	20941	23178	.	-	0	ID=b0569;locus_tag=b0569;product=cyclic di-3',5'-guanylate-activated glycosyltransferase
+NC_000913.3	GenBank	CDS	23328	24770	.	-	0	ID=b0570;locus_tag=b0570;product=sensor histidine kinase CusS
+NC_000913.3	GenBank	CDS	24760	25443	.	-	0	ID=b0571;locus_tag=b0571;product=DNA-binding transcriptional activator CusR
+NC_000913.3	GenBank	CDS	25600	26973	.	+	0	ID=b0572;locus_tag=b0572;product=copper/silver export system outer membrane channel
+NC_000913.3	GenBank	CDS	27131	27463	.	+	0	ID=b0573;locus_tag=b0573;product=copper/silver export system periplasmic binding protein
+NC_000913.3	GenBank	CDS	27479	28702	.	+	0	ID=b0574;locus_tag=b0574;product=copper/silver export system membrane fusion protein
+NC_000913.3	GenBank	CDS	28714	31857	.	+	0	ID=b0575;locus_tag=b0575;product=copper/silver export system RND permease
+NC_000913.3	GenBank	CDS	31959	33335	.	+	0	ID=b0576;locus_tag=b0576;product=phenylalanine:H(+) symporter PheP
+NC_000913.3	GenBank	CDS	33416	34663	.	-	0	ID=b0577;locus_tag=b0577;product=miniconductance mechanosensitive channel YbdG
+NC_000913.3	GenBank	CDS	34771	35424	.	-	0	ID=b0578;locus_tag=b0578;product=NAD(P)H-dependent nitroreductase NfsB
+NC_000913.3	GenBank	CDS	35518	35886	.	-	0	ID=b0579;locus_tag=b0579;product=PF04237 family protein YbdF
+NC_000913.3	GenBank	CDS	35951	36199	.	-	0	ID=b0580;locus_tag=b0580;product=DUF1158 domain-containing protein YbdJ
+NC_000913.3	GenBank	CDS	36265	37383	.	-	0	ID=b0581;locus_tag=b0581;product=putative glutamate--cysteine ligase 2
+NC_000913.3	GenBank	CDS	37836	37988	.	+	0	ID=b4415;locus_tag=b4415;product=small toxic polypeptide HokE
+NC_000913.3	GenBank	CDS	38065	39177	.	+	0	ID=b0582;locus_tag=b0582;product=IS186/IS421 transposase
+NC_000913.3	GenBank	CDS	39459	40079	.	-	0	ID=b0583;locus_tag=b0583;product=phosphopantetheinyl transferase EntD
+NC_000913.3	GenBank	CDS	40254	42494	.	-	0	ID=b0584;locus_tag=b0584;product=ferric enterobactin outer membrane transporter
+NC_000913.3	GenBank	CDS	42737	43939	.	+	0	ID=b0585;locus_tag=b0585;product=ferric enterobactin esterase
+NC_000913.3	GenBank	CDS	43942	44160	.	+	0	ID=b4511;locus_tag=b4511;product=enterobactin biosynthesis protein YbdZ
+NC_000913.3	GenBank	CDS	44157	48038	.	+	0	ID=b0586;locus_tag=b0586;product=apo-serine activating enzyme
+NC_000913.3	GenBank	CDS	48254	49387	.	+	0	ID=b0587;locus_tag=b0587;product=polysaccharide co-polymerase family protein FepE
+NC_000913.3	GenBank	CDS	49384	50199	.	-	0	ID=b0588;locus_tag=b0588;product=ferric enterobactin ABC transporter ATP binding subunit
+NC_000913.3	GenBank	CDS	50196	51188	.	-	0	ID=b0589;locus_tag=b0589;product=ferric enterobactin ABC transporter membrane subunit FepG
+NC_000913.3	GenBank	CDS	51185	52189	.	-	0	ID=b0590;locus_tag=b0590;product=ferric enterobactin ABC transporter membrane subunit FebD
+NC_000913.3	GenBank	CDS	52300	53550	.	+	0	ID=b0591;locus_tag=b0591;product=enterobactin exporter EntS
+NC_000913.3	GenBank	CDS	53554	54510	.	-	0	ID=b0592;locus_tag=b0592;product=ferric enterobactin ABC transporter periplasmic binding protein
+NC_000913.3	GenBank	CDS	54885	56060	.	+	0	ID=b0593;locus_tag=b0593;product=isochorismate synthase EntC
+NC_000913.3	GenBank	CDS	56070	57680	.	+	0	ID=b0594;locus_tag=b0594;product=2,3-dihydroxybenzoate-AMP ligase
+NC_000913.3	GenBank	CDS	57694	58551	.	+	0	ID=b0595;locus_tag=b0595;product=enterobactin synthase component B
+NC_000913.3	GenBank	CDS	58551	59297	.	+	0	ID=b0596;locus_tag=b0596;product=2,3-dihydro-2,3-dihydroxybenzoate dehydrogenase
+NC_000913.3	GenBank	CDS	59300	59713	.	+	0	ID=b0597;locus_tag=b0597;product=proofreading thioesterase in enterobactin biosynthesis
+NC_000913.3	GenBank	CDS	59894	61999	.	+	0	ID=b0598;locus_tag=b0598;product=pyruvate transporter CstA
+NC_000913.3	GenBank	CDS	62182	62379	.	+	0	ID=b4512;locus_tag=b4512;product=PF04328 family protein YbdD
+NC_000913.3	GenBank	CDS	62389	63477	.	-	0	ID=b0599;locus_tag=b0599;product=hydroxycarboxylate dehydrogenase A
+NC_000913.3	GenBank	CDS	63586	64746	.	+	0	ID=b0600;locus_tag=b0600;product=methionine transaminase
+NC_000913.3	GenBank	CDS	64747	65376	.	-	0	ID=b0601;locus_tag=b0601;product=ParB-like nuclease domain-containing protein YbdM
+NC_000913.3	GenBank	CDS	65349	66569	.	-	0	ID=b0602;locus_tag=b0602;product=putative PAPS reductase/DUF3440 domain-containing protein YbdN
+NC_000913.3	GenBank	CDS	66716	67618	.	-	0	ID=b0603;locus_tag=b0603;product=DNA-binding transcriptional repressor CitR
+NC_000913.3	GenBank	CDS	67827	68573	.	-	0	ID=b0604;locus_tag=b0604;product=protein sulfenic acid reductase and chaperone DsbG
+NC_000913.3	GenBank	CDS	68945	69508	.	+	0	ID=b0605;locus_tag=b0605;product=alkyl hydroperoxide reductase, AhpC component
+NC_000913.3	GenBank	CDS	69753	71318	.	+	0	ID=b0606;locus_tag=b0606;product=alkyl hydroperoxide reductase, AhpF component
+NC_000913.3	GenBank	CDS	71439	71867	.	-	0	ID=b0607;locus_tag=b0607;product=universal stress protein G
+NC_000913.3	GenBank	CDS	72088	73326	.	+	0	ID=b0608;locus_tag=b0608;product=putative Zn(2(+))-dependent alcohol dehydrogenase YbdR
+NC_000913.3	GenBank	CDS	73330	73419	.	-	0	ID=b4734;locus_tag=b4734;product=protein YldA
+NC_000913.3	GenBank	CDS	73557	73967	.	-	0	ID=b0610;locus_tag=b0610;product=nucleoside diphosphate kinase regulator
+NC_000913.3	GenBank	CDS	74197	75003	.	-	0	ID=b0611;locus_tag=b0611;product=RNase I
+NC_000913.3	GenBank	CDS	75117	76580	.	-	0	ID=b0612;locus_tag=b0612;product=citrate:succinate antiporter
+NC_000913.3	GenBank	CDS	76631	77509	.	-	0	ID=b0613;locus_tag=b0613;product=triphosphoribosyl-dephospho-CoA synthase
+NC_000913.3	GenBank	CDS	77484	78035	.	-	0	ID=b0614;locus_tag=b0614;product=apo-citrate lyase phosphoribosyl-dephospho-CoA transferase
+NC_000913.3	GenBank	CDS	78039	79571	.	-	0	ID=b0615;locus_tag=b0615;product=citrate lyase alpha subunit
+NC_000913.3	GenBank	CDS	79582	80490	.	-	0	ID=b0616;locus_tag=b0616;product=citrate lyase beta subunit
+NC_000913.3	GenBank	CDS	80487	80783	.	-	0	ID=b0617;locus_tag=b0617;product=citrate lyase acyl carrier protein
+NC_000913.3	GenBank	CDS	80798	81856	.	-	0	ID=b0618;locus_tag=b0618;product=citrate lyase synthetase
+NC_000913.3	GenBank	CDS	82235	83893	.	+	0	ID=b0619;locus_tag=b0619;product=sensor histidine kinase DpiB
+NC_000913.3	GenBank	CDS	83862	84542	.	+	0	ID=b0620;locus_tag=b0620;product=DNA-binding transcriptional dual regulator DpiA
+NC_000913.3	GenBank	CDS	84583	85968	.	-	0	ID=b0621;locus_tag=b0621;product=anaerobic C4-dicarboxylate transporter DcuC
+NC_000913.3	GenBank	CDS	86557	87117	.	+	0	ID=b0622;locus_tag=b0622;product=Lipid A palmitoyltransferase
+NC_000913.3	GenBank	CDS	87292	87501	.	+	0	ID=b0623;locus_tag=b0623;product=transcription antiterminator and regulator of RNA stability CspE
+NC_000913.3	GenBank	CDS	87555	87938	.	-	0	ID=b0624;locus_tag=b0624;product=F(-) channel
+NC_000913.3	GenBank	CDS	88947	89150	.	+	0	ID=b0627;locus_tag=b0627;product=twin arginine protein translocation system - TatE protein
+NC_000913.3	GenBank	CDS	89251	90216	.	-	0	ID=b0628;locus_tag=b0628;product=lipoyl synthase
+NC_000913.3	GenBank	CDS	90425	91378	.	-	0	ID=b0629;locus_tag=b0629;product=putative DNA-binding transcriptional regulator YbeF
+NC_000913.3	GenBank	CDS	91637	92278	.	-	0	ID=b0630;locus_tag=b0630;product=lipoyl(octanoyl) transferase
+NC_000913.3	GenBank	CDS	92379	92642	.	-	0	ID=b0631;locus_tag=b0631;product=DUF493 domain-containing protein YbeD
+NC_000913.3	GenBank	CDS	92752	93963	.	-	0	ID=b0632;locus_tag=b0632;product=D-alanyl-D-alanine carboxypeptidase DacA
+NC_000913.3	GenBank	CDS	94102	95190	.	-	0	ID=b0633;locus_tag=b0633;product=rare lipoprotein RlpA
+NC_000913.3	GenBank	CDS	95201	96313	.	-	0	ID=b0634;locus_tag=b0634;product=peptidoglycan glycosyltransferase MrdB
+NC_000913.3	GenBank	CDS	96316	98217	.	-	0	ID=b0635;locus_tag=b0635;product=peptidoglycan DD-transpeptidase MrdA
+NC_000913.3	GenBank	CDS	98248	98715	.	-	0	ID=b0636;locus_tag=b0636;product=23S rRNA m(3)psi1915 methyltransferase
+NC_000913.3	GenBank	CDS	98719	99036	.	-	0	ID=b0637;locus_tag=b0637;product=ribosomal silencing factor RsfS
+NC_000913.3	GenBank	CDS	99296	99907	.	-	0	ID=b0638;locus_tag=b0638;product=putative adenosylcobalamin phosphatase/alpha-ribazole phosphatase

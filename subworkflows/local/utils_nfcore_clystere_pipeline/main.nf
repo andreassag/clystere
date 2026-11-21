@@ -6,11 +6,11 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { UTILS_NFCORE_PIPELINE   } from '../../nf-core/utils_nfcore_pipeline'
-include { UTILS_NEXTFLOW_PIPELINE } from '../../nf-core/utils_nextflow_pipeline'
-include { validateParameters; samplesheetToList } from 'plugin/nf-schema'
+include { UTILS_NFCORE_PIPELINE; completionSummary } from '../../nf-core/utils_nfcore_pipeline'
+include { UTILS_NEXTFLOW_PIPELINE                  } from '../../nf-core/utils_nextflow_pipeline'
+include { paramsHelp; paramsSummaryLog; validateParameters; samplesheetToList } from 'plugin/nf-schema'
 
-def resolveGenomePath(rawPath, ssDir) {
+def resolveInputPath(rawPath, ssDir) {
     def f = file(rawPath)
     if (f.exists()) return f
     def rel = rawPath.toString().replace(projectDir.toString() + '/', '')
@@ -31,23 +31,43 @@ def resolveGenomePath(rawPath, ssDir) {
 
 workflow PIPELINE_INITIALISATION {
     take:
-    _version
+    version
+    help
     validate_params
     _monochrome_logs
-    _args
-    _outdir
+    nextflow_cli_args
+    outdir
+    input
 
     main:
-    // 1. Validate parameters if enabled
+    // 1. Display help text and exit when --help is passed
+    if (help) {
+        def help_param = ['true', 'false'].contains(help.toString()) ? null : help.toString()
+        log.info paramsHelp(
+            parameter: help_param,
+            command: "nextflow run ${workflow.manifest.name} --input samplesheet.csv --outdir results -profile <docker/singularity/apptainer/conda>"
+        )
+        System.exit(0)
+    }
+
+    // 2. Run standard Nextflow and nf-core utility checks (--version, params dump, profile check)
+    def check_conda = workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1
+    UTILS_NEXTFLOW_PIPELINE(version, true, outdir, check_conda)
+    UTILS_NFCORE_PIPELINE(nextflow_cli_args)
+
+    // 3. Validate parameters if enabled and log summary
     if (validate_params) {
         validateParameters()
     }
+    log.info paramsSummaryLog()
 
-    // 2. Parse input samplesheet via nf-schema
-    def ssDir = file(params.input).parent
-    ch_samplesheet = channel.fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
-        .map { meta, genome, _annotation ->
-            [meta, resolveGenomePath(genome, ssDir)]
+    // 4. Parse input samplesheet via nf-schema
+    def ssDir = file(input).parent
+    ch_samplesheet = channel.fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
+        .map { meta, genome, annotation ->
+            def resolved_genome = resolveInputPath(genome, ssDir)
+            def resolved_annotation = annotation ? resolveInputPath(annotation, ssDir) : []
+            [meta, resolved_genome, resolved_annotation]
         }
 
     emit:
@@ -58,14 +78,15 @@ workflow PIPELINE_COMPLETION {
     take:
     email
     email_on_fail
+    monochrome_logs
     _hook_url
     _multiqc_report
 
     main:
-    // Email / webhook notifications when configured
-    if (email || email_on_fail) {
-        if (email) {
-            log.info "Sending execution completion email to ${email}"
+    workflow.onComplete {
+        completionSummary(monochrome_logs)
+        if ((email || email_on_fail) && email) {
+            log.info "Completion notification target configured for ${email}"
         }
     }
 }

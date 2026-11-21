@@ -12,6 +12,7 @@ import pytest
 from tabulate_regions import (
     extract_known_cluster_blast_results,
     extract_top_known_cluster_hit,
+    main,
     parse_antismash_json,
 )
 
@@ -78,6 +79,52 @@ def test_correct_region_selected_by_index():
     results = [{"ranking": []}, {"ranking": _make_ranking_entry(80)}]
     assert extract_top_known_cluster_hit(results, 0) == NO_HIT
     assert extract_top_known_cluster_hit(results, 1)["knownclusterblast_similarity"] == "high"
+    assert extract_top_known_cluster_hit(results, 5) == NO_HIT
+
+
+def test_main_writes_region_tsv_with_and_without_knownclusters(tmp_path):
+    sdir = tmp_path / "sample1"
+    sdir.mkdir()
+    (sdir / "sample1.json").write_text(
+        json.dumps(
+            {
+                "input_file": "sample1.gbff",
+                "records": [
+                    {
+                        "name": "ctg1",
+                        "description": "Test contig",
+                        "areas": [{"products": ["T1PKS"]}],
+                        "features": [
+                            {
+                                "type": "region",
+                                "location": "[0:1000](+)",
+                                "qualifiers": {
+                                    "region_number": ["1"],
+                                    "contig_edge": ["False"],
+                                    "product": ["T1PKS"],
+                                },
+                            }
+                        ],
+                        "modules": {
+                            "antismash.modules.clusterblast": {"knowncluster": {"results": _make_kcb_results(85)}}
+                        },
+                    }
+                ],
+            }
+        )
+    )
+
+    out_basic = tmp_path / "basic.tsv"
+    main(tmp_path, out_basic, knownclusters=False, threads=1)
+    basic_lines = out_basic.read_text().splitlines()
+    assert len(basic_lines) == 2
+    assert "knownclusterblast_hit" not in basic_lines[0].split("\t")
+
+    out_kcb = tmp_path / "kcb.tsv"
+    main(tmp_path, out_kcb, knownclusters=True, threads=1)
+    kcb_lines = out_kcb.read_text().splitlines()
+    assert "knownclusterblast_hit" in kcb_lines[0].split("\t")
+    assert "Epothilone D" in kcb_lines[1]
 
 
 # ── extract_known_cluster_blast_results ──────────────────────────────────────

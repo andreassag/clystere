@@ -1,17 +1,26 @@
 nextflow_pipeline {
     name "Test pipeline default run"
     script "main.nf"
-    profile "test,docker"
+    profile "test"
     options "-stub"
 
     test("Pipeline runs with test profile") {
         when {
             params {
+                input = "${projectDir}/tests/data/samplesheet_test.csv"
                 outdir = "$outputDir"
+                antismash_cb_knownclusters = true
+                antismash_db = "${outputDir}/nonexistent_antismash_db"
+                deepbgc_data_dir = "${outputDir}/nonexistent_deepbgc_db"
             }
         }
         then {
             assert workflow.success
+            assert path("${outputDir}/summary/all_regions.tsv").exists()
+            assert path("${outputDir}/summary/region_counts.tsv").exists()
+            assert path("${outputDir}/multiqc/multiqc_report.html").exists()
+            assert path("${outputDir}/combgc/GCA_000005845/combgc_summary.tsv").exists()
+            assert path("${outputDir}/combgc/GCA_000009045/combgc_summary.tsv").exists()
         }
     }
 }

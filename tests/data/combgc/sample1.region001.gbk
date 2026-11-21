@@ -1,0 +1,24 @@
+LOCUS       ctg1.region001           500 bp    DNA     linear   BCT 01-JAN-2026
+DEFINITION  Test region 1.
+ACCESSION   ctg1.region001
+VERSION     ctg1.region001
+KEYWORDS    .
+FEATURES             Location/Qualifiers
+     region          1..500
+                     /product="siderophore"
+                     /region_number="1"
+                     /contig_edge="False"
+     CDS             10..250
+                     /locus_tag="TST_0001"
+                     /translation="MKTLLILTCLVAVALARPKHPIKHQGLPQEVLNENLLRFFVAPFPE"
+ORIGIN
+        1 atgaaaaccc tcctcatcct gacctgcctg gtggctgtgg ccctggctcg tcccaagcac
+       61 cccatcaagc accagggact gcctcaggaa gtgctgaacg aaaacctgct gcggttcttc
+      121 gtggcaccct tccctgaata agcggccgct aatagctagc tagctagcta gctagctagc
+      181 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      241 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagcta gc
+      301 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      361 tagctagcta gctagctagc tagctagcta gctagcta gctagctagc tagctagcta
+      421 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      481 tagctagcta gctagctagc
+//

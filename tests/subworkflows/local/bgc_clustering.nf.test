@@ -1,0 +1,87 @@
+nextflow_workflow {
+    name "Test BGC_CLUSTERING"
+    script "subworkflows/local/bgc_clustering.nf"
+    workflow "BGC_CLUSTERING"
+    options "-stub"
+
+    test("comBGC only with partial predictor channels") {
+        when {
+            params {
+                bigscape_run = false
+                bigslice_run = false
+            }
+            workflow {
+                """
+                input[0] = Channel.of([[id: 'sample1'], file("${projectDir}/tests/data/combgc/sample1.gbk", checkIfExists: true)])
+                input[1] = Channel.of([[id: 'sample1'], file("${projectDir}/tests/data/combgc/sample1.region001.gbk", checkIfExists: true)])
+                input[2] = Channel.empty()
+                input[3] = Channel.empty()
+                input[4] = Channel.empty()
+                input[5] = Channel.empty()
+                input[6] = Channel.empty()
+                input[7] = Channel.empty()
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.combined_regions_dir.size() == 1
+            assert workflow.out.summary_tsv.size() == 1
+        }
+    }
+
+    test("BiG-SCAPE clustering enabled") {
+        when {
+            params {
+                bigscape_run = true
+                bigslice_run = false
+                bigscape_dereplicate = true
+                bigscape_pfam_path = "${projectDir}/tests/data/combgc/sample1.gbk"
+            }
+            workflow {
+                """
+                input[0] = Channel.of([[id: 'sample1'], file("${projectDir}/tests/data/combgc/sample1.gbk", checkIfExists: true)])
+                input[1] = Channel.of([[id: 'sample1'], file("${projectDir}/tests/data/combgc/sample1.region001.gbk", checkIfExists: true)])
+                input[2] = Channel.empty()
+                input[3] = Channel.of([[id: 'sample1'], file("${projectDir}/tests/data/combgc/sample1.clusters.tsv", checkIfExists: true)])
+                input[4] = Channel.of([[id: 'sample1'], file("${projectDir}/tests/data/combgc/sample1_cluster_1.gbk", checkIfExists: true)])
+                input[5] = Channel.of([[id: 'sample1'], file("${projectDir}/tests/data/combgc/sample1.bgc.gbk", checkIfExists: true)])
+                input[6] = Channel.of([[id: 'sample1'], file("${projectDir}/tests/data/combgc/sample1.bgc.tsv", checkIfExists: true)])
+                input[7] = Channel.empty()
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.combined_regions_dir.size() == 1
+            assert workflow.out.summary_tsv.size() == 1
+        }
+    }
+
+    test("BiG-SLiCE clustering enabled triggers BIGSLICE_DOWNLOADDB and BIGSLICE_BIGSLICE") {
+        when {
+            params {
+                bigscape_run = false
+                bigslice_run = true
+                bigslice_db = "${outputDir}/nonexistent_bigslice_db"
+            }
+            workflow {
+                """
+                input[0] = Channel.of([[id: 'sample1'], file("${projectDir}/tests/data/combgc/sample1.gbk", checkIfExists: true)])
+                input[1] = Channel.of([[id: 'sample1'], file("${projectDir}/tests/data/combgc/sample1.region001.gbk", checkIfExists: true)])
+                input[2] = Channel.empty()
+                input[3] = Channel.empty()
+                input[4] = Channel.empty()
+                input[5] = Channel.empty()
+                input[6] = Channel.empty()
+                input[7] = Channel.empty()
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.combined_regions_dir.size() == 1
+            assert workflow.out.summary_tsv.size() == 1
+        }
+    }
+}

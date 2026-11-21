@@ -1,0 +1,2 @@
+sequence_id	detector_version	detector_label	bgc_candidate_id	nucl_start	nucl_end	nucl_length	num_proteins	num_domains	num_bio_domains	deepbgc_score	product_activity	antibacterial	cytotoxic	inhibitor	antifungal	product_class	Alkaloid	NRP	Other	Polyketide	RiPP	Saccharide	Terpene	protein_ids	bio_pfam_ids	pfam_ids
+ctg1	0.1.0	deepbgc	ctg1_1	5	460	455	1	1	1	0.88	antibacterial	0.8	0.1	0.05	0.05	NRP	0.01	0.85	0.05	0.05	0.02	0.01	0.01	TST_0001	PF04183	PF04183

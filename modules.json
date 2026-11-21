@@ -1,6 +1,6 @@
 {
-  "name": "exterex/clystere",
-  "homePage": "https://github.com/exterex/clystere",
+  "name": "andreassag/clystere",
+  "homePage": "https://github.com/andreassag/clystere",
   "repos": {
     "https://github.com/nf-core/modules.git": {
       "modules": {
@@ -8,7 +8,8 @@
           "antismash/antismash": {
             "branch": "master",
             "git_sha": "21e4662ae927fdbc5fc04eec9bde38b0689d4954",
-            "installed_by": ["modules"]
+            "installed_by": ["modules"],
+            "patch": "modules/nf-core/antismash/antismash/antismash-antismash.diff"
           },
           "antismash/antismashdownloaddatabases": {
             "branch": "master",
@@ -18,6 +19,11 @@
           "bigslice/bigslice": {
             "branch": "master",
             "git_sha": "2fb71fb1a1e67f1fe470e73c53b685a763c443d9",
+            "installed_by": ["modules"]
+          },
+          "bigslice/downloaddb": {
+            "branch": "master",
+            "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
             "installed_by": ["modules"]
           },
           "deepbgc/download": {
@@ -57,7 +63,8 @@
           "utils_nfcore_pipeline": {
             "branch": "master",
             "git_sha": "a3fb7351b1fdb2b1de282b765816bbea190e86a8",
-            "installed_by": ["subworkflows"]
+            "installed_by": ["subworkflows"],
+            "patch": "subworkflows/nf-core/utils_nfcore_pipeline/utils_nfcore_pipeline.diff"
           }
         }
       }

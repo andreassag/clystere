@@ -1,0 +1,34 @@
+LOCUS       ctg1                     455 bp    DNA     linear   BCT 01-JAN-2026
+DEFINITION  deepBGC region 1.
+ACCESSION   ctg1
+VERSION     ctg1
+KEYWORDS    .
+FEATURES             Location/Qualifiers
+     CDS             10..250
+                     /locus_tag="TST_0001"
+                     /translation="MKTLLILTCLVAVALARPKHPIKHQGLPQEVLNENLLRFFVAPFPE"
+ORIGIN
+        1 atgaaaaccc tcctcatcct gacctgcctg gtggctgtgg ccctggctcg tcccaagcac
+       61 cccatcaagc accagggact gcctcaggaa gtgctgaacg aaaacctgct gcggttcttc
+      121 gtggcaccct tccctgaata agcggccgct aatagctagc tagctagcta gctagctagc
+      181 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      241 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      301 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      361 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      421 tagctagcta gctagctagc tagctagcta gctag
+//
+LOCUS       ctg2                     200 bp    DNA     linear   BCT 01-JAN-2026
+DEFINITION  deepBGC region 2.
+ACCESSION   ctg2
+VERSION     ctg2
+KEYWORDS    .
+FEATURES             Location/Qualifiers
+     CDS             1..120
+                     /locus_tag="TST_0002"
+                     /translation="MKTLLILTCLVAVALARPKHPIKHQGLPQEVLNENLLRF"
+ORIGIN
+        1 atgaaaaccc tcctcatcct gacctgcctg gtggctgtgg ccctggctcg tcccaagcac
+       61 cccatcaagc accagggact gcctcaggaa gtgctgaacg aaaacctgct gcggttcttc
+      121 tagctagcta gctagctagc tagctagcta gctagctagc tagctagcta gctagctagc
+      181 tagctagcta gctagctagc
+//

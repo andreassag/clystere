@@ -10,7 +10,7 @@ on:
 
 jobs:
   test:
-    name: Run pipeline – test profile
+    name: Run pipeline – test profile (stub)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -20,10 +20,10 @@ jobs:
         with:
           version: latest-stable
 
-      - name: Run pipeline (test + docker)
+      - name: Run pipeline (test stub)
         run: |
           nextflow run . \
-            -profile test \
+            -profile test,docker \
             -stub-run
 
       - name: Upload pipeline logs on failure
@@ -33,5 +33,5 @@ jobs:
           name: nextflow-logs
           path: |
             .nextflow.log
-            results/pipeline_info/
+            results_test/pipeline_info/
           retention-days: 7

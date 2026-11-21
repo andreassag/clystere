@@ -6,7 +6,7 @@
 | ------------------------------------ | --------------- | ------------------------------------------------------- |
 | [Nextflow](https://www.nextflow.io/) | 25.10.0         | `NXF_VER` env var can pin the version                   |
 | Java                                 | 17              | Required by Nextflow (Java 17 or higher)                |
-| Container engine                     | —               | One of Docker, Singularity, Apptainer, Podman, or Conda |
+| Container engine                     | —               | One of Docker, Apptainer, Singularity, Podman, or Conda |
 
 ---
 
@@ -53,38 +53,39 @@ conda activate nf
 
 ---
 
-## 3. antiSMASH database
+## 3. Reference databases
 
-The pipeline can download the database automatically on first run. To pre-download it manually:
+Reference databases are downloaded and cached automatically under `--clystere_db_dir`
+(`${launchDir}/.clystere/databases`) on first run when explicit database paths are not provided:
+
+- **antiSMASH** (`--antismash_db`): downloaded via `ANTISMASH_ANTISMASHDOWNLOADDATABASES` into `antismash_db/`.
+- **deepBGC** (`--deepbgc_data_dir`): downloaded via `DEEPBGC_DOWNLOAD` into `deepbgc_db/` when `--deepbgc_run` is
+  enabled.
+- **BiG-SLiCE** (`--bigslice_db`): downloaded via `BIGSLICE_DOWNLOADDB` into `bigslice-models/` when `--bigslice_run` is
+  enabled.
+
+To pre-download the antiSMASH database manually:
 
 <!-- markdownlint-disable MD046 -->
 
 === "Docker"
 
     ```bash
-    # pull the antiSMASH container and run the download helper
-    docker pull antismash/standalone:8.0.4
+    docker pull quay.io/nf-core/antismash:8.0.1--pyhdfd78af_0
     docker run --rm -v /path/to/db:/db \
-        antismash/standalone:8.0.4 \
-        antismash-download-databases /db
+        quay.io/nf-core/antismash:8.0.1--pyhdfd78af_0 \
+        download-antismash-databases --database-dir /db
     ```
 
 === "Conda"
 
     ```bash
-    # create an antiSMASH environment and run the download helper
-    conda create -n antismash -c conda-forge -c bioconda antismash=8
+    conda create -n antismash -c conda-forge -c bioconda antismash=8.0.1
     conda activate antismash
-    antismash-download-databases
+    download-antismash-databases --database-dir /path/to/db
     ```
 
 <!-- markdownlint-enable MD046 -->
-
-Pass the database path to the pipeline with `--antismash_db /path/to/db`. If the path is absent or empty, the pipeline
-downloads the database there automatically before running antiSMASH.
-
-deepBGC model data is also downloaded automatically on first run unless `--deepbgc_data_dir` points to an existing
-directory. Ensure outbound network access for the initial deepBGC run.
 
 ---
 

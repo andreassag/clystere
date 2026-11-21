@@ -4,20 +4,17 @@ nextflow_process {
     process "SUMMARY"
     topics "versions"
 
-    test("Default summary emits both TSVs") {
+    test("Default summary emits both TSVs from JSON input") {
         when {
             params {
                 antismash_cb_knownclusters = false
                 count_per_contig = false
                 split_hybrids = false
-                max_cpus = 2
-                max_memory = "4.GB"
-                max_time = "1.h"
             }
             process {
                 """
                 input[0] = [
-                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true)
+                    file("${projectDir}/tests/data/antismash/GCA_000005845/GCA_000005845.json", checkIfExists: true)
                 ]
                 """
             }
@@ -37,19 +34,17 @@ nextflow_process {
             def countHeader = countLines[0].split("\t")
             assert "record" in countHeader
             assert "total_count" in countHeader
+            assert "hybrid" in countHeader
             assert "description" in countHeader
         }
     }
 
-    test("KnownClusterBlast and per-contig flags affect outputs") {
+    test("KnownClusterBlast, per-contig, and split_hybrids flags affect outputs") {
         when {
             params {
                 antismash_cb_knownclusters = true
                 count_per_contig = true
-                split_hybrids = false
-                max_cpus = 2
-                max_memory = "4.GB"
-                max_time = "1.h"
+                split_hybrids = true
             }
             process {
                 """
@@ -69,29 +64,31 @@ nextflow_process {
             def countLines = path(process.out.region_counts_tsv[0]).readLines()
             assert countLines.size() == 3
             assert countLines[1].contains("U00096.3")
+            def countHeader = countLines[0].split("\t")
+            assert !("hybrid" in countHeader)
         }
     }
 
-    test("Versions topic is emitted") {
+    test("SUMMARY stub execution and versions topic") {
+        options "-stub"
         when {
             params {
                 antismash_cb_knownclusters = false
                 count_per_contig = false
                 split_hybrids = false
-                max_cpus = 2
-                max_memory = "4.GB"
-                max_time = "1.h"
             }
             process {
                 """
                 input[0] = [
-                    file("${projectDir}/tests/data/antismash/GCA_000005845", checkIfExists: true)
+                    file("${projectDir}/tests/data/antismash/GCA_000005845/GCA_000005845.json", checkIfExists: true)
                 ]
                 """
             }
         }
         then {
             assert process.success
+            assert path(process.out.all_regions_tsv[0]).exists()
+            assert path(process.out.region_counts_tsv[0]).exists()
             assert topics.versions.size() == 1
         }
     }

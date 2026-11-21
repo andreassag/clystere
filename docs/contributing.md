@@ -16,11 +16,11 @@ python -m venv .venv
 source .venv/bin/activate
 
 # Install development tools
-pip install pre-commit pytest ruff
+pip install pre-commit pytest ruff biopython pandas jsonschema
 npm install
 
-# Activate the pre-commit git hooks
-git config core.hooksPath .githooks
+# Install pre-commit git hooks
+pre-commit install
 ```
 
 ---
@@ -39,9 +39,11 @@ ruff format --check .
 
 ### Nextflow (`.nf`, `.config`) & Documentation
 
-Nextflow and config files follow EditorConfig rules and Prettier standards:
+Nextflow files are validated with `nextflow lint .`, while Markdown, YAML, JSON, and file conventions follow
+EditorConfig and Prettier standards:
 
 ```bash
+nextflow lint .
 npx editorconfig-checker
 npx prettier --check .
 ```
@@ -50,18 +52,20 @@ npx prettier --check .
 
 ## Pre-commit hooks
 
-Pre-commit git hooks run automatically before each `git commit` to guarantee clean code and formatting:
+Standard [pre-commit](https://pre-commit.com/) hooks defined in `.pre-commit-config.yaml` run automatically on
+`git commit`:
 
-| Check                   | Tool                   | Purpose                          |
-| :---------------------- | :--------------------- | :------------------------------- |
-| Python Linting          | `ruff check`           | Code style and import order      |
-| Python Formatting       | `ruff format`          | Code layout consistency          |
-| Line Length & Standards | `editorconfig-checker` | Indentation and line endings     |
-| Document Formatting     | `prettier`             | Markdown, JSON, and YAML styling |
+| Check               | Tool               | Purpose                          |
+| :------------------ | :----------------- | :------------------------------- |
+| Python Linting      | `ruff`             | Code style and import order      |
+| Python Formatting   | `ruff-format`      | Code layout consistency          |
+| Document Formatting | `prettier`         | Markdown, JSON, and YAML styling |
+| File Hygiene        | `pre-commit-hooks` | Whitespace, EOF, YAML/JSON check |
 
-Run all checks manually:
+Run all hooks and repository checks manually:
 
 ```bash
+pre-commit run --all-files
 npm run check:all
 ```
 
@@ -75,27 +79,29 @@ npm run check:all
 pytest tests/python/ -v
 ```
 
-Tests live in `tests/python/` and exercise the pure Python functions in `bin/`.
+Tests live in `tests/python/` and exercise the Python utilities in `bin/`.
 
-### nf-test (Nextflow pipeline & module tests)
+### nf-test (Nextflow pipeline, subworkflow & module tests)
 
 ```bash
-# Run all nf-test suites (integration + local modules)
-nf-test test tests/ --verbose
+# Run all nf-test suites (integration, configs, subworkflows, and local modules)
+nf-test test tests/ --profile apptainer --verbose
 
-# Run specific local module tests
-nf-test test tests/modules/local/summary --verbose
-nf-test test tests/modules/local/combgc --verbose
-nf-test test tests/modules/local/bigscape --verbose
+# Run specific suites
+nf-test test tests/modules/local/summary --profile apptainer --verbose
+nf-test test tests/modules/local/combgc --profile apptainer --verbose
+nf-test test tests/modules/local/bigscape --profile apptainer --verbose
+nf-test test tests/subworkflows/ --profile apptainer --verbose
 ```
 
 ### Full pipeline test
 
 ```bash
-nextflow run . \
-    --input assets/samplesheet.csv \
-    --outdir results \
-    -profile test,docker
+# Fast compact BGC test profile
+nextflow run . -profile test,apptainer
+
+# Full-genome benchmark with BiG-SCAPE
+nextflow run . -profile test_full,apptainer
 ```
 
 ---
@@ -115,7 +121,7 @@ nextflow run . \
 
 Releases follow [Semantic Versioning](https://semver.org/). To cut a release:
 
-1. Update the version in `nextflow.config` (`manifest.version`).
+1. Update the version in `nextflow.config` (`manifest.version`) and `package.json`.
 2. Commit with message `release: bump version to X.Y.Z`.
 3. Push a `X.Y.Z` tag — the `release.yml` workflow creates the GitHub Release automatically.
 

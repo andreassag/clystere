@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/exterex/clystere/main/assets/schema_input.json",
+  "$id": "https://raw.githubusercontent.com/andreassag/clystere/main/assets/schema_input.json",
   "title": "clystere input samplesheet schema",
   "type": "array",
   "items": {
@@ -15,11 +15,12 @@
       "genome": {
         "type": "string",
         "format": "file-path",
-        "pattern": "^\\S+\\.(gbk|gb|gbff|gbf|gbk\\.gz|gb\\.gz|gbff\\.gz|gbf\\.gz)$"
+        "pattern": "^\\S+\\.(gbk|gb|gbff|gbf|fa|fna|fasta|gbk\\.gz|gb\\.gz|gbff\\.gz|gbf\\.gz|fa\\.gz|fna\\.gz|fasta\\.gz)$"
       },
       "annotation": {
         "type": "string",
-        "format": "file-path"
+        "format": "file-path",
+        "pattern": "^\\S+\\.(gff|gff3|gff\\.gz|gff3\\.gz)$"
       }
     }
   }

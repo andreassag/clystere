@@ -1,8 +1,7 @@
 {
   "name": "clystere",
-  "version": "1.0.0-dev",
+  "version": "1.1.0",
   "scripts": {
-    "prepare": "git config core.hooksPath .githooks || true",
     "lint:ruff": "ruff check .",
     "lint:editorconfig": "editorconfig-checker",
     "format:check": "prettier --check .",
@@ -10,6 +9,7 @@
     "check:all": "ruff check . && ruff format --check . && npx -y editorconfig-checker && npx -y prettier --check ."
   },
   "devDependencies": {
+    "editorconfig-checker": "^6.0.0",
     "prettier": "3.9.6"
   }
 }

@@ -1,0 +1,148 @@
+nextflow_pipeline {
+    name "Test pipeline configuration matrix"
+    script "main.nf"
+    profile "test"
+    options "-stub"
+
+    test("BiG-SCAPE enabled with dereplication") {
+        when {
+            params {
+                input = "${projectDir}/tests/data/samplesheet_test.csv"
+                outdir = "$outputDir"
+                bigscape_run = true
+                bigscape_dereplicate = true
+                antismash_db = "${outputDir}/nonexistent_antismash_db"
+                deepbgc_data_dir = "${outputDir}/nonexistent_deepbgc_db"
+                bigscape_pfam_path = "${projectDir}/tests/data/combgc/sample1.gbk"
+            }
+        }
+        then {
+            assert workflow.success
+            assert path("${outputDir}/bigscape/bigscape.db").exists()
+            assert path("${outputDir}/bigscape_dereplicate").exists()
+        }
+    }
+
+    test("BiG-SCAPE without dereplication and with zip output") {
+        when {
+            params {
+                input = "${projectDir}/tests/data/samplesheet_test.csv"
+                outdir = "$outputDir"
+                bigscape_run = true
+                bigscape_dereplicate = false
+                bigscape_zip_output = true
+                antismash_db = "${outputDir}/nonexistent_antismash_db"
+                deepbgc_data_dir = "${outputDir}/nonexistent_deepbgc_db"
+                bigscape_pfam_path = "${projectDir}/tests/data/combgc/sample1.gbk"
+            }
+        }
+        then {
+            assert workflow.success
+            assert path("${outputDir}/bigscape/bigscape.db").exists()
+            assert path("${outputDir}/bigscape.tar.gz").exists()
+            assert !path("${outputDir}/bigscape_dereplicate").exists()
+        }
+    }
+
+    test("BiG-SLiCE enabled with auto database download") {
+        when {
+            params {
+                input = "${projectDir}/tests/data/samplesheet_test.csv"
+                outdir = "$outputDir"
+                bigslice_run = true
+                antismash_db = "${outputDir}/nonexistent_antismash_db"
+                deepbgc_data_dir = "${outputDir}/nonexistent_deepbgc_db"
+                bigslice_db = "${outputDir}/nonexistent_bigslice_db"
+            }
+        }
+        then {
+            assert workflow.success
+            assert path("${outputDir}/bigslice/all_samples/result/data.db").exists()
+            assert path("${outputDir}/bigslice/all_samples/result/tsv_export/bgcs.tsv").exists()
+        }
+    }
+
+    test("antiSMASH-only predictor configuration with BiG-SCAPE") {
+        when {
+            params {
+                input = "${projectDir}/tests/data/samplesheet_test.csv"
+                outdir = "$outputDir"
+                gecco_run = false
+                deepbgc_run = false
+                bigscape_run = true
+                antismash_db = "${outputDir}/nonexistent_antismash_db"
+                bigscape_pfam_path = "${projectDir}/tests/data/combgc/sample1.gbk"
+            }
+        }
+        then {
+            assert workflow.success
+            assert !path("${outputDir}/gecco").exists()
+            assert !path("${outputDir}/deepbgc").exists()
+            assert path("${outputDir}/bigscape/bigscape.db").exists()
+        }
+    }
+
+    test("Tabulation disabled") {
+        when {
+            params {
+                input = "${projectDir}/tests/data/samplesheet_test.csv"
+                outdir = "$outputDir"
+                run_tabulation = false
+                antismash_db = "${outputDir}/nonexistent_antismash_db"
+                deepbgc_data_dir = "${outputDir}/nonexistent_deepbgc_db"
+            }
+        }
+        then {
+            assert workflow.success
+            assert !path("${outputDir}/summary").exists()
+            assert path("${outputDir}/multiqc/multiqc_report.html").exists()
+        }
+    }
+
+    test("Full antiSMASH modules, per-contig counts, split hybrids, and GFF3 annotation") {
+        when {
+            params {
+                input = "${projectDir}/tests/data/samplesheet_annotated.csv"
+                outdir = "$outputDir"
+                antismash_minimal = false
+                antismash_enable_nrps_pks = true
+                antismash_clusterhmmer = true
+                count_per_contig = true
+                split_hybrids = true
+                antismash_db = "${outputDir}/nonexistent_antismash_db"
+                deepbgc_data_dir = "${outputDir}/nonexistent_deepbgc_db"
+            }
+        }
+        then {
+            assert workflow.success
+            assert path("${outputDir}/summary/all_regions.tsv").exists()
+            assert path("${outputDir}/summary/region_counts.tsv").exists()
+        }
+    }
+
+    test("Mutually exclusive bigscape_run and bigslice_run fails") {
+        when {
+            params {
+                input = "${projectDir}/tests/data/samplesheet_test.csv"
+                outdir = "$outputDir"
+                bigscape_run = true
+                bigslice_run = true
+            }
+        }
+        then {
+            assert workflow.failed
+        }
+    }
+
+    test("Invalid samplesheet fails nf-schema validation") {
+        when {
+            params {
+                input = "${projectDir}/tests/data/samplesheet_invalid.csv"
+                outdir = "$outputDir"
+            }
+        }
+        then {
+            assert workflow.failed
+        }
+    }
+}

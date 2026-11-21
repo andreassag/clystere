@@ -7,13 +7,12 @@ set in a params YAML/JSON file (`-params-file params.yml`).
 
 ## Input / output
 
-| Parameter              | Default                            | Description                                                                |
-| ---------------------- | ---------------------------------- | -------------------------------------------------------------------------- |
-| `--input`              | `null`                             | **Required.** Path to a samplesheet CSV.                                   |
-| `--outdir`             | `results`                          | Output directory for published files.                                      |
-| `--clystere_db_dir`    | `${launchDir}/.clystere/databases` | Workspace directory for downloading and caching reference databases.       |
-| `--clystere_cache_dir` | `${launchDir}/.clystere/cache`     | Directory where pipeline cache files are stored.                           |
-| `--publish_dir_mode`   | `copy`                             | How Nextflow stages outputs: `copy`, `symlink`, `move`, `rellink`, `link`. |
+| Parameter            | Default                            | Description                                                                |
+| -------------------- | ---------------------------------- | -------------------------------------------------------------------------- |
+| `--input`            | `null`                             | **Required.** Path to a samplesheet CSV.                                   |
+| `--outdir`           | `results`                          | Output directory for published files.                                      |
+| `--clystere_db_dir`  | `${launchDir}/.clystere/databases` | Workspace directory for downloading and caching reference databases.       |
+| `--publish_dir_mode` | `copy`                             | How Nextflow stages outputs: `copy`, `symlink`, `move`, `rellink`, `link`. |
 
 ---
 
@@ -115,23 +114,9 @@ These flags enable additional detection modules. All require `--antismash_minima
 
 ---
 
-## comBGC unification
-
-These parameters control filtering while combining antiSMASH, GECCO, and deepBGC predictions prior to BiG-SCAPE or
-BiG-SLiCE.
-
-| Parameter              | Default | Description                               |
-| ---------------------- | ------- | ----------------------------------------- |
-| `--combgc_min_length`  | `3000`  | Minimum BGC length retained by comBGC.    |
-| `--combgc_contig_edge` | `2`     | Exclude BGCs near contig edges in comBGC. |
-
----
-
 ## BiG-SCAPE
 
 `--bigscape_run` and `--bigslice_run` are mutually exclusive.
-
-BiG-SCAPE in clystere runs on unified comBGC-filtered regions and requires `--gecco_run true` and `--deepbgc_run true`.
 
 | Parameter                       | Default       | Description                                                                   |
 | ------------------------------- | ------------- | ----------------------------------------------------------------------------- |
@@ -143,21 +128,18 @@ BiG-SCAPE in clystere runs on unified comBGC-filtered regions and requires `--ge
 | `--bigscape_mix`                | `true`        | Include a mixed-class network alongside class-specific networks.              |
 | `--bigscape_classify`           | `none`        | Classification mode: `none` or `classify`.                                    |
 | `--bigscape_include_singletons` | `true`        | Include singleton BGCs (no GCF membership) in output.                         |
-| `--bigscape_zip_output`         | `false`       | Compress BiG-SCAPE output directory.                                          |
+| `--bigscape_zip_output`         | `false`       | Archive the BiG-SCAPE output directory as `bigscape.tar.gz`.                  |
 | `--bigscape_extra_args`         | `''`          | Arbitrary extra arguments passed to BiG-SCAPE.                                |
+
+---
 
 ## BiG-SLiCE
 
-BiG-SLiCE requires its HMM model bundle. The pipeline bootstraps this bundle automatically during the first BiG-SLiCE
-task execution.
-
-BiG-SLiCE in clystere runs on unified comBGC-filtered regions and requires `--gecco_run true` and `--deepbgc_run true`.
-
-| Parameter               | Default | Description                                                            |
-| ----------------------- | ------- | ---------------------------------------------------------------------- |
-| `--bigslice_run`        | `false` | Enable BiG-SLiCE clustering. Mutually exclusive with `--bigscape_run`. |
-| `--bigslice_zip_output` | `false` | Compress BiG-SLiCE output directory.                                   |
-| `--bigslice_extra_args` | `''`    | Arbitrary extra arguments passed to BiG-SLiCE.                         |
+| Parameter               | Default | Description                                                                            |
+| ----------------------- | ------- | -------------------------------------------------------------------------------------- |
+| `--bigslice_run`        | `false` | Enable BiG-SLiCE clustering. Mutually exclusive with `--bigscape_run`.                 |
+| `--bigslice_db`         | `null`  | Path to BiG-SLiCE HMM database (`bigslice-models`). Auto-downloaded when absent/empty. |
+| `--bigslice_extra_args` | `''`    | Arbitrary extra arguments passed to BiG-SLiCE.                                         |
 
 ---
 
@@ -165,7 +147,7 @@ BiG-SLiCE in clystere runs on unified comBGC-filtered regions and requires `--ge
 
 | Parameter            | Default | Description                                                                                           |
 | -------------------- | ------- | ----------------------------------------------------------------------------------------------------- |
-| `--run_tabulation`   | `true`  | Run `TABULATE_REGIONS` and `COUNT_REGIONS` after antiSMASH.                                           |
+| `--run_tabulation`   | `true`  | Run `SUMMARY` (`tabulate_regions.py` and `count_regions.py`) after antiSMASH.                         |
 | `--count_per_contig` | `false` | Emit one row per contig in `region_counts.tsv` instead of per assembly.                               |
 | `--split_hybrids`    | `false` | Count each product class in a hybrid BGC individually. `total_count` is always the number of regions. |
 
@@ -173,11 +155,9 @@ BiG-SLiCE in clystere runs on unified comBGC-filtered regions and requires `--ge
 
 ## Pipeline internals
 
-| Parameter           | Default | Description                                                                |
-| ------------------- | ------- | -------------------------------------------------------------------------- |
-| `--max_memory`      | `14.GB` | Hard ceiling on memory per process (overridden by `hpc`/`slurm` profiles). |
-| `--max_cpus`        | `8`     | Hard ceiling on CPUs per process.                                          |
-| `--max_time`        | `240.h` | Hard ceiling on wall-time per process.                                     |
-| `--monochrome_logs` | `false` | Disable colour in Nextflow log output.                                     |
-| `--help`            | `false` | Print parameter help and exit.                                             |
-| `--version`         | `false` | Print pipeline version and exit.                                           |
+| Parameter           | Default | Description                            |
+| ------------------- | ------- | -------------------------------------- |
+| `--monochrome_logs` | `false` | Disable colour in Nextflow log output. |
+| `--validate_params` | `true`  | Validate CLI parameters via nf-schema. |
+| `--help`            | `false` | Print parameter help and exit.         |
+| `--version`         | `false` | Print pipeline version and exit.       |
