@@ -1,0 +1,2 @@
+##gff-version 3
+TST_0001	Pfam	protein_match	1	40	1e-10	+	.	ID=match1;Name=PF00501;Dbxref="InterPro:IPR000873"

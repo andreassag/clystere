@@ -92,4 +92,30 @@ nextflow_process {
             assert topics.versions.size() == 1
         }
     }
+
+    test("RiPP preset triggers ripp_candidates.tsv extraction") {
+        when {
+            params {
+                ripp_preset = true
+                antismash_cb_knownclusters = false
+                count_per_contig = false
+                split_hybrids = false
+            }
+            process {
+                """
+                input[0] = [
+                    file("${projectDir}/tests/data/antismash/GCA_000005845/GCA_000005845.json", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert path(process.out.ripp_candidates_tsv[0]).exists()
+            def header = path(process.out.ripp_candidates_tsv[0]).readLines()[0].split("\t")
+            assert "ripp_subclass" in header
+            assert "rre_bitscore" in header
+            assert "core_sequence" in header
+        }
+    }
 }

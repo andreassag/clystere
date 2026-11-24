@@ -17,10 +17,14 @@ workflow {
         params.monochrome_logs,
         args,
         params.outdir,
-        params.input
+        params.input,
+        params.reads_input
     )
 
-    CLYSTERE(PIPELINE_INITIALISATION.out.samplesheet)
+    CLYSTERE(
+        PIPELINE_INITIALISATION.out.samplesheet,
+        PIPELINE_INITIALISATION.out.reads
+    )
 
     PIPELINE_COMPLETION(
         params.email,

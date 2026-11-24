@@ -1,0 +1,74 @@
+name: "consensus_summary"
+description: Builds cross-tool consensus BGC loci and joins Tier 1 QC/taxonomy, GCF, BiG-FAM, and AMP outputs.
+keywords:
+  - consensus
+  - bgc
+  - summary
+  - multiqc
+tools:
+  - "python":
+      description: "Python 3 consensus BGC locus & novelty summary generator"
+      homepage: "https://www.python.org/"
+      licence:
+        - "PSF-2.0"
+input:
+  - combgc_tsvs:
+      type: file
+      description: Per-sample combgc_summary.tsv files
+  - all_regions_tsv:
+      type: file
+      description: Optional antiSMASH all_regions.tsv
+  - gcf_membership_tsv:
+      type: file
+      description: Optional gcf_membership_summary.tsv
+  - bigfam_scores_tsv:
+      type: file
+      description: Optional bigfam_novelty_scores.tsv
+  - quast_tsvs:
+      type: file
+      description: Optional QUAST report.tsv file(s)
+  - checkm2_tsvs:
+      type: file
+      description: Optional CheckM2 quality_report.tsv file(s)
+  - gtdbtk_tsvs:
+      type: file
+      description: Optional GTDB-Tk summary TSV file(s)
+  - amp_summary_tsv:
+      type: file
+      description: Optional AMPcombi summary TSV
+  - min_overlap:
+      type: float
+      description: Minimum interval Jaccard overlap to merge cross-tool calls
+output:
+  consensus_loci_tsv:
+    - consensus_loci.tsv:
+        type: file
+        description: Unified cross-tool BGC consensus loci table
+  genome_summary_tsv:
+    - genome_qc_bgc_summary.tsv:
+        type: file
+        description: Per-genome QC, taxonomy, predictor count, and novelty summary table
+  consensus_support_mqc:
+    - consensus_support_mqc.tsv:
+        type: file
+        description: MultiQC custom content table for consensus support tiers
+  genome_overview_mqc:
+    - genome_overview_mqc.tsv:
+        type: file
+        description: MultiQC custom content table for genome QC and BGC overview
+  amp_summary_mqc:
+    - amp_summary_mqc.tsv:
+        type: file
+        description: Optional MultiQC custom content table for AMP candidate counts
+  versions_consensus_summary:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - python:
+          type: string
+          description: The name of the tool
+      - python3 --version 2>&1 | sed 's/Python //':
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

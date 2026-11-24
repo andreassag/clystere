@@ -1,0 +1,39 @@
+name: "checkm2_to_drep_info"
+description: Converts CheckM2 quality_report.tsv into a CSV formatted for dRep --genomeInfo.
+keywords:
+  - checkm2
+  - drep
+  - genomeinfo
+tools:
+  - "python":
+      description: "Python 3 CheckM2-to-dRep table converter"
+      homepage: "https://www.python.org/"
+      licence:
+        - "PSF-2.0"
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing run metadata
+    - checkm2_tsv:
+        type: file
+        description: CheckM2 quality_report.tsv
+  - genomes:
+      type: file
+      description: Staged genome FASTA files passed to dRep
+output:
+  genome_info_csv:
+    - drep_genome_info.csv:
+        type: file
+        description: CSV with genome, completeness, contamination columns for dRep --genomeInfo
+  versions_checkm2_to_drep_info:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - python:
+          type: string
+          description: The name of the tool
+      - python3 --version 2>&1 | sed 's/Python //':
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

@@ -11,6 +11,7 @@ process BIGSLICE_BIGSLICE {
     tuple val(meta), path(bgc, stageAs: 'bgc_files/s*/*')
     path hmmdb
     val export_tsv
+    path taxonomy_tsv
 
     output:
     tuple val(meta), path("${prefix}/result"), emit: output
@@ -27,14 +28,30 @@ process BIGSLICE_BIGSLICE {
     prefix = task.ext.prefix ?: "${meta.id}"
     def sample = meta.id
     def export_tsv_cmd = export_tsv ? "bigslice --export-tsv ${prefix}/result/tsv_export --program_db_folder ${hmmdb} ${args2} ${prefix}" : ''
+    def taxonomy_cmd = taxonomy_tsv ? "cp ${taxonomy_tsv} input/taxonomy/taxonomy.tsv" : "touch input/taxonomy/taxonomy.tsv"
     """
-    mkdir -p input/dataset/${sample} input/taxonomy
-    find bgc_files -name '*.gbk' | xargs -I{} cp {} input/dataset/${sample}/
+    mkdir -p input/dataset input/taxonomy
+    shopt -s nullglob
+    staged_dirs=0
+    for d in bgc_files/s*/*_regions; do
+        if [[ -d "\${d}" ]]; then
+            genome_id="\$(basename "\${d}" _regions)"
+            mkdir -p "input/dataset/\${genome_id}"
+            for g in "\${d}"/*.gbk; do
+                cp "\${g}" "input/dataset/\${genome_id}/"
+            done
+            staged_dirs=1
+        fi
+    done
+    if [[ \${staged_dirs} -eq 0 ]]; then
+        mkdir -p "input/dataset/${sample}"
+        find -L bgc_files -name '*.gbk' -exec cp {} "input/dataset/${sample}/" \\;
+    fi
 
     printf "# dataset_name\\tdataset_path\\ttaxonomy_path\\tdescription\\n" > input/datasets.tsv
     printf "dataset\\tdataset\\ttaxonomy/taxonomy.tsv\\tBGC dataset\\n" >> input/datasets.tsv
 
-    touch input/taxonomy/taxonomy.tsv
+    ${taxonomy_cmd}
 
     bigslice \\
         ${args} \\

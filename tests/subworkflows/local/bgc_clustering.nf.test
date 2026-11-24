@@ -9,6 +9,7 @@ nextflow_workflow {
             params {
                 bigscape_run = false
                 bigslice_run = false
+                bigfam_db = null
             }
             workflow {
                 """
@@ -20,6 +21,8 @@ nextflow_workflow {
                 input[5] = Channel.empty()
                 input[6] = Channel.empty()
                 input[7] = Channel.empty()
+                input[8] = Channel.empty()
+                input[9] = Channel.empty()
                 """
             }
         }
@@ -35,6 +38,7 @@ nextflow_workflow {
             params {
                 bigscape_run = true
                 bigslice_run = false
+                bigfam_db = null
                 bigscape_dereplicate = true
                 bigscape_pfam_path = "${projectDir}/tests/data/combgc/sample1.gbk"
             }
@@ -48,6 +52,8 @@ nextflow_workflow {
                 input[5] = Channel.of([[id: 'sample1'], file("${projectDir}/tests/data/combgc/sample1.bgc.gbk", checkIfExists: true)])
                 input[6] = Channel.of([[id: 'sample1'], file("${projectDir}/tests/data/combgc/sample1.bgc.tsv", checkIfExists: true)])
                 input[7] = Channel.empty()
+                input[8] = Channel.of([[id: 'sample1'], file("${projectDir}/tests/data/combgc/sample1.sanntis.full.gff", checkIfExists: true)])
+                input[9] = Channel.empty()
                 """
             }
         }
@@ -55,6 +61,7 @@ nextflow_workflow {
             assert workflow.success
             assert workflow.out.combined_regions_dir.size() == 1
             assert workflow.out.summary_tsv.size() == 1
+            assert workflow.out.bigscape_db.size() == 1
         }
     }
 
@@ -63,6 +70,7 @@ nextflow_workflow {
             params {
                 bigscape_run = false
                 bigslice_run = true
+                bigfam_db = null
                 bigslice_db = "${outputDir}/nonexistent_bigslice_db"
             }
             workflow {
@@ -75,6 +83,8 @@ nextflow_workflow {
                 input[5] = Channel.empty()
                 input[6] = Channel.empty()
                 input[7] = Channel.empty()
+                input[8] = Channel.empty()
+                input[9] = Channel.empty()
                 """
             }
         }
@@ -82,6 +92,42 @@ nextflow_workflow {
             assert workflow.success
             assert workflow.out.combined_regions_dir.size() == 1
             assert workflow.out.summary_tsv.size() == 1
+            assert workflow.out.bigslice_tsv.size() == 1
+        }
+    }
+
+    test("BiG-SCAPE + BiG-SLiCE co-execution with GTDB-Tk taxonomy and BiG-FAM query") {
+        when {
+            params {
+                bigscape_run = true
+                bigslice_run = true
+                gtdbtk_run = true
+                bigscape_pfam_path = "${projectDir}/tests/data/combgc/sample1.gbk"
+                bigslice_db = "${outputDir}/nonexistent_bigslice_db"
+                bigfam_db = "${projectDir}/tests/data/mock_bigfam_db"
+            }
+            workflow {
+                """
+                input[0] = Channel.of([[id: 'sample1'], file("${projectDir}/tests/data/combgc/sample1.gbk", checkIfExists: true)])
+                input[1] = Channel.of([[id: 'sample1'], file("${projectDir}/tests/data/combgc/sample1.region001.gbk", checkIfExists: true)])
+                input[2] = Channel.empty()
+                input[3] = Channel.empty()
+                input[4] = Channel.empty()
+                input[5] = Channel.empty()
+                input[6] = Channel.empty()
+                input[7] = Channel.empty()
+                input[8] = Channel.empty()
+                input[9] = Channel.of([[id: 'gtdbtk'], file("${projectDir}/tests/data/combgc/sample1.clusters.tsv", checkIfExists: true)])
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.bigscape_db.size() == 1
+            assert workflow.out.bigslice_tsv.size() == 1
+            assert workflow.out.bigfam_novelty_tsv.size() == 1
+            assert workflow.trace.succeeded().any { it.name.contains("GTDBTK_TO_BIGSLICE_TAXONOMY") }
+            assert workflow.trace.succeeded().any { it.name.contains("BIGSLICE_QUERY") }
         }
     }
 }

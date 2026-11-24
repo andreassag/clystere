@@ -1,0 +1,47 @@
+nextflow_process {
+    name "Test PREPARE_AMP_DB"
+    script "modules/local/prepare_amp_db/main.nf"
+    process "PREPARE_AMP_DB"
+    topics "versions"
+
+    test("Real container: indexes unindexed mock DRAMP DB without mutating source") {
+        when {
+            process {
+                """
+                input[0] = 'DRAMP'
+                input[1] = file("${projectDir}/tests/data/mock_amp_db", checkIfExists: true)
+                input[2] = true
+                """
+            }
+        }
+        then {
+            assert process.success
+            def outDb = path(process.out.db[0])
+            assert outDb.toString().endsWith("amp_DRAMP_database")
+            assert path("${outDb}/mmseqs2/ref_DB.dbtype").exists()
+            assert path("${outDb}/general_amps.txt").exists()
+            // Source fixture remains unmutated (no mmseqs2 subdir written in-place)
+            assert !path("${projectDir}/tests/data/mock_amp_db/mmseqs2").exists()
+            assert topics.versions.size() == 1
+        }
+    }
+
+    test("Stub: emits amp_DRAMP_database structure") {
+        options "-stub"
+        when {
+            process {
+                """
+                input[0] = 'DRAMP'
+                input[1] = []
+                input[2] = true
+                """
+            }
+        }
+        then {
+            assert process.success
+            def outDb = path(process.out.db[0])
+            assert path("${outDb}/mmseqs2/ref_DB.dbtype").exists()
+            assert topics.versions.size() == 1
+        }
+    }
+}

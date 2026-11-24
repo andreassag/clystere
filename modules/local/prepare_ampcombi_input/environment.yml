@@ -1,0 +1,5 @@
+channels:
+  - conda-forge
+dependencies:
+  - "conda-forge::python=3.11.0"
+  - "conda-forge::biopython=1.84"

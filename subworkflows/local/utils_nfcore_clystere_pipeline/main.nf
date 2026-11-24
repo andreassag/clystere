@@ -18,6 +18,7 @@ def resolveInputPath(rawPath, ssDir) {
         file("${ssDir}/${rawPath}"),
         file("${ssDir}/${rel}"),
         file("${ssDir}/genomes/${f.name}"),
+        file("${ssDir}/reads/${f.name}"),
         file("${ssDir}/${f.name}"),
         file("${projectDir}/assets/${rawPath}"),
         file("${projectDir}/assets/${rel}"),
@@ -38,6 +39,7 @@ workflow PIPELINE_INITIALISATION {
     nextflow_cli_args
     outdir
     input
+    reads_input
 
     main:
     // 1. Display help text and exit when --help is passed
@@ -61,17 +63,50 @@ workflow PIPELINE_INITIALISATION {
     }
     log.info paramsSummaryLog()
 
-    // 4. Parse input samplesheet via nf-schema
+    // 4. Parse input samplesheet via nf-schema (supports optional annotation, fastq_1, fastq_2, assay_type)
     def ssDir = file(input).parent
-    ch_samplesheet = channel.fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
-        .map { meta, genome, annotation ->
-            def resolved_genome = resolveInputPath(genome, ssDir)
-            def resolved_annotation = annotation ? resolveInputPath(annotation, ssDir) : []
-            [meta, resolved_genome, resolved_annotation]
+    ch_parsed_input = channel.fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
+
+    ch_samplesheet = ch_parsed_input.map { row ->
+        def meta = row[0]
+        def resolved_genome = resolveInputPath(row[1], ssDir)
+        def resolved_annotation = (row.size() > 2 && row[2]) ? resolveInputPath(row[2], ssDir) : []
+        [meta, resolved_genome, resolved_annotation]
+    }
+
+    ch_inline_reads = ch_parsed_input
+        .filter { row -> row.size() > 3 && row[3] }
+        .map { row ->
+            def meta = row[0]
+            def fq1 = resolveInputPath(row[3], ssDir)
+            def fq2 = (row.size() > 4 && row[4]) ? resolveInputPath(row[4], ssDir) : null
+            def assay = (row.size() > 5 && row[5]) ? row[5].toString() : 'metagenome'
+            def read_meta = [id: meta.id, single_end: (fq2 == null), assay_type: assay]
+            def reads_list = fq2 ? [fq1, fq2] : [fq1]
+            [read_meta, reads_list]
         }
+
+    // 5. Parse optional standalone --reads_input samplesheet
+    ch_extra_reads = channel.empty()
+    if (reads_input) {
+        def readsDir = file(reads_input).parent
+        ch_extra_reads = channel.fromList(samplesheetToList(reads_input, "${projectDir}/assets/schema_reads.json"))
+            .map { row ->
+                def meta = row[0]
+                def fq1 = resolveInputPath(row[1], readsDir)
+                def fq2 = (row.size() > 2 && row[2]) ? resolveInputPath(row[2], readsDir) : null
+                def assay = (row.size() > 3 && row[3]) ? row[3].toString() : 'metagenome'
+                def read_meta = [id: meta.id, single_end: (fq2 == null), assay_type: assay]
+                def reads_list = fq2 ? [fq1, fq2] : [fq1]
+                [read_meta, reads_list]
+            }
+    }
+
+    ch_reads = ch_inline_reads.mix(ch_extra_reads)
 
     emit:
     samplesheet = ch_samplesheet
+    reads       = ch_reads
 }
 
 workflow PIPELINE_COMPLETION {

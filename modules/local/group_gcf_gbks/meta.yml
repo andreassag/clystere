@@ -1,0 +1,53 @@
+name: "group_gcf_gbks"
+description: Groups BGC region GBKs into per-GCF folders for clinker and extracts representative queries for cblaster.
+keywords:
+  - gcf
+  - clinker
+  - cblaster
+tools:
+  - "python":
+      description: "Python 3 GCF grouping helper"
+      homepage: "https://www.python.org/"
+      licence:
+        - "PSF-2.0"
+input:
+  - bgc_dirs:
+      type: directory
+      description: Staged BGC region directories from COMBGC_FILTER
+  - bigscape_db:
+      type: file
+      description: Optional BiG-SCAPE v2 SQLite database
+  - bigslice_tsv_dir:
+      type: directory
+      description: Optional BiG-SLiCE tsv_export directory
+  - clinker_max_bgcs:
+      type: integer
+      description: Maximum BGCs staged per GCF directory for clinker
+  - cblaster_max_queries:
+      type: integer
+      description: Maximum query GBK files staged for cblaster
+output:
+  gcf_dirs:
+    - "gcf_groups/*":
+        type: directory
+        description: Multi-member GCF directories containing >=2 GBK files
+  cblaster_queries:
+    - "cblaster_queries/*.gbk":
+        type: file
+        description: Representative/orphan query GBK files for cblaster
+  membership_tsv:
+    - gcf_membership_summary.tsv:
+        type: file
+        description: Unified GCF membership table across BiG-SCAPE and BiG-SLiCE
+  versions_group_gcf:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - python:
+          type: string
+          description: The name of the tool
+      - python3 --version 2>&1 | sed 's/Python //':
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

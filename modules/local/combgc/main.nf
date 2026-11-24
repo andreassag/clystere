@@ -1,7 +1,7 @@
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     COMBGC_FILTER
-    Runs comBGC.py on antiSMASH + GECCO + deepBGC outputs and stages
+    Runs comBGC.py on antiSMASH + GECCO + deepBGC + SanntiS outputs and stages
     sample-prefixed region GBKs for downstream clustering.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
@@ -16,7 +16,7 @@ process COMBGC_FILTER {
         : 'quay.io/biocontainers/mulled-v2-27978155697a3671f3ef9aead4b5c823a02cc0b7:548df772fe13c0232a7eab1bc1deb98b495a05ab-0'}"
 
     input:
-    tuple val(meta), path(antismash_gbk, stageAs: 'antismash_input/*'), path(antismash_region_gbks, stageAs: 'antismash_regions/*'), path(knownclusterblast_dir, stageAs: 'knownclusterblast'), path(gecco_clusters_tsv, stageAs: 'gecco_tsv/*'), path(gecco_gbks, stageAs: 'gecco_gbks/*'), path(deepbgc_bgc_gbk, stageAs: 'deepbgc_gbk/*'), path(deepbgc_bgc_tsv, stageAs: 'deepbgc_tsv/*')
+    tuple val(meta), path(antismash_gbk, stageAs: 'antismash_input/*'), path(antismash_region_gbks, stageAs: 'antismash_regions/*'), path(knownclusterblast_dir, stageAs: 'knownclusterblast'), path(gecco_clusters_tsv, stageAs: 'gecco_tsv/*'), path(gecco_gbks, stageAs: 'gecco_gbks/*'), path(deepbgc_bgc_gbk, stageAs: 'deepbgc_gbk/*'), path(deepbgc_bgc_tsv, stageAs: 'deepbgc_tsv/*'), path(sanntis_gff, stageAs: 'sanntis_gff/*')
 
     output:
     tuple val(meta), path("${prefix}/combgc_summary.tsv"), emit: summary_tsv
@@ -57,6 +57,10 @@ process COMBGC_FILTER {
     done
 
     for f in deepbgc_tsv/*.tsv; do
+        input_args+=("\${f}")
+    done
+
+    for f in sanntis_gff/*.gff sanntis_gff/*.gff3; do
         input_args+=("\${f}")
     done
 
@@ -150,6 +154,86 @@ for src in sorted(Path("deepbgc_gbk").glob("*.gbk")):
                 c_feat.qualifiers.setdefault("contig_edge", ["False"])
         out = outdir / f"{sample_prefix}.deepbgc.region{idx:03d}.gbk"
         SeqIO.write(rec, out, "genbank")
+
+sanntis_gffs = sorted(list(Path("sanntis_gff").glob("*.gff")) + list(Path("sanntis_gff").glob("*.gff3")))
+if sanntis_gffs:
+    genome_records = {}
+    for gbk_src in sorted(Path("antismash_input").glob("*.gbk")):
+        if gbk_src.stat().st_size == 0 or re.search(r"region[0-9]{3}[.]gbk\$", gbk_src.name):
+            continue
+        for rec in SeqIO.parse(gbk_src, "genbank"):
+            genome_records[rec.id] = rec
+            genome_records[rec.name] = rec
+
+    sanntis_idx = 0
+    for gff_src in sanntis_gffs:
+        if gff_src.stat().st_size == 0:
+            continue
+        for raw_line in gff_src.read_text(encoding="utf-8", errors="replace").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = line.split("\\t")
+            if len(parts) < 9 or parts[2].lower() not in {"cluster", "region", "bgc", "protocluster"}:
+                continue
+            contig_id = parts[0]
+            rec = genome_records.get(contig_id)
+            if rec is None:
+                continue
+            try:
+                start0 = max(0, int(parts[3]) - 1)
+                end0 = min(len(rec.seq), int(parts[4]))
+            except ValueError:
+                continue
+            if end0 <= start0:
+                continue
+            attrs = {}
+            for item in parts[8].split(";"):
+                if "=" in item:
+                    k, v = item.split("=", 1)
+                    attrs[k.strip()] = v.strip()
+            product = attrs.get("nearest_MiBIG_class") or attrs.get("product") or "other"
+            partial = attrs.get("partial", "").strip().lower() in {"true", "1", "yes", "10", "01", "11"}
+            sanntis_idx += 1
+            sub_rec = rec[start0:end0]
+            sub_rec.id = f"{contig_id}_sanntis_{sanntis_idx}"
+            sub_rec.name = sub_rec.id[:16]
+            sub_rec.annotations = dict(sub_rec.annotations)
+            sub_rec.annotations["molecule_type"] = rec.annotations.get("molecule_type", "DNA")
+            # Strip antiSMASH v5-8 structured_comment so BiG-SLiCE/BiG-SCAPE parse the antiSMASH-v4 cluster feature
+            sc = dict(sub_rec.annotations.get("structured_comment", {}))
+            sc.pop("antiSMASH-Data", None)
+            if sc:
+                sub_rec.annotations["structured_comment"] = sc
+            else:
+                sub_rec.annotations.pop("structured_comment", None)
+            kept_feats = []
+            for feat in sub_rec.features:
+                if feat.type in {"region", "protocluster", "cluster", "cand_cluster"}:
+                    continue
+                if feat.type == "CDS" and "translation" not in feat.qualifiers:
+                    try:
+                        aa_str = str(feat.extract(sub_rec.seq).translate(to_stop=True))
+                        if aa_str:
+                            feat.qualifiers["translation"] = [aa_str]
+                        else:
+                            continue
+                    except Exception:
+                        continue
+                kept_feats.append(feat)
+            sub_rec.features = kept_feats
+            cluster_feat = SeqFeature(
+                FeatureLocation(0, len(sub_rec.seq)),
+                type="cluster",
+                qualifiers={
+                    "note": [f"Cluster number: {sanntis_idx}"],
+                    "product": [product],
+                    "contig_edge": ["True" if partial else "False"],
+                },
+            )
+            sub_rec.features.insert(0, cluster_feat)
+            out = outdir / f"{sample_prefix}.sanntis.region{sanntis_idx:03d}.gbk"
+            SeqIO.write(sub_rec, out, "genbank")
 PY
     """
 

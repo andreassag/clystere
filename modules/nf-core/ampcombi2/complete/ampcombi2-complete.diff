@@ -1,0 +1,22 @@
+Changes in component 'nf-core/ampcombi2/complete'
+Changes in 'ampcombi2/complete/main.nf':
+--- modules/nf-core/ampcombi2/complete/main.nf
++++ modules/nf-core/ampcombi2/complete/main.nf
+@@ -22,9 +22,13 @@
+ 
+     script:
+     def args = task.ext.args ?: ''
++    def summary_list = (summaries instanceof List) ? summaries : [summaries]
++    def input_arg = summary_list.size() > 1
++        ? "--summaries_files '${summary_list.collect { file_path -> "${file_path}" }.join("' '")}'"
++        : "--summaries_directory ."
+     """
+     ampcombi complete \\
+-        --summaries_files '${summaries.collect{file_path -> "$file_path"}.join("' '")}' \\
++        ${input_arg} \\
+         ${args}
+     """
+ 
+'modules/nf-core/ampcombi2/complete/meta.yml' is unchanged
+'modules/nf-core/ampcombi2/complete/environment.yml' is unchanged
+************************************************************

@@ -18,8 +18,17 @@
           "exists": true,
           "mimetype": "text/csv",
           "pattern": "^\\S+\\.csv$",
-          "description": "Path to samplesheet CSV with columns: sample, genome[, annotation].",
-          "help_text": "CSV file with a header row. Required columns: `sample` (unique identifier) and `genome` (path to a GenBank/EMBL/FASTA file). Optional column: `annotation` (path to a GFF3 annotation file).",
+          "description": "Path to samplesheet CSV with columns: sample, genome[, annotation, fastq_1, fastq_2, assay_type].",
+          "help_text": "CSV file with a header row. Required columns: `sample` (unique identifier) and `genome` (path to a GenBank/EMBL/FASTA file). Optional columns: `annotation` (GFF3 file), `fastq_1`, `fastq_2`, and `assay_type` (`metagenome` or `metatranscriptome`).",
+          "fa_icon": "fas fa-file-csv"
+        },
+        "reads_input": {
+          "type": "string",
+          "format": "file-path",
+          "exists": true,
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$",
+          "description": "Optional path to a reads samplesheet CSV with columns: sample, fastq_1[, fastq_2, assay_type] for BGC abundance/expression profiling.",
           "fa_icon": "fas fa-file-csv"
         },
         "outdir": {
@@ -32,8 +41,126 @@
         "clystere_db_dir": {
           "type": "string",
           "format": "directory-path",
-          "description": "Directory where reference databases (antiSMASH, deepBGC, BiG-SLiCE) will be downloaded and cached.",
+          "description": "Directory where reference databases (antiSMASH, deepBGC, BiG-SLiCE, Bakta, CheckM2, GTDB-Tk) will be downloaded and cached.",
           "fa_icon": "fas fa-database"
+        }
+      }
+    },
+    "preprocessing_dereplication_options": {
+      "title": "Genome preprocessing & dereplication",
+      "type": "object",
+      "fa_icon": "fas fa-cogs",
+      "description": "Gene-calling options for unannotated FASTA inputs and optional genome dereplication before annotation.",
+      "properties": {
+        "annotation_tool": {
+          "type": "string",
+          "default": "pyrodigal",
+          "enum": ["pyrodigal", "bakta", "none"],
+          "description": "Gene-calling / annotation tool applied automatically to unannotated FASTA genomes.",
+          "fa_icon": "fas fa-dna"
+        },
+        "pyrodigal_mode": {
+          "type": "string",
+          "default": "single",
+          "enum": ["single", "meta"],
+          "description": "Pyrodigal prediction mode (`single` for isolate genomes, `meta` for metagenomic contigs/MAGs).",
+          "fa_icon": "fas fa-sliders-h"
+        },
+        "bakta_db": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "Path to an existing Bakta database directory. Downloaded automatically when `--annotation_tool bakta` is selected and absent.",
+          "fa_icon": "fas fa-database"
+        },
+        "bakta_db_type": {
+          "type": "string",
+          "default": "light",
+          "enum": ["light", "full"],
+          "description": "Bakta database variant to download automatically (`light` or `full`).",
+          "fa_icon": "fas fa-download"
+        },
+        "dereplicate_genomes": {
+          "type": "boolean",
+          "default": false,
+          "description": "Dereplicate redundant input genomes/MAGs before BGC annotation.",
+          "fa_icon": "fas fa-compress"
+        },
+        "dereplicate_tool": {
+          "type": "string",
+          "default": "skani",
+          "enum": ["skani", "drep"],
+          "description": "Tool used for genome dereplication when `--dereplicate_genomes` is enabled.",
+          "fa_icon": "fas fa-tools"
+        },
+        "dereplicate_ani": {
+          "type": "number",
+          "default": 99.0,
+          "minimum": 70,
+          "maximum": 100,
+          "description": "ANI percentage threshold for dereplicating redundant genomes (e.g. `99.0` strain-level, `95.0` species-level).",
+          "fa_icon": "fas fa-sliders-h"
+        }
+      }
+    },
+    "qc_taxonomy_options": {
+      "title": "Assembly QC & taxonomy options",
+      "type": "object",
+      "fa_icon": "fas fa-check-circle",
+      "description": "Optional assembly contiguity QC (QUAST), MAG quality assessment (CheckM2), and taxonomic classification (GTDB-Tk).",
+      "properties": {
+        "quast_run": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run QUAST assembly contiguity metrics (N50, L50, contig counts).",
+          "fa_icon": "fas fa-chart-bar"
+        },
+        "checkm2_run": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run CheckM2 to estimate genome completeness and contamination.",
+          "fa_icon": "fas fa-check-double"
+        },
+        "checkm2_db": {
+          "type": "string",
+          "format": "path",
+          "description": "Path to a CheckM2 `.dmnd` database file or directory containing it. Downloaded automatically to `--clystere_db_dir` when absent.",
+          "fa_icon": "fas fa-database"
+        },
+        "checkm2_db_zenodo_id": {
+          "type": "integer",
+          "default": 14897628,
+          "description": "Zenodo record ID used when automatically downloading the CheckM2 database.",
+          "fa_icon": "fas fa-download"
+        },
+        "gtdbtk_run": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run GTDB-Tk taxonomic classification and feed lineages into BiG-SLiCE and summary reports.",
+          "fa_icon": "fas fa-sitemap"
+        },
+        "gtdbtk_db": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "Path to an extracted GTDB-Tk reference database directory (required when `--gtdbtk_run` is enabled unless `--gtdbtk_download_db` is true).",
+          "fa_icon": "fas fa-database"
+        },
+        "gtdbtk_download_db": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically download the GTDB-Tk reference package (~110 GB) if `--gtdbtk_db` is not supplied.",
+          "fa_icon": "fas fa-download"
+        },
+        "gtdbtk_db_url": {
+          "type": "string",
+          "default": "https://data.gtdb.ecogenomic.org/releases/latest/auxillary_files/gtdbtk_package/full_package/gtdbtk_data.tar.gz",
+          "description": "Download URL for the GTDB-Tk reference database archive when `--gtdbtk_download_db` is enabled.",
+          "fa_icon": "fas fa-link"
+        },
+        "gtdbtk_extra_args": {
+          "type": "string",
+          "default": "",
+          "description": "Additional command-line arguments appended verbatim to `gtdbtk classify_wf`.",
+          "fa_icon": "fas fa-terminal"
         }
       }
     },
@@ -414,6 +541,57 @@
         }
       }
     },
+    "expanded_discovery_options": {
+      "title": "Expanded BGC & peptide discovery",
+      "type": "object",
+      "fa_icon": "fas fa-microscope",
+      "description": "Optional SanntiS 4th BGC predictor, antimicrobial peptide (AMP) discovery (Macrel + AMPcombi), and RiPP/RRE preset.",
+      "properties": {
+        "sanntis_run": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run SanntiS as a 4th neural-network BGC predictor and integrate results into comBGC and clustering.",
+          "fa_icon": "fas fa-brain"
+        },
+        "sanntis_interpro_dir": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "Optional directory of pre-computed per-sample InterProScan `.gff3`/`.tsv` files (matching `<sample_id>*`) passed to SanntiS via `--ip-file`.",
+          "fa_icon": "fas fa-folder-open"
+        },
+        "sanntis_extra_args": {
+          "type": "string",
+          "default": "",
+          "description": "Additional command-line arguments appended verbatim to SanntiS.",
+          "fa_icon": "fas fa-terminal"
+        },
+        "amp_run": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run antimicrobial peptide (AMP) discovery using Macrel and AMPcombi.",
+          "fa_icon": "fas fa-dna"
+        },
+        "amp_database": {
+          "type": "string",
+          "default": "DRAMP",
+          "enum": ["DRAMP", "APD", "UniRef100"],
+          "description": "Reference AMP database used by AMPcombi (`DRAMP`, `APD`, or `UniRef100`).",
+          "fa_icon": "fas fa-database"
+        },
+        "amp_database_dir": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "Optional path to a local pre-downloaded AMPcombi reference database directory.",
+          "fa_icon": "fas fa-database"
+        },
+        "ripp_preset": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable antiSMASH 8 RiPP & RRE-Finder modules (`--rre`, lanthipeptides, lassopeptides, sactipeptides, thiopeptides, `--asf`, `--clusterhmmer`) and extract `ripp_candidates.tsv`.",
+          "fa_icon": "fas fa-flask"
+        }
+      }
+    },
     "bigscape_options": {
       "title": "BiG-SCAPE options",
       "type": "object",
@@ -486,15 +664,15 @@
       }
     },
     "bigslice_options": {
-      "title": "BiG-SLiCE options",
+      "title": "BiG-SLiCE & BiG-FAM options",
       "type": "object",
       "fa_icon": "fas fa-project-diagram",
-      "description": "Options for BiG-SLiCE gene cluster family (GCF) analysis.",
+      "description": "Options for BiG-SLiCE GCF clustering and BiG-FAM database novelty querying.",
       "properties": {
         "bigslice_run": {
           "type": "boolean",
           "default": false,
-          "description": "Run BiG-SLiCE on the unified comBGC-staged region set. Mutually exclusive with `--bigscape_run`.",
+          "description": "Run BiG-SLiCE on the unified comBGC-staged region set (can run independently or alongside `--bigscape_run`).",
           "fa_icon": "fas fa-play"
         },
         "bigslice_db": {
@@ -508,19 +686,133 @@
           "default": "",
           "description": "Additional command-line arguments appended verbatim to the BiG-SLiCE invocation.",
           "fa_icon": "fas fa-terminal"
+        },
+        "bigfam_db": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "Path to a pre-computed BiG-FAM / BiG-SLiCE database directory to query via `bigslice --query` for BGC novelty scoring.",
+          "fa_icon": "fas fa-database"
+        },
+        "bigfam_n_ranks": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 1,
+          "description": "Number of top GCF hits to return per BGC in BiG-SLiCE query mode.",
+          "fa_icon": "fas fa-sort-numeric-up"
+        },
+        "bigfam_novelty_threshold": {
+          "type": "number",
+          "default": 900,
+          "minimum": 0,
+          "description": "BiG-SLiCE distance (`d`-score) above which a queried BGC is flagged as putative novel.",
+          "fa_icon": "fas fa-sliders-h"
+        },
+        "bigfam_no_normalize": {
+          "type": "boolean",
+          "default": true,
+          "description": "Pass `--no_normalize_feature` to `bigslice --query` (required for BiG-SLiCE v1.0.0 BiG-FAM databases with `--bigfam_novelty_threshold 900`; set `false` with threshold `~0.4` for BiG-SLiCE v2 DBs).",
+          "fa_icon": "fas fa-sliders-h"
+        }
+      }
+    },
+    "comparative_options": {
+      "title": "Comparative genomics & visualization",
+      "type": "object",
+      "fa_icon": "fas fa-project-diagram",
+      "description": "Gene-cluster synteny plotting (clinker) and gene-neighborhood homology searching (cblaster).",
+      "properties": {
+        "clinker_run": {
+          "type": "boolean",
+          "default": false,
+          "description": "Generate interactive HTML synteny plots via clinker for every multi-member GCF from BiG-SCAPE and/or BiG-SLiCE.",
+          "fa_icon": "fas fa-image"
+        },
+        "clinker_max_bgcs": {
+          "type": "integer",
+          "default": 50,
+          "minimum": 2,
+          "description": "Maximum number of BGC members plotted per GCF by clinker.",
+          "fa_icon": "fas fa-sliders-h"
+        },
+        "clinker_extra_args": {
+          "type": "string",
+          "default": "",
+          "description": "Additional command-line arguments appended verbatim to clinker.",
+          "fa_icon": "fas fa-terminal"
+        },
+        "cblaster_run": {
+          "type": "boolean",
+          "default": false,
+          "description": "Search representative/orphan BGC clusters for collocated homologues via cblaster.",
+          "fa_icon": "fas fa-search"
+        },
+        "cblaster_mode": {
+          "type": "string",
+          "default": "local",
+          "enum": ["local", "remote"],
+          "description": "cblaster search mode: `local` (offline cohort or `--cblaster_db` DIAMOND+SQLite DB) or `remote` (NCBI).",
+          "fa_icon": "fas fa-server"
+        },
+        "cblaster_db": {
+          "type": "string",
+          "format": "path",
+          "description": "Optional pre-built local cblaster `.dmnd` database path (paired with `.sqlite3`). When omitted in `local` mode, built from the cohort genomes.",
+          "fa_icon": "fas fa-database"
+        },
+        "cblaster_max_queries": {
+          "type": "integer",
+          "default": 50,
+          "minimum": 1,
+          "description": "Maximum number of representative/orphan query BGCs searched by cblaster.",
+          "fa_icon": "fas fa-sliders-h"
+        },
+        "cblaster_extra_args": {
+          "type": "string",
+          "default": "",
+          "description": "Additional command-line arguments appended verbatim to cblaster.",
+          "fa_icon": "fas fa-terminal"
+        }
+      }
+    },
+    "abundance_options": {
+      "title": "Metagenomic & metatranscriptomic abundance",
+      "type": "object",
+      "fa_icon": "fas fa-chart-area",
+      "description": "Read-mapping options for quantifying BGC/GCF abundance (DNA) and expression (RNA) across cohorts.",
+      "properties": {
+        "abundance_mapper": {
+          "type": "string",
+          "default": "bowtie2",
+          "enum": ["bowtie2", "minimap2"],
+          "description": "Short/long-read aligner used to map reads against the non-redundant BGC catalog.",
+          "fa_icon": "fas fa-align-left"
+        },
+        "abundance_min_identity": {
+          "type": "number",
+          "default": 95.0,
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Minimum read percent identity passed to CoverM contig quantification.",
+          "fa_icon": "fas fa-sliders-h"
+        },
+        "minimap2_extra_args": {
+          "type": "string",
+          "default": "-ax sr",
+          "description": "Additional arguments passed to `minimap2` when `--abundance_mapper minimap2` is selected.",
+          "fa_icon": "fas fa-terminal"
         }
       }
     },
     "tabulation_options": {
-      "title": "Tabulation options",
+      "title": "Tabulation & consensus summary options",
       "type": "object",
       "fa_icon": "fas fa-table",
-      "description": "Options for summary table generation across all antiSMASH results.",
+      "description": "Options for antiSMASH tabulation and cross-tool consensus BGC summary generation.",
       "properties": {
         "run_tabulation": {
           "type": "boolean",
           "default": true,
-          "description": "Generate per-region and per-genome BGC count summary tables.",
+          "description": "Generate per-region, per-genome, cross-tool consensus loci, and genome QC/BGC summary tables.",
           "fa_icon": "fas fa-table"
         },
         "count_per_contig": {
@@ -534,6 +826,14 @@
           "default": false,
           "description": "Count each product type in hybrid BGCs separately. The `total_count` column is unaffected.",
           "fa_icon": "fas fa-code-branch"
+        },
+        "consensus_min_overlap": {
+          "type": "number",
+          "default": 0.25,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Minimum pairwise interval Jaccard overlap required to merge overlapping BGC calls across predictors.",
+          "fa_icon": "fas fa-sliders-h"
         }
       }
     },
@@ -622,6 +922,8 @@
   },
   "allOf": [
     { "$ref": "#/$defs/input_output_options" },
+    { "$ref": "#/$defs/preprocessing_dereplication_options" },
+    { "$ref": "#/$defs/qc_taxonomy_options" },
     { "$ref": "#/$defs/antismash_basic_options" },
     { "$ref": "#/$defs/antismash_modules_options" },
     { "$ref": "#/$defs/antismash_clusterblast_options" },
@@ -629,16 +931,12 @@
     { "$ref": "#/$defs/antismash_output_options" },
     { "$ref": "#/$defs/gecco_options" },
     { "$ref": "#/$defs/deepbgc_options" },
+    { "$ref": "#/$defs/expanded_discovery_options" },
     { "$ref": "#/$defs/bigscape_options" },
     { "$ref": "#/$defs/bigslice_options" },
+    { "$ref": "#/$defs/comparative_options" },
+    { "$ref": "#/$defs/abundance_options" },
     { "$ref": "#/$defs/tabulation_options" },
     { "$ref": "#/$defs/generic_options" }
-  ],
-  "not": {
-    "properties": {
-      "bigscape_run": { "const": true },
-      "bigslice_run": { "const": true }
-    },
-    "required": ["bigscape_run", "bigslice_run"]
-  }
+  ]
 }

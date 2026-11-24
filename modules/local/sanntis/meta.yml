@@ -1,0 +1,52 @@
+name: "sanntis"
+description: Predicts biosynthetic gene clusters using SanntiS neural networks on annotated GenBank records.
+keywords:
+  - bgc
+  - sanntis
+  - neural network
+tools:
+  - "sanntis":
+      description: "Secondary metabolite gene cluster annotations using neural networks trained on InterPro signatures"
+      homepage: "https://github.com/Finn-Lab/SanntiS"
+      licence:
+        - "MIT"
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information e.g. `[ id:'sample1' ]`
+    - gbk:
+        type: file
+        description: Annotated GenBank file (e.g., from antiSMASH or Bakta)
+        pattern: "*.{gbk,gbff}"
+    - ip_file:
+        type: file
+        description: Optional pre-computed InterProScan GFF3 or TSV annotation file for the sample
+        pattern: "*.{gff,gff3,tsv}"
+output:
+  gff:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "${prefix}/${prefix}.sanntis.full.gff":
+          type: file
+          description: SanntiS BGC predictions in GFF3 format
+          pattern: "*/*.sanntis.full.gff"
+  outdir:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "${prefix}":
+          type: directory
+          description: SanntiS output directory
+  versions_sanntis:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - sanntis:
+          type: string
+          description: The name of the tool
+      - 'python3 -c ''import importlib.metadata; print(importlib.metadata.version("sanntis"))''':
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

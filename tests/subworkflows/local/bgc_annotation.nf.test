@@ -9,6 +9,8 @@ nextflow_workflow {
             params {
                 gecco_run = true
                 deepbgc_run = true
+                sanntis_run = false
+                amp_run = false
                 bigscape_run = false
                 bigslice_run = false
                 antismash_db = "${outputDir}/nonexistent_antismash_db"
@@ -23,6 +25,7 @@ nextflow_workflow {
                         []
                     ]
                 )
+                input[1] = Channel.empty()
                 """
             }
         }
@@ -34,6 +37,7 @@ nextflow_workflow {
             assert workflow.out.gecco_gbks.size() == 1
             assert workflow.out.deepbgc_bgc_gbk.size() == 1
             assert workflow.out.deepbgc_tsv.size() == 1
+            assert workflow.out.sanntis_gff.size() == 0
         }
     }
 
@@ -42,6 +46,8 @@ nextflow_workflow {
             params {
                 gecco_run = false
                 deepbgc_run = false
+                sanntis_run = false
+                amp_run = false
                 bigscape_run = false
                 bigslice_run = false
                 antismash_db = "${outputDir}/nonexistent_antismash_db"
@@ -55,6 +61,7 @@ nextflow_workflow {
                         file("${projectDir}/tests/data/genomes/GCA_000005845_mini.gff3", checkIfExists: true)
                     ]
                 )
+                input[1] = Channel.empty()
                 """
             }
         }
@@ -73,6 +80,8 @@ nextflow_workflow {
             params {
                 gecco_run = true
                 deepbgc_run = false
+                sanntis_run = false
+                amp_run = false
                 bigscape_run = true
                 bigslice_run = false
                 antismash_db = "${outputDir}/nonexistent_antismash_db"
@@ -86,6 +95,7 @@ nextflow_workflow {
                         []
                     ]
                 )
+                input[1] = Channel.empty()
                 """
             }
         }
@@ -93,6 +103,47 @@ nextflow_workflow {
             assert workflow.success
             assert workflow.out.gecco_clusters.size() == 1
             assert workflow.trace.succeeded().any { it.name.contains("GECCO_CONVERT") }
+        }
+    }
+
+    test("Tier 2 SanntiS, Macrel + AMPcombi2, and RiPP preset run cleanly") {
+        when {
+            params {
+                gecco_run = false
+                deepbgc_run = false
+                sanntis_run = true
+                amp_run = true
+                ripp_preset = true
+                antismash_db = "${outputDir}/nonexistent_antismash_db"
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'GCA_000005845'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.gbff.gz", checkIfExists: true),
+                        []
+                    ]
+                )
+                input[1] = Channel.of(
+                    [
+                        [id: 'GCA_000005845'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.fna.gz", checkIfExists: true)
+                    ]
+                )
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.sanntis_gff.size() == 1
+            assert workflow.out.amp_summary_tsv.size() == 1
+            assert workflow.out.amp_cluster_tsv.size() == 1
+            assert workflow.trace.succeeded().any { it.name.contains("SANNTIS") }
+            assert workflow.trace.succeeded().any { it.name.contains("MACREL_CONTIGS") }
+            assert workflow.trace.succeeded().any { it.name.contains("AMPCOMBI2_PARSETABLES") }
+            assert workflow.trace.succeeded().any { it.name.contains("AMPCOMBI2_COMPLETE") }
+            assert workflow.trace.succeeded().any { it.name.contains("AMPCOMBI2_CLUSTER") }
         }
     }
 }

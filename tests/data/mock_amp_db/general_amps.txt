@@ -1,0 +1,4 @@
+DRAMP_ID	Sequence	Name	Family	Source	Target_Organism	Gene	Swiss_Prot_Entry	PDB_ID
+DRAMP_TEST_001	KKLLKWLLKLLKKLLK	MockPep1	Synthetic AMP	Synthetic	Escherichia coli	mock1	NA	NA
+DRAMP_TEST_002	GIGKFLHSAKKFGKAFVGEIMNS	Magainin-2-mock	Magainin	Xenopus laevis	Bacteria	mag2	P11006	2MAG
+DRAMP_TEST_003	LGLLTVCLRYKDKYGKQPNVLGWKMVRMISKIDK	SubtilisMock3	Bacillus CDP	Bacillus subtilis	Bacteria	mock3	NA	NA

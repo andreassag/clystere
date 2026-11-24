@@ -1,0 +1,55 @@
+name: "cblaster_search"
+description: Searches query BGC GenBank regions for collocated homologues in local or remote databases.
+keywords:
+  - cblaster
+  - bgc
+  - homologs
+tools:
+  - "cblaster":
+      description: "Detect collocated homologues of gene clusters"
+      homepage: "https://github.com/gamcil/cblaster"
+      licence:
+        - "MIT"
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing query BGC identifier
+    - query_gbk:
+        type: file
+        description: Query BGC GenBank file
+  - db_dmnd:
+      type: file
+      description: Local DIAMOND database (when mode is local)
+  - db_sqlite:
+      type: file
+      description: Local SQLite coordinate database paired with db_dmnd
+  - mode:
+      type: string
+      description: Search mode ('local' or 'remote')
+output:
+  summary_tsv:
+    - - meta:
+          type: map
+          description: Groovy Map containing query BGC identifier
+      - "${prefix}_cblaster.tsv":
+          type: file
+          description: cblaster cluster hit summary table
+  binary_tsv:
+    - - meta:
+          type: map
+          description: Groovy Map containing query BGC identifier
+      - "${prefix}_binary.tsv":
+          type: file
+          description: Binary gene presence/absence matrix across hits
+  versions_cblaster_search:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - cblaster:
+          type: string
+          description: The name of the tool
+      - "cblaster --version 2>&1 | grep -Eo '[0-9]+(\\.[0-9]+)+' | tail -n 1":
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

@@ -1,0 +1,62 @@
+name: "prepare_ampcombi_input"
+description: Unpacks gzipped Macrel prediction tables and protein ORFs and constructs a locus-tag-matched GenBank for AMPcombi2.
+keywords:
+  - amp
+  - macrel
+  - ampcombi2
+tools:
+  - "biopython":
+      description: "BioPython tools for biological computation"
+      homepage: "https://biopython.org/"
+      licence:
+        - "BSD-3-Clause"
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information
+    - prediction_gz:
+        type: file
+        description: Gzipped Macrel prediction file
+    - orfs_faa_gz:
+        type: file
+        description: Gzipped Macrel protein ORF FASTA
+    - genome_fasta:
+        type: file
+        description: Genome nucleotide FASTA matching Macrel contigs
+    - antismash_gbk:
+        type: file
+        description: Optional antiSMASH GenBank used to preserve functional product annotations
+output:
+  prediction:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "${prefix}.macrel.prediction":
+          type: file
+          description: Uncompressed Macrel AMP prediction table
+  faa:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "${prefix}.faa":
+          type: file
+          description: Uncompressed protein FASTA for AMPcombi2
+  gbk:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "${prefix}.gbk":
+          type: file
+          description: Locus-tag-matched GenBank file for AMPcombi2 parse_tables
+  versions_prepare_ampcombi:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - biopython:
+          type: string
+          description: The name of the tool
+      - "python3 -c 'import Bio; print(Bio.__version__)'":
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

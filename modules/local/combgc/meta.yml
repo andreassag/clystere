@@ -43,6 +43,10 @@ input:
         type: file
         description: Optional deepBGC predictions TSV file (`*.bgc.tsv`)
         pattern: "*.bgc.tsv"
+    - sanntis_gff:
+        type: file
+        description: Optional SanntiS predictions GFF3 file (`*.sanntis.full.gff`)
+        pattern: "*.sanntis.full.gff"
 output:
   summary_tsv:
     - - meta:

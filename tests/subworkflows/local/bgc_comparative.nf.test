@@ -1,0 +1,56 @@
+nextflow_workflow {
+    name "Test BGC_COMPARATIVE"
+    script "subworkflows/local/bgc_comparative.nf"
+    workflow "BGC_COMPARATIVE"
+
+    test("Real container: GROUP_GCF_GBKS + CLINKER synteny plot + CBLASTER local cohort search") {
+        when {
+            params {
+                clinker_run = true
+                clinker_max_bgcs = 10
+                cblaster_run = true
+                cblaster_mode = 'local'
+                cblaster_db = null
+                cblaster_max_queries = 5
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'cohort_regions'],
+                        file("${projectDir}/tests/data/comparative", checkIfExists: true)
+                    ]
+                )
+                input[1] = Channel.of(
+                    [
+                        [id: 'cluster_a'],
+                        file("${projectDir}/tests/data/comparative/cluster_a.gbk", checkIfExists: true)
+                    ],
+                    [
+                        [id: 'cluster_b'],
+                        file("${projectDir}/tests/data/comparative/cluster_b.gbk", checkIfExists: true)
+                    ]
+                )
+                input[2] = Channel.empty()
+                input[3] = Channel.of(
+                    [
+                        [id: 'all_samples'],
+                        file("${projectDir}/tests/data/comparative/tsv_export", checkIfExists: true)
+                    ]
+                )
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.gcf_membership_tsv.size() == 1
+            assert workflow.out.clinker_html.size() == 1
+            assert workflow.out.clinker_alignments.size() == 1
+            assert path(workflow.out.clinker_html[0][1]).size() > 1000
+
+            assert workflow.out.cblaster_summary.size() >= 1
+            assert path(workflow.out.cblaster_summary[0][1]).exists()
+            assert path(workflow.out.cblaster_summary[0][1]).size() > 0
+        }
+    }
+}

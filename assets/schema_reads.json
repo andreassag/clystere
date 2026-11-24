@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/andreassag/clystere/main/assets/schema_reads.json",
+  "title": "clystere reads samplesheet schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["sample", "fastq_1"],
+    "properties": {
+      "sample": {
+        "type": "string",
+        "pattern": "^\\S+$",
+        "meta": ["id"]
+      },
+      "fastq_1": {
+        "type": "string",
+        "format": "file-path",
+        "pattern": "^\\S+\\.(fq|fastq)(\\.gz)?$"
+      },
+      "fastq_2": {
+        "type": "string",
+        "format": "file-path",
+        "pattern": "^\\S+\\.(fq|fastq)(\\.gz)?$"
+      },
+      "assay_type": {
+        "type": "string",
+        "enum": ["metagenome", "metatranscriptome"]
+      }
+    }
+  }
+}

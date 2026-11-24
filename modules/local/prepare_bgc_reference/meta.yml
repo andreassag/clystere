@@ -1,0 +1,47 @@
+name: "prepare_bgc_reference"
+description: Builds a deduplicated nucleotide FASTA catalog and metadata table of detected BGC regions.
+keywords:
+  - bgc
+  - catalog
+  - fasta
+  - abundance
+tools:
+  - "biopython":
+      description: "Biopython SeqIO catalog builder"
+      homepage: "https://biopython.org/"
+      licence:
+        - "BSD-3-Clause"
+input:
+  - bgc_dirs:
+      type: directory
+      description: Staged BGC region directories from COMBGC_FILTER
+  - bigscape_derep_dir:
+      type: directory
+      description: Optional BiG-SCAPE dereplicate output directory
+  - gcf_membership_tsv:
+      type: file
+      description: Optional gcf_membership_summary.tsv
+output:
+  fasta:
+    - - meta:
+          type: map
+          description: "Catalog metadata map (`[id: 'bgc_catalog']`)"
+      - bgc_catalog.fna:
+          type: file
+          description: Non-redundant BGC nucleotide catalog FASTA
+  metadata_tsv:
+    - bgc_catalog_metadata.tsv:
+        type: file
+        description: BGC catalog metadata table
+  versions_prepare_bgc_ref:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - biopython:
+          type: string
+          description: The name of the tool
+      - "python3 -c 'import Bio; print(Bio.__version__)'":
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

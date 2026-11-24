@@ -1,0 +1,67 @@
+nextflow_process {
+    name "Test SANNTIS"
+    script "modules/local/sanntis/main.nf"
+    process "SANNTIS"
+    topics "versions"
+
+    test("Real container: SANNTIS with pre-computed InterProScan GFF3 emits GFF3 and versions") {
+        when {
+            process {
+                """
+                input[0] = [
+                    [id: 'sample1'],
+                    file("${projectDir}/tests/data/combgc/sample1.gbk", checkIfExists: true),
+                    file("${projectDir}/tests/data/combgc/sample1.interpro.gff3", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert path(process.out.gff[0][1]).exists()
+            assert path(process.out.gff[0][1]).getText().startsWith("##gff-version 3")
+            assert topics.versions.size() == 1
+        }
+    }
+
+    test("Real container: SANNTIS without InterProScan GFF3 fails fast with actionable message") {
+        when {
+            process {
+                """
+                input[0] = [
+                    [id: 'sample1'],
+                    file("${projectDir}/tests/data/combgc/sample1.gbk", checkIfExists: true),
+                    []
+                ]
+                """
+            }
+        }
+        then {
+            assert process.failed
+            assert process.stderr.any { it.contains("--sanntis_interpro_dir") }
+        }
+    }
+
+    test("Stub: SANNTIS emits real-format GFF3 and versions topic") {
+        options "-stub"
+        when {
+            process {
+                """
+                input[0] = [
+                    [id: 'sample1'],
+                    file("${projectDir}/tests/data/combgc/sample1.gbk", checkIfExists: true),
+                    []
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            assert path(process.out.gff[0][1]).exists()
+            def txt = path(process.out.gff[0][1]).getText()
+            assert txt.contains("sample1_sanntis_1")
+            assert txt.contains("nearest_MiBIG_diceDistance")
+            assert topics.versions.size() == 1
+        }
+    }
+}

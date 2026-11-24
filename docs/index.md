@@ -1,39 +1,44 @@
 # clystere
 
-**clystere** is a Nextflow pipeline for automated biosynthetic gene cluster (BGC) discovery and comparative analysis. It
-runs [antiSMASH](https://antismash.secondarymetabolites.org/), [GECCO](https://github.com/zellerlab/GECCO), and
-[deepBGC](https://github.com/Merck/deepbgc) across a collection of bacterial or fungal genomes, aggregates predictions
-with [comBGC](https://nf-co.re/funcscan), and optionally groups representative BGCs into gene cluster families (GCFs)
-with [BiG-SCAPE](https://github.com/medema-group/BiG-SCAPE) or [BiG-SLiCE](https://github.com/medema-group/bigslice).
+**clystere** is a Nextflow pipeline for end-to-end biosynthetic gene cluster (BGC) and antimicrobial peptide (AMP)
+discovery, assembly QC, taxonomic annotation, gene cluster family (GCF) clustering, comparative genomics, and
+metagenomic/metatranscriptomic abundance quantification.
 
 ---
 
 ## Overview
 
 ```mermaid
-graph LR
-    A[GenBank genomes<br/>samplesheet.csv] --> B[ANTISMASH_ANTISMASH<br/>per-genome]
-    A --> C[GECCO_RUN<br/>optional per-genome]
-    A --> D[DEEPBGC_PIPELINE<br/>optional per-genome]
-    B --> E[SUMMARY<br/>all_regions.tsv & region_counts.tsv]
-    B --> G[COMBGC_FILTER<br/>summary + staged regions]
-    C --> G
-    D --> G
-    G --> H[BIGSCAPE dereplicate + cluster<br/>optional]
-    G --> I[BIGSLICE_BIGSLICE cluster<br/>optional]
-    E --> J[MULTIQC<br/>multiqc_report.html]
+flowchart TD
+    IN["Samplesheet (--input)<br/>GenBank or raw FASTA"] --> PRE["1. GENOME_PREPROCESSING<br/>GenBank->FASTA, skani/dRep, Pyrodigal/Bakta"]
+    PRE --> QCTAX["2. GENOME_QC_TAXONOMY<br/>QUAST, CheckM2, GTDB-Tk"]
+    PRE --> ANN["3. BGC_ANNOTATION<br/>antiSMASH 8 (+RiPP preset), GECCO, deepBGC, SanntiS, Macrel+AMPcombi"]
+    QCTAX -- "taxonomy.tsv" --> CLUST
+    ANN --> CLUST["4. BGC_CLUSTERING<br/>comBGC (4 predictors), BiG-SCAPE v2, BiG-SLiCE v2, BiG-FAM Query"]
+    CLUST --> COMP["5. BGC_COMPARATIVE<br/>clinker synteny & cblaster search"]
+    READS["Reads (--reads_input / fastq_1,2)"] --> ABUND["6. BGC_ABUNDANCE<br/>Bowtie2/Minimap2 + Samtools + CoverM"]
+    CLUST --> ABUND
+    ANN --> SUM["7. SUMMARY & CONSENSUS<br/>all_regions, region_counts, ripp_candidates, consensus_loci, genome_qc_bgc_summary"]
+    CLUST --> SUM
+    QCTAX --> SUM
+    ABUND --> MQC["8. MULTIQC"]
+    COMP --> MQC
+    SUM --> MQC
 ```
 
 ---
 
 ## Features
 
-- Parallel antiSMASH + GECCO + deepBGC annotation across GenBank genome files (with optional GFF3 annotation)
-- Configurable predictor toggles (`--gecco_run`, `--deepbgc_run`)
-- `comBGC.py`-based summary aggregation and sample-prefixed region GBK staging before clustering
-- Per-region tabulation (`all_regions.tsv`) and per-genome/per-contig BGC count summary (`region_counts.tsv`)
-- MultiQC HTML report aggregating software versions and BGC metrics
-- Optional BiG-SCAPE (with optional `bigscape dereplicate`) or BiG-SLiCE (with `BIGSLICE_DOWNLOADDB`) clustering
+- **Tier 1 (Input Flexibility, MAG QC & Taxonomy)**: Automatic Pyrodigal/Bakta pre-annotation on raw FASTA genomes,
+  GenBank-to-FASTA extraction, optional QUAST, CheckM2, and GTDB-Tk feeding BiG-SLiCE taxonomy and summaries.
+- **Tier 2 (Expanded BGC & Peptide Discovery)**: Parallel antiSMASH 8, GECCO, deepBGC, optional SanntiS (4th predictor),
+  Macrel + AMPcombi2 antimicrobial peptides, and `--ripp_preset` with `ripp_candidates.tsv`.
+- **Tier 3 (Comparative Genomics & Novelty Scoring)**: Co-executable BiG-SCAPE v2 + BiG-SLiCE v2, BiG-FAM `--query`
+  novelty scoring, clinker interactive HTML synteny plots, cblaster cohort/remote neighborhood search, and cross-tool
+  consensus locus summary.
+- **Tier 4 (Ecological Context)**: Pre-annotation genome dereplication (`skani` / `dRep`) and metagenomic /
+  metatranscriptomic BGC & GCF read-mapping matrices (`Bowtie2` / `Minimap2` + `SAMtools` + `CoverM`).
 
 ---
 

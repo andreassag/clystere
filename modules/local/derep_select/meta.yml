@@ -1,0 +1,49 @@
+name: "derep_select"
+description: Selects representative dereplicated genomes from skani triangle ANI output.
+keywords:
+  - dereplication
+  - skani
+  - ani
+tools:
+  - "python":
+      description: "Python 3 representative genome selector"
+      homepage: "https://www.python.org/"
+      licence:
+        - "PSF-2.0"
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing run metadata
+    - skani_tsv:
+        type: file
+        description: Pairwise ANI output from skani triangle
+  - genomes:
+      type: file
+      description: Input genome FASTA files
+  - ani_threshold:
+      type: float
+      description: ANI threshold (0-100) for clustering redundant genomes
+  - checkm2_tsv:
+      type: file
+      description: Optional CheckM2 quality_report.tsv used to weight representative selection
+output:
+  ids:
+    - dereplicated_genome_ids.txt:
+        type: file
+        description: Winning representative sample IDs (one per line)
+  clusters_tsv:
+    - dereplication_clusters.tsv:
+        type: file
+        description: Cluster membership and quality scoring table
+  versions_derep_select:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - python:
+          type: string
+          description: The name of the tool
+      - python3 --version 2>&1 | sed 's/Python //':
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

@@ -1,0 +1,36 @@
+name: "gtdbtk_downloaddb"
+description: Downloads and unpacks the GTDB-Tk reference database when --gtdbtk_download_db is enabled.
+keywords:
+  - gtdbtk
+  - taxonomy
+  - database
+tools:
+  - "aria2":
+      description: "Lightweight multi-protocol command-line download utility"
+      homepage: "https://aria2.github.io/"
+      licence:
+        - "GPL-2.0-or-later"
+input:
+  - db_url:
+      type: string
+      description: URL of the GTDB-Tk reference tarball
+output:
+  database:
+    - - gtdbtk_db:
+          type: string
+          description: Database identifier
+      - gtdbtk_db:
+          type: directory
+          description: Extracted GTDB-Tk database directory
+  versions_gtdbtk_downloaddb:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - aria2:
+          type: string
+          description: The name of the tool
+      - "aria2c --version 2>&1 | sed '1s/[^ ]* [^ ]* //; q'":
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

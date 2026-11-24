@@ -27,6 +27,11 @@ output:
         type: file
         description: Tab-separated table of BGC counts per genome assembly or contig
         pattern: "region_counts.tsv"
+  ripp_candidates_tsv:
+    - ripp_candidates.tsv:
+        type: file
+        description: Optional RiPP precursor and RRE-Finder candidate table extracted when RiPP modules are enabled
+        pattern: "ripp_candidates.tsv"
   versions_summary:
     - - ${task.process}:
           type: string

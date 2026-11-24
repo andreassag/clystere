@@ -120,13 +120,98 @@ nextflow_pipeline {
         }
     }
 
-    test("Mutually exclusive bigscape_run and bigslice_run fails") {
+    test("BiG-SCAPE and BiG-SLiCE co-execution with BiG-FAM query, clinker, and cblaster") {
         when {
             params {
                 input = "${projectDir}/tests/data/samplesheet_test.csv"
                 outdir = "$outputDir"
                 bigscape_run = true
                 bigslice_run = true
+                bigfam_db = "${projectDir}/tests/data/mock_bigfam_db"
+                clinker_run = true
+                cblaster_run = true
+                antismash_db = "${outputDir}/nonexistent_antismash_db"
+                deepbgc_data_dir = "${outputDir}/nonexistent_deepbgc_db"
+                bigscape_pfam_path = "${projectDir}/tests/data/combgc/sample1.gbk"
+                bigslice_db = "${outputDir}/nonexistent_bigslice_db"
+            }
+        }
+        then {
+            assert workflow.success
+            assert path("${outputDir}/bigscape/bigscape.db").exists()
+            assert path("${outputDir}/bigslice/all_samples/result/data.db").exists()
+            assert path("${outputDir}/bigfam_query/all_samples/bigfam_novelty_scores.tsv").exists()
+            assert path("${outputDir}/comparative/gcf_membership_summary.tsv").exists()
+            assert path("${outputDir}/clinker/bigscape_GCF_0001.html").exists()
+            assert path("${outputDir}/cblaster/cohort.dmnd").exists()
+        }
+    }
+
+    test("Full 4-tier stub integration: raw FASTA, Pyrodigal, derep, QC, taxonomy, SanntiS, AMP, RiPP, reads") {
+        when {
+            params {
+                input = "${projectDir}/tests/data/samplesheet_fasta.csv"
+                reads_input = "${projectDir}/tests/data/samplesheet_reads.csv"
+                outdir = "$outputDir"
+                annotation_tool = 'pyrodigal'
+                dereplicate_genomes = true
+                dereplicate_tool = 'skani'
+                quast_run = true
+                checkm2_run = true
+                checkm2_db = "${outputDir}/nonexistent_checkm2_db"
+                gtdbtk_run = true
+                gtdbtk_db = "${projectDir}/tests/data/mock_gtdbtk_db"
+                sanntis_run = true
+                amp_run = true
+                ripp_preset = true
+                antismash_db = "${outputDir}/nonexistent_antismash_db"
+                deepbgc_data_dir = "${outputDir}/nonexistent_deepbgc_db"
+            }
+        }
+        then {
+            assert workflow.success
+            assert path("${outputDir}/qc/quast/quast.tsv").exists()
+            assert path("${outputDir}/qc/checkm2/checkm2_checkm2_report.tsv").exists()
+            assert path("${outputDir}/taxonomy/gtdbtk/gtdbtk/classify/gtdbtk.bac120.summary.tsv").exists()
+            assert path("${outputDir}/sanntis/GCA_000005845/GCA_000005845.sanntis.full.gff").exists()
+            assert path("${outputDir}/amp/ampcombi/Ampcombi_summary.tsv").exists()
+            assert path("${outputDir}/summary/ripp_candidates.tsv").exists()
+            assert path("${outputDir}/summary/consensus_loci.tsv").exists()
+            assert path("${outputDir}/summary/genome_qc_bgc_summary.tsv").exists()
+            assert path("${outputDir}/abundance/bgc_abundance_tpm.tsv").exists()
+            assert path("${outputDir}/multiqc/multiqc_report.html").exists()
+            // Verify CheckM2 ran only once (pre-dereplication) and was not duplicated in GENOME_QC_TAXONOMY
+            assert workflow.trace.succeeded().count { it.name.contains("CHECKM2_PREDICT") } == 1
+        }
+    }
+
+    test("Inline fastq_1/fastq_2/assay_type columns in --input trigger BGC_ABUNDANCE without --reads_input") {
+        when {
+            params {
+                input = "${projectDir}/tests/data/samplesheet_inline_reads.csv"
+                reads_input = null
+                outdir = "$outputDir"
+                gecco_run = false
+                deepbgc_run = false
+                antismash_db = "${outputDir}/nonexistent_antismash_db"
+            }
+        }
+        then {
+            assert workflow.success
+            assert path("${outputDir}/abundance/bgc_abundance_tpm.tsv").exists()
+            assert path("${outputDir}/abundance/bgc_abundance_mqc.tsv").exists()
+            assert path("${outputDir}/multiqc/multiqc_report.html").exists()
+        }
+    }
+
+    test("GTDB-Tk enabled without --gtdbtk_db fails") {
+        when {
+            params {
+                input = "${projectDir}/tests/data/samplesheet_test.csv"
+                outdir = "$outputDir"
+                gtdbtk_run = true
+                gtdbtk_db = "${outputDir}/missing_gtdbtk_db"
+                gtdbtk_download_db = false
             }
         }
         then {

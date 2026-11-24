@@ -1,0 +1,49 @@
+name: "clinker"
+description: Generates interactive HTML gene cluster synteny and alignment plots for multi-member GCFs.
+keywords:
+  - bgc
+  - synteny
+  - clinker
+  - visualization
+tools:
+  - "clinker":
+      description: "Gene cluster comparison figure generator"
+      homepage: "https://github.com/gamcil/clinker"
+      licence:
+        - "MIT"
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing GCF identifier e.g. `[ id:'bigscape_GCF_0001' ]`
+    - gcf_dir:
+        type: directory
+        description: Directory containing >=2 BGC GenBank files in the same GCF
+output:
+  html:
+    - - meta:
+          type: map
+          description: Groovy Map containing GCF identifier
+      - "${prefix}.html":
+          type: file
+          description: Interactive HTML synteny comparison plot
+          pattern: "*.html"
+  alignments:
+    - - meta:
+          type: map
+          description: Groovy Map containing GCF identifier
+      - "${prefix}_alignments.tsv":
+          type: file
+          description: Pairwise gene alignment summary table
+          pattern: "*_alignments.tsv"
+  versions_clinker:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - clinker:
+          type: string
+          description: The name of the tool
+      - "clinker --version 2>&1 | sed 's/.*clinker v//; s/clinker //'":
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

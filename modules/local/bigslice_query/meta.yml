@@ -1,0 +1,59 @@
+name: "bigslice_query"
+description: Queries BGC region GBKs against a pre-computed BiG-FAM/BiG-SLiCE database and extracts novelty d-scores.
+keywords:
+  - bgc
+  - bigslice
+  - bigfam
+  - novelty
+tools:
+  - "bigslice":
+      description: "Biosynthetic Gene clusters - Super Linear Clustering Engine (query mode)"
+      homepage: "https://github.com/medema-group/bigslice"
+      licence:
+        - "MIT"
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing run metadata
+    - bgc:
+        type: file
+        description: Query BGC region GenBank files
+  - hmmdb:
+      type: directory
+      description: BiG-SLiCE HMM database (bigslice-models)
+  - bigfam_db:
+      type: directory
+      description: Pre-computed BiG-FAM or BiG-SLiCE database directory containing result/data.db
+  - n_ranks:
+      type: integer
+      description: Number of top GCF hits to return per BGC
+  - novelty_threshold:
+      type: float
+      description: Distance d-score above which a BGC is flagged as putative novel
+output:
+  novelty_tsv:
+    - - meta:
+          type: map
+          description: Groovy Map containing run metadata
+      - "${prefix}/bigfam_novelty_scores.tsv":
+          type: file
+          description: Per-BGC BiG-FAM GCF assignments and novelty scores
+  reports_dir:
+    - - meta:
+          type: map
+          description: Groovy Map containing run metadata
+      - "${prefix}/reports":
+          type: directory
+          description: BiG-SLiCE query report directory
+  versions_bigslice_query:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - bigslice:
+          type: string
+          description: The name of the tool
+      - "2.0.2":
+          type: val
+          description: Tool version
+authors:
+  - "@andreassag"

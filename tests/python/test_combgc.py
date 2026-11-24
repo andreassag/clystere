@@ -145,3 +145,85 @@ def test_prepare_multisample_input_antismash(tmp_path):
     assert len(paths) == 1
     assert paths[0][0].endswith("sampleA.gbk")
     assert paths[0][1].endswith("knownclusterblast")
+
+
+def test_sanntis_workflow_parses_gff_and_handles_empty(tmp_path):
+    gff = tmp_path / "sample1.sanntis.full.gff"
+    gff.write_text(
+        "##gff-version 3\n"
+        "ctg1\tSanntiS\tcluster\t100\t1200\t0.91\t+\t.\t"
+        "ID=SanntiS_0001;nearest_MiBIG=BGC0000349;nearest_MiBIG_class=NRP;"
+        "nearest_MiBIG_diceScore=0.87;partial=false;cds_count=4\n"
+        "ctg1\tSanntiS\tcluster\t2000\t2500\t0.65\t-\t.\t"
+        "ID=SanntiS_0002;nearest_MiBIG_class=Polyketide;partial=true\n"
+    )
+    df = comBGC.sanntis_workflow(gff)
+    assert len(df) == 2
+    assert list(df["Prediction_tool"]) == ["SanntiS", "SanntiS"]
+    assert df.iloc[0]["Sample_ID"] == "sample1"
+    assert df.iloc[0]["Product_class"] == "NRP"
+    assert df.iloc[0]["MIBiG_ID"] == "BGC0000349"
+    assert df.iloc[0]["BGC_probability"] == "0.87"
+    assert df.iloc[0]["BGC_complete"] == "Yes"
+    assert df.iloc[0]["CDS_count"] == 4
+    assert df.iloc[1]["BGC_complete"] == "No"
+    assert df.iloc[1]["MIBiG_ID"] == "NA"
+
+    empty_gff = tmp_path / "empty.sanntis.full.gff"
+    empty_gff.write_text("##gff-version 3\n")
+    empty_df = comBGC.sanntis_workflow(empty_gff)
+    assert empty_df.empty
+    assert list(empty_df.columns) == comBGC.INTERNAL_COLS
+
+
+def test_sanntis_workflow_parses_real_v0935_attributes(tmp_path):
+    """Real SanntiS 0.9.3.5 writes CLUSTER with col 6 '.', score=..., nearest_MiBIG_diceDistance=..., partial=00/10."""
+    gff = tmp_path / "bsub.sanntis.full.gff"
+    gff.write_text(
+        "##gff-version 3\n"
+        "NC_000964.3\tSanntiSv0.9.3.5\tCLUSTER\t1000\t15000\t.\t.\t.\t"
+        "ID=NC_000964.3_sanntis_1;nearest_MiBIG=BGC0000433;nearest_MiBIG_class=NRP;"
+        "nearest_MiBIG_diceDistance=0.125;score=0.941;partial=00\n"
+        "NC_000964.3\tSanntiSv0.9.3.5\tCLUSTER\t50000\t60000\t.\t.\t.\t"
+        "ID=NC_000964.3_sanntis_2;nearest_MiBIG=BGC0000309;nearest_MiBIG_class=Polyketide;"
+        "nearest_MiBIG_diceDistance=0.250;partial=10\n"
+        "NC_000964.3\tSanntiSv0.9.3.5\tCLUSTER_border\t1200\t14800\t.\t.\t.\t"
+        "ID=NC_000964.3_sanntis_1_1;nearest_MiBIG=BGC0000433;partial=00\n"
+    )
+    df = comBGC.sanntis_workflow(gff)
+    assert len(df) == 2
+    assert df.iloc[0]["BGC_probability"] == "0.941"
+    assert df.iloc[0]["BGC_complete"] == "Yes"
+    assert df.iloc[0]["MIBiG_ID"] == "BGC0000433"
+    assert df.iloc[1]["BGC_probability"] == "0.750"
+    assert df.iloc[1]["BGC_complete"] == "No"
+
+
+def test_main_combines_all_four_predictors_including_sanntis(tmp_path):
+    sanntis_gff = tmp_path / "sample1.sanntis.full.gff"
+    sanntis_gff.write_text(
+        "##gff-version 3\n"
+        "ctg1.1\tSanntiS\tcluster\t10\t200\t0.88\t+\t.\t"
+        "ID=SanntiS_1;nearest_MiBIG=BGC0000349;nearest_MiBIG_class=Siderophore;"
+        "nearest_MiBIG_diceScore=0.79;partial=false\n"
+    )
+    classified = comBGC.classify_all_inputs([str(FIXTURES / "sample1.gbk"), str(sanntis_gff)])
+    assert classified["SanntiS"] == [str(sanntis_gff)]
+
+    outdir = tmp_path / "out_4tools"
+    rc = comBGC.main(
+        [
+            "--outdir",
+            str(outdir),
+            "--input",
+            str(FIXTURES / "sample1.gbk"),
+            str(FIXTURES / "knownclusterblast"),
+            str(FIXTURES / "sample1.clusters.tsv"),
+            str(FIXTURES / "sample1_cluster_1.gbk"),
+            str(FIXTURES / "sample1.bgc.tsv"),
+            str(sanntis_gff),
+        ]
+    )
+    assert rc == 0
+    summary = pd.read_csv(outdir / "combgc_summary.tsv", sep="\t")
+    assert set(summary["Prediction_tool"]) == {"antiSMASH", "GECCO", "deepBGC", "SanntiS"}

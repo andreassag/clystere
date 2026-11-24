@@ -30,7 +30,7 @@ trim_trailing_whitespace = false
 trim_trailing_whitespace = false
 
 [*.snap]
-insert_final_newline = unset
+insert_final_newline = false
 
 [tests/data/**]
 trim_trailing_whitespace = false

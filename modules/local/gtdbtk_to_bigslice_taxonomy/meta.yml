@@ -1,0 +1,33 @@
+name: "gtdbtk_to_bigslice_taxonomy"
+description: Converts GTDB-Tk summary TSV files into BiG-SLiCE taxonomy.tsv format.
+keywords:
+  - gtdbtk
+  - bigslice
+  - taxonomy
+tools:
+  - "python":
+      description: "Python 3 GTDB-Tk to BiG-SLiCE taxonomy converter"
+      homepage: "https://www.python.org/"
+      licence:
+        - "PSF-2.0"
+input:
+  - summaries:
+      type: file
+      description: GTDB-Tk *.summary.tsv file(s)
+output:
+  taxonomy_tsv:
+    - taxonomy.tsv:
+        type: file
+        description: BiG-SLiCE 9-column taxonomy table
+  versions_gtdbtk_to_bigslice:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - python:
+          type: string
+          description: The name of the tool
+      - python3 --version 2>&1 | sed 's/Python //':
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

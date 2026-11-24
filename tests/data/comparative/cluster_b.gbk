@@ -1,0 +1,340 @@
+LOCUS       cluster_b               6000 bp    DNA              UNK 01-JAN-1980
+DEFINITION  Escherichia coli str. K-12 substr. MG1655, complete genome (region
+            570001..670000).
+ACCESSION   cluster_b
+VERSION     cluster_b
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     gene            393..944
+                     /gene="ybcL"
+                     /locus_tag="b0545"
+                     /gene_synonym="ECK0536"
+                     /db_xref="ASAP:ABE-0001869"
+                     /db_xref="ECOCYC:G6301"
+                     /db_xref="GeneID:945165"
+     CDS             393..944
+                     /gene="ybcL"
+                     /locus_tag="b0545"
+                     /gene_synonym="ECK0536"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="periplasmic protein YbcL"
+                     /protein_id="NP_415077.1"
+                     /db_xref="UniProtKB/Swiss-Prot:P77368"
+                     /db_xref="ASAP:ABE-0001869"
+                     /db_xref="ECOCYC:G6301"
+                     /db_xref="GeneID:945165"
+                     /translation="MKTLIVSTVLAFITFSAQAAAFQVTSNEIKTGEQLTTSHVFSGFG
+                     CEGGNTSPSLTWSGVPEGTKSFAVTVYDPDAPTGSGWWHWTVVNIPATVTYLPVDAGRR
+                     DGTKLPTGAVQGRNDFGYAGFGGACPPKGDKPHHYQFKVWALKTEKIPVDSNSSGALVG
+                     YMLNANKIATAEITPVYEIK"
+     gene            954..1751
+                     /gene="ybcM"
+                     /locus_tag="b0546"
+                     /gene_synonym="ECK0537"
+                     /db_xref="ASAP:ABE-0001871"
+                     /db_xref="ECOCYC:G6302"
+                     /db_xref="GeneID:945163"
+     CDS             954..1751
+                     /gene="ybcM"
+                     /locus_tag="b0546"
+                     /gene_synonym="ECK0537"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="putative DNA-binding transcriptional regulator"
+                     /protein_id="NP_415078.1"
+                     /db_xref="UniProtKB/Swiss-Prot:P77634"
+                     /db_xref="ASAP:ABE-0001871"
+                     /db_xref="ECOCYC:G6302"
+                     /db_xref="GeneID:945163"
+                     /translation="MLARGKTNLKIEEIRMHKHHEIHRVKPLMPALCRIRQGKKVINWE
+                     THTLTVDNNQIILFPCGYEFYIENYPEAGLYLAEMLYLPIDLIESFQKLYTVTDQIRNK
+                     TSFFLPQNPELIYCWEQLKTSVSRGFSTKIQEHLAMGVLLSLGVNHVNHLLLSYSKQSL
+                     ISRCYNLLLSEPGTKWTANKVARYLYISVSTLHRRLASEGVSFQSILDDVRLNNALSAI
+                     QTTVKPISEIARENGYKCPSRFTERFHNRFNITPREIRKASRE"
+     gene            1868..1969
+                     /gene="ylcH"
+                     /locus_tag="b4588"
+                     /gene_synonym="ECK4398"
+                     /db_xref="ECOCYC:G0-10584"
+                     /db_xref="GeneID:5061504"
+     CDS             1868..1969
+                     /gene="ylcH"
+                     /locus_tag="b4588"
+                     /gene_synonym="ECK4398"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="uncharacterized protein YlcH"
+                     /protein_id="YP_001165308.1"
+                     /db_xref="UniProtKB/Swiss-Prot:Q47268"
+                     /db_xref="ECOCYC:G0-10584"
+                     /db_xref="GeneID:5061504"
+                     /translation="MRTYNPNSLLPSQMQKCTCNSLHLAFDLCGGEA"
+     gene            1966..2421
+                     /gene="ybcN"
+                     /locus_tag="b0547"
+                     /gene_synonym="ECK0538"
+                     /db_xref="ASAP:ABE-0001874"
+                     /db_xref="ECOCYC:G6303"
+                     /db_xref="GeneID:945162"
+     CDS             1966..2421
+                     /gene="ybcN"
+                     /locus_tag="b0547"
+                     /gene_synonym="ECK0538"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="DNA base-flipping protein"
+                     /protein_id="NP_415079.1"
+                     /db_xref="UniProtKB/Swiss-Prot:Q47269"
+                     /db_xref="ASAP:ABE-0001874"
+                     /db_xref="ECOCYC:G6303"
+                     /db_xref="GeneID:945162"
+                     /translation="MNLSQDGIKLHRGNFTAIGRQIQPYLEEGKCFRMVLKPWREKRSL
+                     SQNALSHMWYSEISEYLISRGKTFATPAWVKDALKHTYLGYETKDLVDVVTGDITTIQS
+                     LRHTSDLDTGEMYVFLCKVEAWAMNIGCHLTIPQSCEFQLLRDKQEA"
+     gene            2421..2591
+                     /gene="ninE"
+                     /locus_tag="b0548"
+                     /gene_synonym="ECK0539"
+                     /db_xref="ASAP:ABE-0001876"
+                     /db_xref="ECOCYC:G6304"
+                     /db_xref="GeneID:945151"
+     CDS             2421..2591
+                     /gene="ninE"
+                     /locus_tag="b0548"
+                     /gene_synonym="ECK0539"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="NinE family prophage protein"
+                     /protein_id="NP_415080.1"
+                     /db_xref="UniProtKB/Swiss-Prot:Q47270"
+                     /db_xref="ASAP:ABE-0001876"
+                     /db_xref="ECOCYC:G6304"
+                     /db_xref="GeneID:945151"
+                     /translation="MATPLIRVMNGHIYRVPNRRKRKPELKPSEIPTLLGYTASLVDKK
+                     WLRLAARRSHG"
+     gene            2584..2874
+                     /gene="ybcO"
+                     /locus_tag="b0549"
+                     /gene_synonym="ECK0540"
+                     /db_xref="ASAP:ABE-0001878"
+                     /db_xref="ECOCYC:G6305"
+                     /db_xref="GeneID:945147"
+     CDS             2584..2874
+                     /gene="ybcO"
+                     /locus_tag="b0549"
+                     /gene_synonym="ECK0540"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="putative nuclease YbcO"
+                     /protein_id="NP_415081.1"
+                     /db_xref="UniProtKB/Swiss-Prot:P68661"
+                     /db_xref="ASAP:ABE-0001878"
+                     /db_xref="ECOCYC:G6305"
+                     /db_xref="GeneID:945147"
+                     /translation="MADLRKAARGRECQVRIPGVCNGNPETSVLAHIRLTGLCGTGTKP
+                     PDLIATIACSACHDEIDRRTHFVDAGYAKECALEGMARTQVIWLKEGVIKA"
+     gene            2871..3233
+                     /gene="rusA"
+                     /locus_tag="b0550"
+                     /gene_synonym="ECK0541; rus; ybcP"
+                     /db_xref="ASAP:ABE-0001880"
+                     /db_xref="ECOCYC:G6306"
+                     /db_xref="GeneID:945174"
+     CDS             2871..3233
+                     /gene="rusA"
+                     /locus_tag="b0550"
+                     /gene_synonym="ECK0541; rus; ybcP"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="crossover junction endodeoxyribonuclease RusA"
+                     /protein_id="NP_415082.1"
+                     /db_xref="UniProtKB/Swiss-Prot:P0AG74"
+                     /db_xref="ASAP:ABE-0001880"
+                     /db_xref="ECOCYC:G6306"
+                     /db_xref="GeneID:945174"
+                     /translation="MNTYSITLPWPPSNNRYYRHNRGRTHVSAEGQAYRDNVARIIKNA
+                     MLDIGLAMPVKIRIECHMPDRRRRDLDNLQKAAFDALTKAGFWLDDAQVVDYRVVKMPV
+                     TKGGRLELTITEMGNE"
+     gene            3230..3370
+                     /gene="ylcG"
+                     /locus_tag="b4509"
+                     /gene_synonym="ECK0542"
+                     /db_xref="ASAP:ABE-0285030"
+                     /db_xref="ECOCYC:G0-10435"
+                     /db_xref="GeneID:1450240"
+     CDS             3230..3370
+                     /gene="ylcG"
+                     /locus_tag="b4509"
+                     /gene_synonym="ECK0542"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="uncharacterized protein YlcG"
+                     /protein_id="YP_588439.1"
+                     /db_xref="UniProtKB/Swiss-Prot:Q47272"
+                     /db_xref="ASAP:ABE-0285030"
+                     /db_xref="ECOCYC:G0-10435"
+                     /db_xref="GeneID:1450240"
+                     /translation="MMFEFNMAELLRHRWGRLRLYRFPGSVLTDYRILKNYAKTLTGAG
+                     V"
+     gene            3456..3839
+                     /gene="quuD"
+                     /locus_tag="b0551"
+                     /gene_synonym="ECK0543; ybcQ"
+                     /db_xref="ASAP:ABE-0001883"
+                     /db_xref="ECOCYC:G6307"
+                     /db_xref="GeneID:945177"
+     CDS             3456..3839
+                     /gene="quuD"
+                     /locus_tag="b0551"
+                     /gene_synonym="ECK0543; ybcQ"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="prophage antitermination protein Q homolog QuuD"
+                     /protein_id="NP_415083.1"
+                     /db_xref="UniProtKB/Swiss-Prot:Q47274"
+                     /db_xref="ASAP:ABE-0001883"
+                     /db_xref="ECOCYC:G6307"
+                     /db_xref="GeneID:945177"
+                     /translation="MRDIQMVLERWGAWAANNHEDVTWSSIAAGFKGLITSKVKSRPQC
+                     CDDDAMIICGCMARLKKNNSDLHDLLVDYYVVGMTFMSLAGKHCCSDGYIGKRLQKAEG
+                     IIEGMLMALDIRLEMDIVVNNSN"
+     misc_feature    complement(4029..4086)
+                     /gene="nmpC"
+                     /locus_tag="b0553"
+                     /gene_synonym="ECK0544; phmA"
+                     /note="gene fragment 2 of nmpC"
+                     /pseudo=""
+                     /db_xref="ECOCYC:GFRAG0-26"
+     mobile_element  complement(4091..5285)
+                     /mobile_element_type="insertion sequence:IS5B"
+     gene            complement(4237..5217)
+                     /gene="insH2"
+                     /locus_tag="b0552"
+                     /gene_synonym="ECK0261; trs5-2; yi52_2"
+                     /db_xref="ASAP:ABE-0001886"
+                     /db_xref="ECOCYC:G6308"
+                     /db_xref="GeneID:946163"
+     CDS             complement(4237..5217)
+                     /gene="insH2"
+                     /locus_tag="b0552"
+                     /gene_synonym="ECK0261; trs5-2; yi52_2"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="IS5 transposase and trans-activator"
+                     /protein_id="NP_415084.2"
+                     /db_xref="UniProtKB/Swiss-Prot:P0CE50"
+                     /db_xref="ASAP:ABE-0001886"
+                     /db_xref="ECOCYC:G6308"
+                     /db_xref="GeneID:946163"
+                     /translation="MSHQLTFADSEFSSKRRQTRKEIFLSRMEQILPWQNMVEVIEPFY
+                     PKAGNGRRPYPLETMLRIHCMQHWYNLSDGAMEDALYEIASMRLFARLSLDSALPDRTT
+                     IMNFRHLLEQHQLARQLFKTINRWLAEAGVMMTQGTLVDATIIEAPSSTKNKEQQRDPE
+                     MHQTKKGNQWHFGMKAHIGVDAKSGLTHSLVTTAANEHDLNQLGNLLHGEEQFVSADAG
+                     YQGAPQREELAEVDVDWLIAERPGKVRTLKQHPRKNKTAINIEYMKASIRARVEHPFRI
+                     IKRQFGFVKARYKGLLKNDNQLAMLFTLANLFRADQMIRQWERSH"
+ORIGIN
+        1 ttaatgggta attactttgt ttgctcccac aagcgagttt tgtacggctg tattggggta
+       61 gtaaatgagc tatacaatct taatcatttg ttaggtgaga actcttggtc gcagattcaa
+      121 atactgaaaa tacgtgacaa attattatga gcaaaatggt gtatgtcacg tattttgaat
+      181 ggtaggttaa aaaataacac cgactttcgt aggtgttact aataataaag cagagttttt
+      241 agatagtatc aatgtgcttt gtgtatattg tggcaaataa ttgggttggg ggtacaattg
+      301 tgattgcttt tgcatgaaca ttgcgccttt atgcataatg agataaagga atatcaaata
+      361 aaataacgat aggtcataac aaagaggttt ttatgaaaac acttatcgtt tcaactgtat
+      421 tggcattcat aacattttct gcgcaggctg cagcatttca ggtcactagt aatgaaataa
+      481 aaacaggaga gcaacttaca acgtctcatg tcttttctgg atttgggtgt gaaggtggta
+      541 atacatcgcc ctcattaacc tggtctggtg ttcctgaagg taccaaaagc tttgccgtaa
+      601 ctgtatatga tccagatgca cctacaggca gtggttggtg gcattggact gttgttaata
+      661 ttccagcaac agtaacatat ttgcccgttg atgcagggag acgtgatgga acaaaactgc
+      721 cgactggtgc tgttcaaggc cgaaatgatt ttggctatgc tgggtttggt ggcgcatgtc
+      781 ctcctaaagg agataaacca catcattacc agtttaaagt atgggctcta aaaactgaaa
+      841 agattcctgt agattctaac tccagcggag cgttagttgg ttatatgctt aatgctaata
+      901 aaatcgcaac cgctgagata acaccagttt atgagataaa gtagggtgag agtatgctgg
+      961 caagaggtaa gactaactta aagatcgaag aaatacggat gcataaacat catgagattc
+     1021 atagggttaa gcctcttatg ccagctttgt gtcgtatccg tcagggaaag aaagttatca
+     1081 attgggagac gcatacttta actgttgata ataatcaaat aatattattt ccttgtggtt
+     1141 atgaatttta tattgagaat tatcctgaag cagggcttta tcttgcagaa atgctttact
+     1201 tacccattga tttaattgag agtttccaaa aactttatac ggtaactgat caaatacgta
+     1261 acaaaacaag tttcttttta cctcagaatc ctgagttaat atattgttgg gagcaactaa
+     1321 aaacatctgt ttcccgaggc ttctcaacta aaattcagga gcacttagca atgggcgttc
+     1381 tactttcgtt aggagtgaat catgttaatc atttactttt atcatatagt aaacaatcat
+     1441 tgataagtcg ttgttataac ctgctgctat ccgaacccgg cacaaaatgg acagcaaaca
+     1501 aggttgctcg atatctctac atttctgttt ctacattaca tcgccgtcta gcaagcgagg
+     1561 gggtaagttt ccaaagtata ctggacgatg tgaggttaaa taatgcgttg tctgctatac
+     1621 aaacgacggt aaaacctata agcgagattg ccagagaaaa tggttataag tgtccttctc
+     1681 gttttactga aagatttcat aatcgtttta atataacacc aagagagata agaaaagctt
+     1741 ccagagagta aaagtgtttt aagaaggagc aattctatcg attttgattt tgggaaatca
+     1801 acacggcata attatgtcac cggagcctga acaactccgg tgacttctgc gctaaacggg
+     1861 gacgtttatg cgcacataca atccaaactc tcttctccct tcacagatgc agaaatgcac
+     1921 ctgcaattct ttgcatctag cgtttgacct ctgcggaggg gaagcgtgaa cctctcacaa
+     1981 gacggcatca aattacatcg cggcaacttc accgctatcg gtcggcagat ccagccttat
+     2041 ctggaggagg gcaaatgctt tcgcatggtg cttaaaccgt ggcgtgagaa acgcagtctt
+     2101 tcccagaatg cactcagcca catgtggtac agcgaaatca gtgaatacct catcagcagg
+     2161 ggtaaaacgt tcgccactcc agcttgggta aaagatgctc tcaaacacac atatctcggt
+     2221 tatgaaacca aagacctggt tgatgtcgta accggtgata tcaccactat ccagtcgtta
+     2281 cgccatacct ccgatcttga taccggagag atgtatgtct tcctgtgtaa ggttgaagcc
+     2341 tgggcgatga atattggttg ccacctgact attccacaga gctgcgagtt ccagctgctg
+     2401 cgcgacaagc aggaggcgta atggctacac cgcttattcg tgtcatgaac ggacacatct
+     2461 acagagtacc aaatcgtcgt aagcgtaaac ctgagctgaa gccatccgaa ataccaacac
+     2521 tgctcggata taccgccagc ttggttgata aaaaatggtt gcgactggca gcaaggagga
+     2581 gtcatggctg atttgagaaa agcagcgcgt ggtcgggaat gccaggtaag aatccctggc
+     2641 gtatgtaatg gcaaccctga aacgtctgta ctggcacata tccggctgac tggattgtgc
+     2701 ggcaccggta cgaaaccgcc agacctgatt gccaccattg catgttctgc ctgccacgac
+     2761 gaaatcgacc gccgcacgca ttttgttgac gctggatatg caaaagaatg cgcgctggaa
+     2821 ggtatggcga gaacacaggt tatctggctg aaagaggggg ttattaaggc gtgaatacct
+     2881 acagcatcac attaccctgg cctccgagca ataatcgcta ttaccgccat aatcgcgggc
+     2941 gcacgcacgt cagcgcagag gggcaggcat accgcgataa cgtcgcccga atcattaaaa
+     3001 acgcaatgct ggatatcggc ctggctatgc ctgtgaaaat ccgcattgag tgccacatgc
+     3061 cggatcgccg tcgccgtgac ctggataatc tgcaaaaagc cgcttttgac gcactcacta
+     3121 aagcaggttt ctggctggat gatgctcagg tcgttgatta ccgcgttgtg aagatgcctg
+     3181 ttaccaaagg tgggaggctg gaactgacca tcaccgaaat ggggaatgaa tgatgtttga
+     3241 gtttaatatg gcagaacttc ttcgccaccg ctgggggcgt ctgcgcttat atcgtttccc
+     3301 cggttctgtt ttgaccgatt accgaatact gaagaattac gccaaaaccc tgacaggagc
+     3361 aggagtatga agtcagagat aacaatcaac taatactgtt ttgttgattt ttgcttgtaa
+     3421 ttggcgttct ggtctgattt ttgtggagta agttgatgcg tgatattcag atggttcttg
+     3481 agcgttgggg agcgtgggcg gctaataatc atgaagatgt gacctggtcg tccattgccg
+     3541 ccggttttaa gggattaatt acttcaaaag taaaatctcg cccgcaatgt tgtgacgatg
+     3601 acgcgatgat catttgcggg tgcatggccc gtctgaaaaa gaacaacagc gatttgcacg
+     3661 atttattagt agattattat gtagtcggta tgacattcat gtcactggca ggtaagcatt
+     3721 gctgctctga tggttatatc gggaaaaggt tacagaaggc tgagggcata attgaaggga
+     3781 tgttaatggc attagatatc cggttagaga tggatatcgt tgttaataac tctaattaat
+     3841 atgccaattg tttactaaaa attattaaaa atggggcgtt gagacgcccc caaaaataaa
+     3901 gggtaatata taacagaagg tttatatagt tagaagcaag gttgtgcttc taaaggaagt
+     3961 ggcttgaggg agccacttat atgttgggga ggcaacgcct cccgcaacat atctttttcg
+     4021 taatcagatt agaactggta aaccagacct acagcaacga tgtcatcagt gcttacaccg
+     4081 agtgctttag ggaaggtgcg aataagcggg gaaattcttc tcggctgact cagtcatttc
+     4141 atttcttcat gtttgagccg attttttctc ccgtaaatgc cttgaatcag cctatttaga
+     4201 ccgtttcttc gccatttaag gcgttatccc cagtttttag tgagatctct cccactgacg
+     4261 tatcatttgg tccgcccgaa acaggttggc cagcgtgaat aacatcgcca gttggttatc
+     4321 gtttttcagc aaccccttgt atctggcttt cacgaagccg aactgtcgct tgatgatgcg
+     4381 aaatgggtgc tccaccctgg cccggatgct ggctttcatg tattcgatgt tgatggccgt
+     4441 tttgttcttg cgtggatgct gtttcaaggt tcttaccttg ccggggcgct cggcgatcag
+     4501 ccagtccaca tccacctcgg ccagctcctc gcgctgtggc gccccttggt agccggcatc
+     4561 ggctgagaca aattgctcct ctccatgcag cagattaccc agctgattga ggtcatgctc
+     4621 gttggccgcg gtggtgacca ggctgtgggt caggccactc ttggcatcga caccaatgtg
+     4681 ggccttcatg ccaaagtgcc actgattgcc tttcttggtc tgatgcatct ccggatcgcg
+     4741 ttgctgctct ttgttcttgg tcgagctggg tgcctcaatg atggtggcat cgaccaaggt
+     4801 gccttgagtc atcatgacgc ctgcttcggc cagccagcga ttgatggtct tgaacaattg
+     4861 gcgggccagt tgatgctgct ccagcaggtg gcggaaattc atgatggtgg tgcggtccgg
+     4921 caaggcgcta tccagggata accgggcaaa cagacgcatg gaggcgattt cgtacagagc
+     4981 atcttccatc gcgccatcgc tcaggttgta ccaatgctgc atgcagtgaa tgcgtagcat
+     5041 ggtttccagc ggataaggtc gccggccatt accagccttg gggtaaaacg gctcgatgac
+     5101 ttccaccatg ttttgccatg gcagaatctg ctccatgcgg gacaagaaaa tctcttttct
+     5161 ggtctgacgg cgcttactgc tgaattcact gtcggcgaag gtaagttgat gactcatgat
+     5221 gaaccctgtt ctatggctcc agatgacaaa catgatctca tatcagggac ttgttcgcac
+     5281 cttccttagt gaagtcattt ttgtcaagca ggttgatttt gtaatcaacg aaagtagaca
+     5341 tatttttgtt gaagtaatag gttgcaccta catcaacata tttgactaag tcctgatcgc
+     5401 cccatactcc aagatcctta cctttagatt gcaggtaagc aacggacgga cgcagaccga
+     5461 aatcgaactg atattgtgca acagcttcga agttttgggc tttattagca acgaagtgat
+     5521 cagcaaatac agtcatattc tgggtttcag aataggtagt ggccaggtaa atgttgttag
+     5581 cgtcatattt cagacctgcg gcccaaactt ctgcattttt accggaagca aatacttcag
+     5641 gaagaacttt ccctgcatta acttgagtgt cggtacgatc agatttcgca taagttgcac
+     5701 cgataccgaa tccttcgtat tcataggtag cagagaaacc gaagccatca ccgttacctt
+     5761 cagtgtagtt atcgaaatcg ctacgatcgt ttttgccttg gtactgagca gcaaagttca
+     5821 gaccatcaac cagaccaaag aagtcgttgt tacgataggt tgcaacacca gttgcacgtt
+     5881 gagtcatgaa cacgtcggtt tgagtccaag tgtcaccacc gaattctggc aggacgtcag
+     5941 tccacgcacc gatgtcgtat gctacaccgt agttacggcc gtaatcgatg gagccgtagt
+//

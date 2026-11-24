@@ -1,3 +1,14 @@
 {
-  "Exclude": ["node_modules", "\\.git", "\\.nextflow", "\\.venv", "site", "work", "results", "tests/data/combgc"]
+  "Exclude": [
+    "node_modules",
+    "\\.git",
+    "\\.nextflow",
+    "\\.venv",
+    "site",
+    "work",
+    "results",
+    "modules/nf-core",
+    "tests/data/combgc",
+    "tests/data/comparative"
+  ]
 }

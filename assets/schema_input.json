@@ -21,6 +21,20 @@
         "type": "string",
         "format": "file-path",
         "pattern": "^\\S+\\.(gff|gff3|gff\\.gz|gff3\\.gz)$"
+      },
+      "fastq_1": {
+        "type": "string",
+        "format": "file-path",
+        "pattern": "^\\S+\\.(fq|fastq)(\\.gz)?$"
+      },
+      "fastq_2": {
+        "type": "string",
+        "format": "file-path",
+        "pattern": "^\\S+\\.(fq|fastq)(\\.gz)?$"
+      },
+      "assay_type": {
+        "type": "string",
+        "enum": ["metagenome", "metatranscriptome"]
       }
     }
   }

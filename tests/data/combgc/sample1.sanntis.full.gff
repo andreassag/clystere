@@ -1,0 +1,2 @@
+##gff-version 3
+ctg1.1	SanntiS	cluster	1	490	0.91	+	.	ID=SanntiS_0001;nearest_MiBIG=BGC0000349;nearest_MiBIG_class=Siderophore;nearest_MiBIG_diceScore=0.86;partial=false;cds_count=1

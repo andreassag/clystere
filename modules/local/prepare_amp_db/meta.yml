@@ -1,0 +1,40 @@
+name: "prepare_amp_db"
+description: Downloads or indexes an AMPcombi2 reference database once per run for parallel parse_tables tasks.
+keywords:
+  - amp
+  - ampcombi2
+  - mmseqs2
+  - database
+tools:
+  - "ampcombi":
+      description: "AMPcombi parses AMP prediction tools and aligns hits against AMP reference databases"
+      homepage: "https://github.com/Darcy220606/AMPcombi"
+      licence:
+        - "MIT"
+input:
+  - opt_amp_db:
+      type: string
+      description: AMP database name (DRAMP, APD, or UniRef100)
+  - existing_db_dir:
+      type: directory
+      description: Optional pre-downloaded AMP database directory (indexed without mutating source)
+  - trigger:
+      type: boolean
+      description: Channel signal ensuring DB preparation runs only when samples exist
+output:
+  db:
+    - "amp_${opt_amp_db}_database":
+        type: directory
+        description: Ready-to-use AMP database directory containing indexed mmseqs2/ref_DB
+  versions_prepare_amp_db:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - ampcombi:
+          type: string
+          description: The name of the tool
+      - ampcombi --version | sed 's/ampcombi //':
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

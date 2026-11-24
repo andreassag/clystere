@@ -9,10 +9,41 @@ set in a params YAML/JSON file (`-params-file params.yml`).
 
 | Parameter            | Default                            | Description                                                                |
 | -------------------- | ---------------------------------- | -------------------------------------------------------------------------- |
-| `--input`            | `null`                             | **Required.** Path to a samplesheet CSV.                                   |
+| `--input`            | `null`                             | **Required.** Path to a genome samplesheet CSV.                            |
+| `--reads_input`      | `null`                             | Optional reads samplesheet CSV (`sample,fastq_1[,fastq_2,assay_type]`).    |
 | `--outdir`           | `results`                          | Output directory for published files.                                      |
 | `--clystere_db_dir`  | `${launchDir}/.clystere/databases` | Workspace directory for downloading and caching reference databases.       |
 | `--publish_dir_mode` | `copy`                             | How Nextflow stages outputs: `copy`, `symlink`, `move`, `rellink`, `link`. |
+
+---
+
+## Genome preprocessing & dereplication
+
+| Parameter               | Default     | Description                                                                             |
+| ----------------------- | ----------- | --------------------------------------------------------------------------------------- |
+| `--annotation_tool`     | `pyrodigal` | Automatic gene caller for unannotated FASTA inputs: `pyrodigal`, `bakta`, or `none`.    |
+| `--pyrodigal_mode`      | `single`    | Pyrodigal mode: `single` (isolates) or `meta` (metagenomic contigs/MAGs).               |
+| `--bakta_db`            | `null`      | Path to existing Bakta DB. Downloaded automatically when `--annotation_tool bakta`.     |
+| `--bakta_db_type`       | `light`     | Bakta DB type to download automatically: `light` or `full`.                             |
+| `--dereplicate_genomes` | `false`     | Dereplicate redundant genomes/MAGs prior to BGC annotation.                             |
+| `--dereplicate_tool`    | `skani`     | Dereplication engine: `skani` (default) or `drep`.                                      |
+| `--dereplicate_ani`     | `99.0`      | ANI percentage threshold for dereplication (`99.0` strain-level, `95.0` species-level). |
+
+---
+
+## Assembly QC & taxonomy (Tier 1)
+
+| Parameter                | Default     | Description                                                                                  |
+| ------------------------ | ----------- | -------------------------------------------------------------------------------------------- |
+| `--quast_run`            | `false`     | Run QUAST assembly contiguity QC (N50, L50, contig counts).                                  |
+| `--checkm2_run`          | `false`     | Run CheckM2 completeness and contamination QC.                                               |
+| `--checkm2_db`           | `null`      | Path to CheckM2 `.dmnd` file or directory. Auto-downloaded to `--clystere_db_dir` if absent. |
+| `--checkm2_db_zenodo_id` | `14897628`  | Zenodo record ID for automatic CheckM2 database download.                                    |
+| `--gtdbtk_run`           | `false`     | Run GTDB-Tk taxonomic classification and wire lineages into BiG-SLiCE and summary tables.    |
+| `--gtdbtk_db`            | `null`      | Path to extracted GTDB-Tk reference package (required unless `--gtdbtk_download_db true`).   |
+| `--gtdbtk_download_db`   | `false`     | Auto-download GTDB-Tk reference archive (~110 GB) if `--gtdbtk_db` is omitted.               |
+| `--gtdbtk_db_url`        | GTDB latest | Archive URL used when `--gtdbtk_download_db` is enabled.                                     |
+| `--gtdbtk_extra_args`    | `''`        | Additional CLI arguments appended to `gtdbtk classify_wf`.                                   |
 
 ---
 
@@ -31,8 +62,7 @@ set in a params YAML/JSON file (`-params-file params.yml`).
 
 ## antiSMASH — detection modules
 
-These flags enable additional detection modules. All require `--antismash_minimal false` (or set the flag alongside
-`--antismash_minimal` to override it):
+These flags enable additional detection modules alongside or instead of minimal mode:
 
 | Parameter                           | antiSMASH flag            | Description                        |
 | ----------------------------------- | ------------------------- | ---------------------------------- |
@@ -58,98 +88,98 @@ These flags enable additional detection modules. All require `--antismash_minima
 
 ---
 
-## antiSMASH — ClusterBlast
+## antiSMASH — ClusterBlast, HMM & output
 
-| Parameter                           | Default | antiSMASH flag            | Description                                                            |
-| ----------------------------------- | ------- | ------------------------- | ---------------------------------------------------------------------- |
-| `--antismash_cc_mibig`              | `false` | `--cc-mibig`              | Compare clusters to MIBiG reference clusters                           |
-| `--antismash_cb_general`            | `false` | `--cb-general`            | GeneralClusterBlast (NCBI database)                                    |
-| `--antismash_cb_knownclusters`      | `false` | `--cb-knownclusters`      | KnownClusterBlast (MIBiG). Also adds hit columns to `all_regions.tsv`. |
-| `--antismash_cb_subclusters`        | `false` | `--cb-subclusters`        | SubClusterBlast                                                        |
-| `--antismash_cc_custom_dbs`         | `null`  | `--cc-custom-dbs`         | Comma-separated paths to custom ClusterCompare DB config files         |
-| `--antismash_cb_nclusters`          | `null`  | `--cb-nclusters`          | Maximum clusters to report (default: 10)                               |
-| `--antismash_cb_min_homology_scale` | `null`  | `--cb-min-homology-scale` | Minimum homology scale threshold (0.0–1.0)                             |
-
----
-
-## antiSMASH — HMM detection
-
-| Parameter                                                  | Default   | Description                                            |
-| ---------------------------------------------------------- | --------- | ------------------------------------------------------ |
-| `--antismash_hmmdetection_strictness`                      | `relaxed` | Detection strictness: `strict`, `relaxed`, or `loose`. |
-| `--antismash_hmmdetection_fungal_cutoff_multiplier`        | `null`    | Override fungal HMM score cutoff multiplier.           |
-| `--antismash_hmmdetection_fungal_neighbourhood_multiplier` | `null`    | Override fungal neighbourhood multiplier.              |
-| `--antismash_hmmdetection_limit_to_rule_names`             | `null`    | Comma-separated rule names to restrict detection.      |
-| `--antismash_hmmdetection_limit_to_rule_categories`        | `null`    | Comma-separated rule categories to restrict detection. |
+| Parameter                             | Default   | Description                                                          |
+| ------------------------------------- | --------- | -------------------------------------------------------------------- |
+| `--antismash_cc_mibig`                | `false`   | Compare clusters to MIBiG reference clusters (`--cc-mibig`).         |
+| `--antismash_cb_general`              | `false`   | GeneralClusterBlast (`--cb-general`).                                |
+| `--antismash_cb_knownclusters`        | `false`   | KnownClusterBlast against MIBiG (adds columns to `all_regions.tsv`). |
+| `--antismash_cb_subclusters`          | `false`   | SubClusterBlast (`--cb-subclusters`).                                |
+| `--antismash_hmmdetection_strictness` | `relaxed` | Detection strictness: `strict`, `relaxed`, or `loose`.               |
+| `--antismash_zip_output`              | `false`   | Archive antiSMASH directory as a zip file.                           |
+| `--antismash_allow_long_headers`      | `true`    | Allow sequence headers longer than 80 characters.                    |
 
 ---
 
-## antiSMASH — output
+## GECCO, deepBGC & Tier 2 Expanded Discovery
 
-| Parameter                        | Default | Description                                                             |
-| -------------------------------- | ------- | ----------------------------------------------------------------------- |
-| `--antismash_zip_output`         | `false` | `true` = force zip; `false` = force no-zip; `null` = antiSMASH default. |
-| `--antismash_summary_gbk`        | `null`  | Toggle summary GenBank output (`true`/`false`/`null`).                  |
-| `--antismash_region_gbks`        | `null`  | Toggle per-region GenBank files (`true`/`false`/`null`).                |
-| `--antismash_allow_long_headers` | `true`  | Allow sequence headers longer than antiSMASH's default limit.           |
-
----
-
-## GECCO
-
-| Parameter            | Default | Description                                |
-| -------------------- | ------- | ------------------------------------------ |
-| `--gecco_run`        | `true`  | Run GECCO for each input genome.           |
-| `--gecco_extra_args` | `''`    | Arbitrary extra arguments passed to GECCO. |
-
----
-
-## deepBGC
-
-| Parameter              | Default | Description                                                          |
-| ---------------------- | ------- | -------------------------------------------------------------------- |
-| `--deepbgc_run`        | `true`  | Run deepBGC for each input genome.                                   |
-| `--deepbgc_data_dir`   | `null`  | Path to deepBGC downloads/models. Auto-downloaded when absent/empty. |
-| `--deepbgc_extra_args` | `''`    | Arbitrary extra arguments passed to deepBGC.                         |
+| Parameter                | Default | Description                                                                                                                                |
+| ------------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--gecco_run`            | `true`  | Run GECCO for each input genome.                                                                                                           |
+| `--gecco_extra_args`     | `''`    | Extra CLI arguments passed to GECCO.                                                                                                       |
+| `--deepbgc_run`          | `true`  | Run deepBGC for each input genome.                                                                                                         |
+| `--deepbgc_data_dir`     | `null`  | Path to deepBGC downloads/models. Auto-downloaded when absent.                                                                             |
+| `--deepbgc_extra_args`   | `''`    | Extra CLI arguments passed to deepBGC.                                                                                                     |
+| `--sanntis_run`          | `false` | Run SanntiS as a 4th neural-network BGC predictor integrated into `comBGC.py` and clustering.                                              |
+| `--sanntis_interpro_dir` | `null`  | Optional directory of pre-computed per-sample InterProScan `.gff3`/`.tsv` files (`<sample_id>*`) passed to SanntiS via `--ip-file`.        |
+| `--sanntis_extra_args`   | `''`    | Extra CLI arguments passed to SanntiS.                                                                                                     |
+| `--amp_run`              | `false` | Run Macrel + AMPcombi2 antimicrobial peptide discovery.                                                                                    |
+| `--amp_database`         | `DRAMP` | Reference AMP database for AMPcombi2 (`DRAMP`, `APD`, `UniRef100`).                                                                        |
+| `--amp_database_dir`     | `null`  | Optional local pre-downloaded AMPcombi2 database directory.                                                                                |
+| `--ripp_preset`          | `false` | Enable antiSMASH RiPP/RRE modules (`--rre`, lanthi/lasso/sacti/thiopeptides, `--asf`, `--clusterhmmer`) and extract `ripp_candidates.tsv`. |
 
 ---
 
-## BiG-SCAPE
+## BiG-SCAPE, BiG-SLiCE & BiG-FAM Query
 
-`--bigscape_run` and `--bigslice_run` are mutually exclusive.
+BiG-SCAPE and BiG-SLiCE can run independently or together in the same execution.
 
-| Parameter                       | Default       | Description                                                                   |
-| ------------------------------- | ------------- | ----------------------------------------------------------------------------- |
-| `--bigscape_run`                | `false`       | Enable BiG-SCAPE GCF clustering.                                              |
-| `--bigscape_dereplicate`        | `true`        | Run `bigscape dereplicate` before clustering.                                 |
-| `--bigscape_dereplicate_cutoff` | `0.8`         | Similarity cutoff used for BiG-SCAPE dereplication.                           |
-| `--bigscape_pfam_path`          | `null`        | Path to `Pfam-A.hmm`. Resolved automatically from `--antismash_db` if absent. |
-| `--bigscape_gcf_cutoffs`        | `0.3 0.5 0.7` | Space-separated list of GCF similarity cutoffs.                               |
-| `--bigscape_mix`                | `true`        | Include a mixed-class network alongside class-specific networks.              |
-| `--bigscape_classify`           | `none`        | Classification mode: `none` or `classify`.                                    |
-| `--bigscape_include_singletons` | `true`        | Include singleton BGCs (no GCF membership) in output.                         |
-| `--bigscape_zip_output`         | `false`       | Archive the BiG-SCAPE output directory as `bigscape.tar.gz`.                  |
-| `--bigscape_extra_args`         | `''`          | Arbitrary extra arguments passed to BiG-SCAPE.                                |
-
----
-
-## BiG-SLiCE
-
-| Parameter               | Default | Description                                                                            |
-| ----------------------- | ------- | -------------------------------------------------------------------------------------- |
-| `--bigslice_run`        | `false` | Enable BiG-SLiCE clustering. Mutually exclusive with `--bigscape_run`.                 |
-| `--bigslice_db`         | `null`  | Path to BiG-SLiCE HMM database (`bigslice-models`). Auto-downloaded when absent/empty. |
-| `--bigslice_extra_args` | `''`    | Arbitrary extra arguments passed to BiG-SLiCE.                                         |
+| Parameter                       | Default       | Description                                                                                         |
+| ------------------------------- | ------------- | --------------------------------------------------------------------------------------------------- |
+| `--bigscape_run`                | `false`       | Enable BiG-SCAPE v2 GCF clustering.                                                                 |
+| `--bigscape_dereplicate`        | `true`        | Run `bigscape dereplicate` before clustering.                                                       |
+| `--bigscape_dereplicate_cutoff` | `0.8`         | Similarity cutoff used for BiG-SCAPE dereplication.                                                 |
+| `--bigscape_pfam_path`          | `null`        | Path to `Pfam-A.hmm`. Resolved automatically from `--antismash_db` if absent.                       |
+| `--bigscape_gcf_cutoffs`        | `0.3 0.5 0.7` | Space-separated list of GCF similarity cutoffs.                                                     |
+| `--bigscape_mix`                | `true`        | Analyse all BGC classes together in a mixed network (`--mix`).                                      |
+| `--bigscape_classify`           | `none`        | Classification mode: `none` or `classify`.                                                          |
+| `--bigscape_include_singletons` | `true`        | Include singleton BGCs in output.                                                                   |
+| `--bigscape_zip_output`         | `false`       | Archive BiG-SCAPE output as `bigscape.tar.gz`.                                                      |
+| `--bigscape_extra_args`         | `''`          | Extra CLI arguments passed to BiG-SCAPE.                                                            |
+| `--bigslice_run`                | `false`       | Enable BiG-SLiCE v2 clustering (automatically incorporates GTDB-Tk taxonomy).                       |
+| `--bigslice_db`                 | `null`        | Path to `bigslice-models`. Auto-downloaded when absent.                                             |
+| `--bigslice_extra_args`         | `''`          | Extra CLI arguments passed to BiG-SLiCE.                                                            |
+| `--bigfam_db`                   | `null`        | Path to pre-computed BiG-FAM/BiG-SLiCE DB for `bigslice --query` novelty scoring.                   |
+| `--bigfam_n_ranks`              | `1`           | Top N GCF hits returned per BGC in query mode.                                                      |
+| `--bigfam_novelty_threshold`    | `900`         | Distance `d`-score above which a queried BGC is flagged as putative novel.                          |
+| `--bigfam_no_normalize`         | `true`        | Pass `--no_normalize_feature` for BiG-FAM v1 DBs (`false` + threshold `~0.4` for BiG-SLiCE v2 DBs). |
 
 ---
 
-## Tabulation
+## Comparative genomics & visualization (Tier 3)
 
-| Parameter            | Default | Description                                                                                           |
-| -------------------- | ------- | ----------------------------------------------------------------------------------------------------- |
-| `--run_tabulation`   | `true`  | Run `SUMMARY` (`tabulate_regions.py` and `count_regions.py`) after antiSMASH.                         |
-| `--count_per_contig` | `false` | Emit one row per contig in `region_counts.tsv` instead of per assembly.                               |
-| `--split_hybrids`    | `false` | Count each product class in a hybrid BGC individually. `total_count` is always the number of regions. |
+| Parameter                | Default | Description                                                                                |
+| ------------------------ | ------- | ------------------------------------------------------------------------------------------ |
+| `--clinker_run`          | `false` | Generate interactive clinker HTML synteny plots per multi-member GCF.                      |
+| `--clinker_max_bgcs`     | `50`    | Maximum BGCs included per GCF plot.                                                        |
+| `--clinker_extra_args`   | `''`    | Extra CLI arguments passed to clinker.                                                     |
+| `--cblaster_run`         | `false` | Search representative/orphan BGC clusters via cblaster.                                    |
+| `--cblaster_mode`        | `local` | Search mode: `local` (offline cohort or `--cblaster_db`) or `remote` (NCBI).               |
+| `--cblaster_db`          | `null`  | Pre-built local cblaster `.dmnd` path (paired with `.sqlite3`). Built from cohort if null. |
+| `--cblaster_max_queries` | `50`    | Maximum representative/orphan BGCs searched by cblaster.                                   |
+| `--cblaster_extra_args`  | `''`    | Extra CLI arguments passed to cblaster.                                                    |
+
+---
+
+## Metagenomic & metatranscriptomic abundance (Tier 4)
+
+| Parameter                  | Default   | Description                                                              |
+| -------------------------- | --------- | ------------------------------------------------------------------------ |
+| `--abundance_mapper`       | `bowtie2` | Read aligner for BGC/GCF quantification: `bowtie2` or `minimap2`.        |
+| `--abundance_min_identity` | `95.0`    | Minimum read percent identity passed to CoverM contig quantification.    |
+| `--minimap2_extra_args`    | `-ax sr`  | Extra arguments passed to `minimap2` when `--abundance_mapper minimap2`. |
+
+---
+
+## Tabulation & consensus summary
+
+| Parameter                 | Default | Description                                                                                         |
+| ------------------------- | ------- | --------------------------------------------------------------------------------------------------- |
+| `--run_tabulation`        | `true`  | Emit `all_regions.tsv`, `region_counts.tsv`, `consensus_loci.tsv`, and `genome_qc_bgc_summary.tsv`. |
+| `--count_per_contig`      | `false` | Emit one row per contig in `region_counts.tsv` instead of per assembly.                             |
+| `--split_hybrids`         | `false` | Count each product class in hybrid BGCs individually.                                               |
+| `--consensus_min_overlap` | `0.25`  | Minimum pairwise interval Jaccard overlap required to merge calls across predictors.                |
 
 ---
 

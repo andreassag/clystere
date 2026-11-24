@@ -1,0 +1,50 @@
+nextflow_workflow {
+    name "Test AMP_DISCOVERY"
+    script "subworkflows/local/amp_discovery.nf"
+    workflow "AMP_DISCOVERY"
+
+    test("Real container: multi-sample parallel MACREL + PREPARE_AMP_DB + AMPCOMBI2 end-to-end") {
+        when {
+            params {
+                amp_database = 'DRAMP'
+                amp_database_dir = "${projectDir}/tests/data/mock_amp_db"
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'bsub_a'],
+                        file("${projectDir}/tests/data/genomes/GCA_000009045_mini.fna.gz", checkIfExists: true)
+                    ],
+                    [
+                        [id: 'bsub_b'],
+                        file("${projectDir}/tests/data/genomes/GCA_000009045_mini.fna.gz", checkIfExists: true)
+                    ],
+                    [
+                        [id: 'ecoli_empty'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.fna.gz", checkIfExists: true)
+                    ]
+                )
+                input[1] = Channel.empty()
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.trace.succeeded().count { it.name.contains("PREPARE_AMP_DB") } == 1
+            assert workflow.trace.succeeded().count { it.name.contains("AMPCOMBI2_PARSETABLES") } == 3
+            assert !path("${projectDir}/tests/data/mock_amp_db/mmseqs2").exists()
+
+            assert workflow.out.amp_summary_tsv.size() == 1
+            def summaryTxt = path(workflow.out.amp_summary_tsv[0]).getText()
+            assert summaryTxt.contains("bsub_a")
+            assert summaryTxt.contains("bsub_b")
+            assert summaryTxt.contains("DRAMP_TEST_003")
+
+            assert workflow.out.amp_cluster_tsv.size() == 1
+            def clusterTxt = path(workflow.out.amp_cluster_tsv[0]).getText()
+            assert clusterTxt.contains("cluster_id")
+            assert clusterTxt.contains("LGLLTVCLRYKDKYGKQPNVLGWKMVRMISKIDK")
+        }
+    }
+}

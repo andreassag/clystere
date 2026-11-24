@@ -30,6 +30,7 @@ import argparse
 from pathlib import Path
 import re
 import sys
+from urllib.parse import unquote
 
 from Bio import SeqIO
 import pandas as pd
@@ -41,7 +42,7 @@ WELCOME = f"""\
                     * comBGC v.{TOOL_VERSION} *
                 ........................
     This tool aggregates the results of BGC prediction tools:
-                antiSMASH, deepBGC, and GECCO
+            antiSMASH, deepBGC, GECCO, and SanntiS
     For detailed usage documentation please refer
     to https://nf-co.re/funcscan
     ........................................................."""
@@ -410,6 +411,100 @@ def gecco_workflow(gecco_paths: list[str], verbose: bool = False) -> pd.DataFram
     return gecco_df[INTERNAL_COLS]
 
 
+def _parse_gff_attributes(attr_field: str) -> dict[str, str]:
+    """Parse a GFF3 semicolon-separated key=value attributes column."""
+    attrs: dict[str, str] = {}
+    for item in attr_field.strip().split(";"):
+        item = item.strip()
+        if not item or "=" not in item:
+            continue
+        key, value = item.split("=", 1)
+        attrs[key.strip()] = unquote(value.strip())
+    return attrs
+
+
+def sanntis_workflow(sanntis_path: str | Path, verbose: bool = False) -> pd.DataFrame:
+    """Create a DataFrame with aggregated SanntiS BGC predictions from GFF3 output."""
+    if verbose:
+        print("\nParsing SanntiS file\n... ", end="")
+
+    path = Path(sanntis_path)
+    if not path.is_file() or path.stat().st_size == 0:
+        if verbose:
+            print("Done.")
+        return pd.DataFrame(columns=INTERNAL_COLS)
+
+    sample = re.sub(r"\.sanntis(\.full)?\.gff3?$", "", path.name)
+    if sample == path.name:
+        sample = path.stem
+
+    rows: list[dict[str, str | int]] = []
+    with path.open("r", encoding="utf-8", errors="replace") as handle:
+        for raw_line in handle:
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = line.split("\t")
+            if len(parts) < 9:
+                continue
+            contig_id, _source, feature_type, start_str, end_str, score_str, _strand, _phase, attr_str = parts[:9]
+            if feature_type.lower() not in {"cluster", "region", "bgc", "protocluster"}:
+                continue
+            try:
+                bgc_start = int(start_str)
+                bgc_end = int(end_str)
+            except ValueError:
+                continue
+
+            attrs = _parse_gff_attributes(attr_str)
+            cluster_id = attrs.get("ID") or attrs.get("Name") or f"{contig_id}_{bgc_start}_{bgc_end}"
+            product_class = attrs.get("nearest_MiBIG_class") or attrs.get("product") or "Other"
+            mibig_id = attrs.get("nearest_MiBIG") or "NA"
+            # Real SanntiS 0.9.3.5 writes `score=...;nearest_MiBIG_diceDistance=...` in col 9 (col 6 is '.')
+            prob_val = attrs.get("score") or attrs.get("nearest_MiBIG_diceScore")
+            if not prob_val and attrs.get("nearest_MiBIG_diceDistance"):
+                try:
+                    prob_val = f"{max(0.0, 1.0 - float(attrs['nearest_MiBIG_diceDistance'])):.3f}"
+                except ValueError:
+                    prob_val = None
+            dice_score = prob_val or (score_str if score_str not in {".", ""} else "NA")
+            partial = attrs.get("partial", "").strip().lower()
+            if partial in {"true", "1", "yes", "10", "01", "11"}:
+                bgc_complete = "No"
+            elif partial in {"false", "0", "no", "00"}:
+                bgc_complete = "Yes"
+            else:
+                bgc_complete = "NA"
+            cds_count_raw = attrs.get("cds_count") or attrs.get("num_cds") or attrs.get("CDS_count")
+            try:
+                cds_count = int(cds_count_raw) if cds_count_raw is not None else 0
+            except ValueError:
+                cds_count = 0
+
+            rows.append(
+                {
+                    "Sample_ID": sample,
+                    "Prediction_tool": "SanntiS",
+                    "Contig_ID": contig_id,
+                    "Product_class": product_class,
+                    "BGC_probability": dice_score,
+                    "BGC_complete": bgc_complete,
+                    "BGC_start": bgc_start,
+                    "BGC_end": bgc_end,
+                    "BGC_length": max(0, bgc_end - bgc_start + 1),
+                    "CDS_ID": cluster_id,
+                    "CDS_count": cds_count,
+                    "PFAM_domains": attrs.get("pfam_domains") or "NA",
+                    "MIBiG_ID": mibig_id,
+                    "InterPro_ID": attrs.get("interpro_domains") or "NA",
+                }
+            )
+
+    if verbose:
+        print("Done.")
+    return pd.DataFrame(rows, columns=INTERNAL_COLS)
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Create the comBGC CLI argument parser."""
     parser = argparse.ArgumentParser(
@@ -424,11 +519,12 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="PATH(s)",
         dest="input",
         nargs="*",
-        help="""path(s) to the required output file(s) of antiSMASH, DeepBGC and/or GECCO
+        help="""path(s) to the required output file(s) of antiSMASH, DeepBGC, GECCO, and/or SanntiS
 these can be:
 - antiSMASH: <sample name>.gbk and (optional) knownclusterblast/ directory
 - DeepBGC:   <sample name>.bgc.tsv
 - GECCO:     <sample name>.clusters.tsv
+- SanntiS:   <sample name>.sanntis.full.gff
 Note: Please provide files from a single sample only. If you would like to
 summarize multiple samples, please see the --antismash_multiple_samples flag.""",
     )
@@ -457,14 +553,20 @@ sample). Can only be used if --input is not specified.""",
     return parser
 
 
-def classify_inputs(input_paths: list[str] | None) -> tuple[list[str], str, list[str]]:
-    """Categorize input paths into antiSMASH, deepBGC, and GECCO lists."""
+def classify_all_inputs(input_paths: list[str] | None) -> dict[str, list[str] | str]:
+    """Categorize input paths into antiSMASH, deepBGC, GECCO, and SanntiS buckets."""
     input_antismash: list[str] = []
     input_deepbgc = ""
     input_gecco: list[str] = []
+    input_sanntis: list[str] = []
 
     if not input_paths:
-        return input_antismash, input_deepbgc, input_gecco
+        return {
+            "antiSMASH": input_antismash,
+            "deepBGC": input_deepbgc,
+            "GECCO": input_gecco,
+            "SanntiS": input_sanntis,
+        }
 
     for raw_path in input_paths:
         path_obj = Path(raw_path)
@@ -481,11 +583,30 @@ def classify_inputs(input_paths: list[str] | None) -> tuple[list[str], str, list
             input_deepbgc = raw_path
         elif raw_path.endswith("clusters.tsv"):
             input_gecco.append(raw_path)
+        elif re.search(r"sanntis(\.full)?\.gff3?$", raw_path):
+            input_sanntis.append(raw_path)
         elif raw_path.rstrip("/").endswith("knownclusterblast") or (
             path_obj.is_dir() and path_obj.name == "knownclusterblast"
         ):
             input_antismash.append(raw_path)
 
+    return {
+        "antiSMASH": input_antismash,
+        "deepBGC": input_deepbgc,
+        "GECCO": input_gecco,
+        "SanntiS": input_sanntis,
+    }
+
+
+def classify_inputs(input_paths: list[str] | None) -> tuple[list[str], str, list[str]]:
+    """Categorize input paths into antiSMASH, deepBGC, and GECCO lists."""
+    classified = classify_all_inputs(input_paths)
+    input_antismash = classified["antiSMASH"]
+    input_deepbgc = classified["deepBGC"]
+    input_gecco = classified["GECCO"]
+    assert isinstance(input_antismash, list)
+    assert isinstance(input_deepbgc, str)
+    assert isinstance(input_gecco, list)
     return input_antismash, input_deepbgc, input_gecco
 
 
@@ -504,11 +625,18 @@ def main(argv: list[str] | None = None) -> int:
             "Please use only one of them (or see --help for how to use)."
         )
 
-    input_antismash, input_deepbgc, input_gecco = classify_inputs(args.input)
+    classified = classify_all_inputs(args.input)
+    input_antismash = classified["antiSMASH"]
+    input_deepbgc = classified["deepBGC"]
+    input_gecco = classified["GECCO"]
+    input_sanntis = classified["SanntiS"]
     dir_antismash = args.antismash_multiple_samples
 
-    if not (input_antismash or input_gecco or input_deepbgc or dir_antismash):
-        sys.exit("Please specify at least one input file (i.e. output from antismash, deepbgc, or gecco) or see --help")
+    if not (input_antismash or input_gecco or input_deepbgc or input_sanntis or dir_antismash):
+        sys.exit(
+            "Please specify at least one input file "
+            "(i.e. output from antismash, deepbgc, gecco, or sanntis) or see --help"
+        )
 
     tools_provided: dict[str, list[str] | str] = {}
     if input_antismash:
@@ -519,6 +647,8 @@ def main(argv: list[str] | None = None) -> int:
         tools_provided["deepBGC"] = input_deepbgc
     if input_gecco:
         tools_provided["GECCO"] = input_gecco
+    if input_sanntis:
+        tools_provided["SanntiS"] = input_sanntis
 
     if args.verbose:
         print(WELCOME)
@@ -539,6 +669,10 @@ def main(argv: list[str] | None = None) -> int:
         elif tool == "GECCO":
             assert isinstance(tool_input, list)
             frames.append(gecco_workflow(tool_input, verbose=args.verbose))
+        elif tool == "SanntiS":
+            assert isinstance(tool_input, list)
+            for sanntis_file in tool_input:
+                frames.append(sanntis_workflow(sanntis_file, verbose=args.verbose))
 
     non_empty_frames = [df for df in frames if not df.empty]
     if non_empty_frames:

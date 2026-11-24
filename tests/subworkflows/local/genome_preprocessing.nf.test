@@ -1,0 +1,255 @@
+nextflow_workflow {
+    name "Test GENOME_PREPROCESSING"
+    script "subworkflows/local/genome_preprocessing.nf"
+    workflow "GENOME_PREPROCESSING"
+
+    test("Real container: GBK_TO_FASTA + PYRODIGAL + GUNZIP_GFF on raw FASTA and GenBank") {
+        when {
+            params {
+                annotation_tool = 'pyrodigal'
+                pyrodigal_mode = 'single'
+                quast_run = true
+                dereplicate_genomes = false
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'ecoli_fasta'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.fna.gz", checkIfExists: true),
+                        []
+                    ],
+                    [
+                        [id: 'bsub_gbk'],
+                        file("${projectDir}/tests/data/genomes/GCA_000009045_mini.gbff.gz", checkIfExists: true),
+                        []
+                    ]
+                )
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.samples_for_bgc.size() == 2
+            assert workflow.out.genome_fastas.size() == 2
+
+            // Verify raw FASTA received an uncompressed plain-text GFF3 from Pyrodigal
+            def fastaSample = workflow.out.samples_for_bgc.find { it[0].id == 'ecoli_fasta' }
+            assert fastaSample != null
+            def gffFile = path(fastaSample[2])
+            assert gffFile.exists()
+            assert gffFile.toString().endsWith('.gff3')
+            assert gffFile.getText().contains('CDS')
+
+            // Verify GenBank was extracted to a non-empty .fna
+            def gbkFasta = workflow.out.genome_fastas.find { it[0].id == 'bsub_gbk' }
+            assert gbkFasta != null
+            assert path(gbkFasta[1]).exists()
+            assert path(gbkFasta[1]).size() > 1000
+        }
+    }
+
+    test("Real container: SKANI_TRIANGLE + DEREP_SELECT collapses identical genomes") {
+        when {
+            params {
+                annotation_tool = 'none'
+                dereplicate_genomes = true
+                dereplicate_tool = 'skani'
+                dereplicate_ani = 99.0
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'ecoli_a'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.fna.gz", checkIfExists: true),
+                        []
+                    ],
+                    [
+                        [id: 'ecoli_dup'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.fna.gz", checkIfExists: true),
+                        []
+                    ],
+                    [
+                        [id: 'bsub_distinct'],
+                        file("${projectDir}/tests/data/genomes/GCA_000009045_mini.fna.gz", checkIfExists: true),
+                        []
+                    ]
+                )
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            // Two identical E. coli slices collapse to 1 + 1 distinct B. subtilis = 2 winners
+            assert workflow.out.samples_for_bgc.size() == 2
+            assert workflow.out.genome_fastas.size() == 2
+            assert workflow.out.dereplication_clusters.size() == 1
+            def keptIds = workflow.out.samples_for_bgc.collect { it[0].id }.sort()
+            assert 'bsub_distinct' in keptIds
+            assert ('ecoli_a' in keptIds) ^ ('ecoli_dup' in keptIds)
+        }
+    }
+
+    test("Real container: DREP_DEREPLICATE collapses identical genomes") {
+        when {
+            params {
+                annotation_tool = 'none'
+                dereplicate_genomes = true
+                dereplicate_tool = 'drep'
+                dereplicate_ani = 99.0
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'ecoli_a'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.fna.gz", checkIfExists: true),
+                        []
+                    ],
+                    [
+                        [id: 'ecoli_dup'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.fna.gz", checkIfExists: true),
+                        []
+                    ],
+                    [
+                        [id: 'bsub_distinct'],
+                        file("${projectDir}/tests/data/genomes/GCA_000009045_mini.fna.gz", checkIfExists: true),
+                        []
+                    ]
+                )
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.samples_for_bgc.size() == 2
+            assert workflow.out.genome_fastas.size() == 2
+            assert workflow.out.dereplication_clusters.size() == 1
+            def keptIds = workflow.out.samples_for_bgc.collect { it[0].id }.sort()
+            assert 'bsub_distinct' in keptIds
+            assert ('ecoli_a' in keptIds) ^ ('ecoli_dup' in keptIds)
+        }
+    }
+
+    test("Stub: Bakta pre-annotation with automatic light DB download and dRep dereplication") {
+        options "-stub"
+        when {
+            params {
+                annotation_tool = 'bakta'
+                bakta_db = "${outputDir}/nonexistent_bakta_db"
+                bakta_db_type = 'light'
+                dereplicate_genomes = true
+                dereplicate_tool = 'drep'
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'ecoli_fasta'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.fna.gz", checkIfExists: true),
+                        []
+                    ]
+                )
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.samples_for_bgc.size() == 1
+            assert workflow.trace.succeeded().any { it.name.contains("BAKTA_BAKTADBDOWNLOAD") }
+            assert workflow.trace.succeeded().any { it.name.contains("BAKTA_BAKTA") }
+            assert workflow.trace.succeeded().any { it.name.contains("DREP_DEREPLICATE") }
+        }
+    }
+
+    test("Stub: Bakta DB download is skipped when all inputs are GenBank") {
+        options "-stub"
+        when {
+            params {
+                annotation_tool = 'bakta'
+                bakta_db = "${outputDir}/nonexistent_bakta_db"
+                bakta_db_type = 'light'
+                dereplicate_genomes = false
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'bsub_gbk'],
+                        file("${projectDir}/tests/data/genomes/GCA_000009045_mini.gbff.gz", checkIfExists: true),
+                        []
+                    ]
+                )
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.samples_for_bgc.size() == 1
+            assert !workflow.trace.succeeded().any { it.name.contains("BAKTA_BAKTADBDOWNLOAD") }
+            assert !workflow.trace.succeeded().any { it.name.contains("BAKTA_BAKTA") }
+        }
+    }
+
+    test("Stub: CheckM2 feeds DEREP_SELECT when --dereplicate_genomes (skani) and --checkm2_run are both enabled") {
+        options "-stub"
+        when {
+            params {
+                annotation_tool = 'none'
+                dereplicate_genomes = true
+                dereplicate_tool = 'skani'
+                checkm2_run = true
+                checkm2_db = "${outputDir}/nonexistent_checkm2_db"
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'ecoli_fasta'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.fna.gz", checkIfExists: true),
+                        []
+                    ]
+                )
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.checkm2_tsv.size() == 1
+            assert workflow.trace.succeeded().count { it.name.contains("CHECKM2_PREDICT") } == 1
+            assert workflow.trace.succeeded().any { it.name.contains("DEREP_SELECT") }
+        }
+    }
+
+    test("Stub: CheckM2 feeds CHECKM2_TO_DREP_INFO and DREP_DEREPLICATE when --dereplicate_tool drep is enabled") {
+        options "-stub"
+        when {
+            params {
+                annotation_tool = 'none'
+                dereplicate_genomes = true
+                dereplicate_tool = 'drep'
+                checkm2_run = true
+                checkm2_db = "${outputDir}/nonexistent_checkm2_db"
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'ecoli_fasta'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.fna.gz", checkIfExists: true),
+                        []
+                    ]
+                )
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.checkm2_tsv.size() == 1
+            assert workflow.trace.succeeded().count { it.name.contains("CHECKM2_PREDICT") } == 1
+            assert workflow.trace.succeeded().any { it.name.contains("CHECKM2_TO_DREP_INFO") }
+            assert workflow.trace.succeeded().any { it.name.contains("DREP_DEREPLICATE") }
+        }
+    }
+}

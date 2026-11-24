@@ -1,0 +1,38 @@
+name: "cblaster_makedb"
+description: Builds a local DIAMOND + SQLite cblaster database from cohort GenBank files.
+keywords:
+  - cblaster
+  - diamond
+  - bgc
+  - comparative genomics
+tools:
+  - "cblaster":
+      description: "Detect collocated homologues of gene clusters"
+      homepage: "https://github.com/gamcil/cblaster"
+      licence:
+        - "MIT"
+input:
+  - gbks:
+      type: file
+      description: Cohort GenBank files
+output:
+  dmnd:
+    - cohort.dmnd:
+        type: file
+        description: DIAMOND protein database
+  sqlite:
+    - cohort.sqlite3:
+        type: file
+        description: cblaster SQLite genomic coordinates database
+  versions_cblaster_makedb:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - cblaster:
+          type: string
+          description: The name of the tool
+      - "cblaster --version 2>&1 | grep -Eo '[0-9]+(\\.[0-9]+)+' | tail -n 1":
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

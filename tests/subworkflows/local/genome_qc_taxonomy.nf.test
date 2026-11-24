@@ -1,0 +1,94 @@
+nextflow_workflow {
+    name "Test GENOME_QC_TAXONOMY"
+    script "subworkflows/local/genome_qc_taxonomy.nf"
+    workflow "GENOME_QC_TAXONOMY"
+
+    test("Real container: QUAST produces real N50 and Total length metrics") {
+        when {
+            params {
+                quast_run = true
+                checkm2_run = false
+                gtdbtk_run = false
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'GCA_000005845'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.fna.gz", checkIfExists: true)
+                    ],
+                    [
+                        [id: 'GCA_000009045'],
+                        file("${projectDir}/tests/data/genomes/GCA_000009045_mini.fna.gz", checkIfExists: true)
+                    ]
+                )
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.quast_tsv.size() == 1
+            def tsvText = path(workflow.out.quast_tsv[0][1]).getText()
+            assert tsvText.contains("N50")
+            assert tsvText.contains("Total length")
+            assert tsvText.contains("100000")
+        }
+    }
+
+    test("Stub: CheckM2 auto-download and GTDB-Tk with pre-staged metadata DB") {
+        options "-stub"
+        when {
+            params {
+                quast_run = false
+                checkm2_run = true
+                checkm2_db = "${outputDir}/nonexistent_checkm2_db"
+                gtdbtk_run = true
+                gtdbtk_db = "${projectDir}/tests/data/mock_gtdbtk_db"
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'GCA_000005845'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.fna.gz", checkIfExists: true)
+                    ]
+                )
+                """
+            }
+        }
+        then {
+            assert workflow.success
+            assert workflow.out.checkm2_tsv.size() == 1
+            assert workflow.out.gtdbtk_summary.size() == 1
+            assert workflow.trace.succeeded().any { it.name.contains("CHECKM2_DATABASEDOWNLOAD") }
+            assert workflow.trace.succeeded().any { it.name.contains("CHECKM2_PREDICT") }
+            assert workflow.trace.succeeded().any { it.name.contains("GTDBTK_CLASSIFYWF") }
+        }
+    }
+
+    test("GTDB-Tk without --gtdbtk_db and without --gtdbtk_download_db fails cleanly") {
+        options "-stub"
+        when {
+            params {
+                quast_run = false
+                checkm2_run = false
+                gtdbtk_run = true
+                gtdbtk_db = "${outputDir}/missing_gtdbtk_db"
+                gtdbtk_download_db = false
+            }
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [id: 'GCA_000005845'],
+                        file("${projectDir}/tests/data/genomes/GCA_000005845_mini.fna.gz", checkIfExists: true)
+                    ]
+                )
+                """
+            }
+        }
+        then {
+            assert workflow.failed
+        }
+    }
+}

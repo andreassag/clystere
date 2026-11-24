@@ -1,0 +1,51 @@
+name: "gbk_to_fasta"
+description: Converts GenBank genome files into nucleotide FASTA (and optional protein FAA) or normalizes FASTA inputs.
+keywords:
+  - genbank
+  - fasta
+  - conversion
+tools:
+  - "biopython":
+      description: "Biopython SeqIO conversion utility"
+      homepage: "https://biopython.org/"
+      licence:
+        - "BSD-3-Clause"
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information e.g. `[ id:'sample1' ]`
+    - genome:
+        type: file
+        description: Input GenBank or FASTA genome file (plain or gzipped)
+  - is_fasta:
+      type: boolean
+      description: True when input is already FASTA and only needs normalization
+output:
+  fasta:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "${prefix}.fna":
+          type: file
+          description: Uncompressed nucleotide FASTA file
+          pattern: "*.fna"
+  faa:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "${prefix}.faa":
+          type: file
+          description: Optional protein FASTA extracted from GenBank CDS annotations
+          pattern: "*.faa"
+  versions_biopython:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - biopython:
+          type: string
+          description: The name of the tool
+      - "python3 -c 'import Bio; print(Bio.__version__)'":
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"

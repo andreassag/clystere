@@ -1,0 +1,68 @@
+name: "aggregate_bgc_abundance"
+description: Aggregates CoverM contig profiles into BGC and GCF TPM, RPKM, covered fraction, and DNA/RNA activity matrices.
+keywords:
+  - abundance
+  - metagenomics
+  - metatranscriptomics
+  - coverm
+  - bgc
+tools:
+  - "python":
+      description: "Python 3 BGC/GCF abundance aggregator"
+      homepage: "https://www.python.org/"
+      licence:
+        - "PSF-2.0"
+input:
+  - coverm_tsvs:
+      type: file
+      description: Per-sample CoverM contig depth TSV files
+  - metadata_tsv:
+      type: file
+      description: BGC catalog metadata TSV
+  - gcf_membership_tsv:
+      type: file
+      description: Optional gcf_membership_summary.tsv
+  - assay_manifest_tsv:
+      type: file
+      description: Optional TSV mapping sample_id to assay_type (metagenome or metatranscriptome)
+output:
+  bgc_tpm_tsv:
+    - bgc_abundance_tpm.tsv:
+        type: file
+        description: BGC x sample TPM matrix
+  bgc_rpkm_tsv:
+    - bgc_abundance_rpkm.tsv:
+        type: file
+        description: BGC x sample RPKM matrix
+  bgc_covered_fraction_tsv:
+    - bgc_covered_fraction.tsv:
+        type: file
+        description: BGC x sample covered fraction matrix
+  gcf_tpm_tsv:
+    - gcf_abundance_tpm.tsv:
+        type: file
+        description: GCF x sample summed TPM matrix
+  gcf_rpkm_tsv:
+    - gcf_abundance_rpkm.tsv:
+        type: file
+        description: GCF x sample summed RPKM matrix
+  activity_summary_tsv:
+    - bgc_activity_summary.tsv:
+        type: file
+        description: Metagenome vs metatranscriptome BGC prevalence and RNA/DNA activity summary
+  abundance_mqc:
+    - bgc_abundance_mqc.tsv:
+        type: file
+        description: MultiQC custom content table for BGC read mapping abundance
+  versions_aggregate_abundance:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - python:
+          type: string
+          description: The name of the tool
+      - python3 --version 2>&1 | sed 's/Python //':
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@andreassag"
