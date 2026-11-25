@@ -1,15 +1,15 @@
 repos:
-  # Python linting and formatting via Ruff
+  # Python linting and formatting via Ruff (matches PythonLint job)
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.4
+    rev: v0.17.6
     hooks:
-      - id: ruff
-        args: [--fix]
+      - id: ruff-check
+        args: [--fix, --exit-non-zero-on-fix]
         types_or: [python, pyi]
       - id: ruff-format
         types_or: [python, pyi]
 
-  # Formatting for JSON, YAML, and Markdown via Prettier
+  # Formatting for JSON, YAML, Markdown, and web/JS config files via Prettier (matches Prettier job)
   # (.nf and .config are excluded in .prettierignore because prettier-plugin-groovy strips trailing newlines)
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v4.0.0-alpha.8
@@ -17,8 +17,15 @@ repos:
       - id: prettier
         additional_dependencies:
           - prettier@3.9.6
-        files: \.(json|yml|yaml|md)$
+        files: \.(json|jsonc|json5|yml|yaml|md|mdx|cjs|mjs|js|jsx|ts|tsx|css|scss|less|html)$
         types_or: [file]
+
+  # EditorConfig enforcement across all non-excluded files (matches EditorConfig job)
+  - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
+    rev: 3.11.1
+    hooks:
+      - id: editorconfig-checker
+        exclude: ^(modules/nf-core/|tests/data/(combgc|comparative)/)
 
   # Generic file hygiene
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -34,3 +41,62 @@ repos:
       - id: check-merge-conflict
       - id: mixed-line-ending
         args: [--fix=lf]
+
+  # Nextflow, nf-core, schema & gitignore CI parity checks (matches Schema, NextflowLint & NfCoreLint jobs)
+  - repo: local
+    hooks:
+      - id: gitignore-source-guard
+        name: Guard source/module directories from .gitignore
+        entry: >-
+          bash -c 'ignored=$(git ls-files --others --ignored --exclude-standard
+          | grep -E "^(modules|subworkflows|workflows|bin|assets|conf|docs|tests|\.github)/"
+          | grep -Ev "(^|/)(__pycache__|\.pytest_cache|\.ruff_cache|\.mypy_cache|\.nf-test|\.nextflow)/|\.py[cod]$"
+          || true); if [ -n "$ignored" ]; then echo "Ignored source files:"; echo "$ignored"; exit 1; fi'
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: schema-meta-validate
+        name: JSON Schema meta-validation (matches Schema job)
+        entry: >-
+          python -c 'import json, pathlib, jsonschema;
+          schema = json.loads(pathlib.Path("nextflow_schema.json").read_text(encoding="utf-8"));
+          jsonschema.Draft202012Validator.check_schema(schema);
+          missing = {"$schema", "$id", "title", "description", "type"} - schema.keys();
+          assert not missing, f"Missing top-level keys: {missing}";
+          assert "properties" in schema or "$defs" in schema, "Schema must have properties or $defs"'
+        language: python
+        additional_dependencies:
+          - jsonschema
+        pass_filenames: false
+        files: ^(nextflow_schema\.json|nextflow\.config)$
+
+      - id: nextflow-lint
+        name: Nextflow lint (matches NextflowLint job)
+        entry: >-
+          bash -c 'export PATH="$PATH:$HOME/.local/bin";
+          command -v nextflow >/dev/null || { echo "nextflow not found on PATH"; exit 1; };
+          nextflow lint .'
+        language: system
+        pass_filenames: false
+        files: (\.(nf|config)$|^modules\.json$)
+
+      - id: nf-core-schema-lint
+        name: nf-core schema lint (matches NfCoreLint job)
+        entry: >-
+          bash -c 'export PATH="$PATH:$HOME/.local/bin";
+          command -v nf-core >/dev/null || { echo "nf-core not found on PATH"; exit 1; };
+          nf-core pipelines schema lint nextflow_schema.json'
+        language: system
+        pass_filenames: false
+        files: ^(nextflow_schema\.json|nextflow\.config|conf/.*)$
+
+      - id: nf-core-pipelines-lint
+        name: nf-core pipelines lint (matches NfCoreLint job)
+        entry: >-
+          bash -c 'export PATH="$PATH:$HOME/.local/bin";
+          command -v nf-core >/dev/null || { echo "nf-core not found on PATH"; exit 1; };
+          nf-core pipelines lint; rc=$?; rm -f conf/containers_*.config; exit $rc'
+        language: system
+        pass_filenames: false
+        files: (\.(nf|config|diff)$|^(nextflow_schema\.json|modules\.json|\.nf-core\.yml|assets/.*\.json|assets/multiqc_config\.yml|\.github/workflows/.*\.ya?ml)$|^(modules|subworkflows)/)

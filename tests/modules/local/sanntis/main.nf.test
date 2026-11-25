@@ -38,7 +38,11 @@ nextflow_process {
         }
         then {
             assert process.failed
-            assert process.stderr.any { it.contains("--sanntis_interpro_dir") }
+            def combined = (process.stdout ?: []) + (process.stderr ?: [])
+            assert combined.any {
+                it?.trim()?.startsWith("ERROR: SanntiS requires InterProScan") &&
+                    it.contains("--sanntis_interpro_dir")
+            }
         }
     }
 

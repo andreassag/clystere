@@ -13,9 +13,7 @@ select = [
     "C4",  # flake8-comprehensions
     "PTH", # flake8-use-pathlib — enforce Path over os.path
 ]
-ignore = [
-    "E501", # line too long — enforced by formatter, not linter
-]
+ignore = []
 
 [lint.isort]
 force-sort-within-sections = true

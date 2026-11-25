@@ -262,7 +262,7 @@ def load_gtdbtk(paths: list[Path]) -> dict[str, str]:
 def load_gcf_membership(
     path: Path | None,
 ) -> tuple[dict[str, dict[str, list[str]]], dict[tuple[str, str, int], dict[str, list[str]]]]:
-    """Load gcf_membership_summary.tsv into (sample -> tool -> [gcf_ids], (sample, predictor, idx) -> tool -> [gcf_ids])."""
+    """Load gcf_membership_summary.tsv into sample-level and locus-level GCF mappings."""
     by_sample: dict[str, dict[str, list[str]]] = defaultdict(lambda: defaultdict(list))
     by_key: dict[tuple[str, str, int], dict[str, list[str]]] = defaultdict(lambda: defaultdict(list))
     if path is None or not path.is_file() or path.stat().st_size == 0:
